@@ -137,8 +137,8 @@ packages:
   easy_localization:
     dependency: "direct main"
     description:
-      path: "/Users/hanlf2/Desktop/midea/applib/easy_localization-3.0.1"
-      relative: false
+      path: "packages/easy_localization-3.0.1"
+      relative: true
     source: path
     version: "3.0.1"
   easy_logger:
