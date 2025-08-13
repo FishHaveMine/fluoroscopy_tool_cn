@@ -3,3 +3,4 @@
 /dart_tool/
 .dart_tool/
 .flutter-plugins
+.DS_Store
