@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Echarts Example</title>
+  <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+</head>
+
+<body>
+  <div id="chart" style="width: 360px; height: 210px;"></div>
+  <script type="text/javascript">
+    var myChart = echarts.init(document.getElementById('chart'));
+
+    var base = +new Date(1968, 9, 3);
+    var oneDay = 24 * 3600 * 1000;
+    var date = [];
+
+    var listdata = [];
+    var namelist = ["环境温度T4", "低压压力", "压缩机1排气温度T7C1", "压缩机1频率", "高压压力"];
+    var colorslist = ["#0080FF", "#52DD0D", "#FFC001", "#FF3367", "#0DDDA8"];
+
+    for (var i = 0; i < namelist.length; i++) {
+      listdata.push({
+        name: namelist[i],
+        type: 'line',
+        smooth: true,
+        symbol: 'none',
+        sampling: 'average',
+        itemStyle: {
+          color: colorslist[i]
+        },
+        yAxisIndex: i > 2 ? 0 : 1,
+        data: []
+      });
+    }
+    
+
+    for (var i = 1; i < 20; i++) {
+      var now = new Date(base += oneDay);
+      date.push([now.getFullYear(), now.getMonth() + 1, now.getDate()].join('/'));
+
+      for (var d = 0; d < namelist.length; d++) {
+        listdata[d]['data'].push(Math.floor(Math.random() * 10001));
+      }
+    }
+
+    var option = {
+      grid: {
+        "borderWidth": 0,
+        "top": 30,
+        "left": 50,
+        "right": 50,
+        "bottom": 75,
+        textStyle: {
+          color: "#fff"
+        }
+      },
+      legend: {
+        x: '0%',
+        bottom: '0', icon: 'rect',  // 设置图标形状为长方形
+        itemWidth: 8,  // 设置图标宽度
+        itemHeight: 2,  // 设置图标高度，可以根据需要调
+        textStyle: {
+          fontSize: 9,
+          color: '#90979c',
+        },
+        data: namelist
+      },
+      tooltip: {
+        trigger: 'axis',
+        position: function (pt) {
+          return [pt[0], '10%'];
+        }
+      },
+      toolbox: {
+
+      },
+      xAxis: {
+        type: 'category',
+        boundaryGap: false,
+        data: date,
+        axisLabel: {
+          textStyle: {
+            fontSize: 9,
+            color: '#556677'
+          }
+        },
+      },
+      yAxis: [{
+        type: 'value',
+        axisTick: {
+          show: false
+        },
+        axisLine: {
+          show: true,
+          lineStyle: {
+            color: '#DCE2E8'
+          }
+        },
+        axisLabel: {
+          textStyle: {
+            fontSize: 9,
+            color: '#556677'
+          }
+        },
+        splitLine: {
+          show: false
+        }
+      }, {
+        type: 'value',
+        position: 'right',
+        axisTick: {
+          show: false
+        },
+        axisLabel: {
+          textStyle: {
+            fontSize: 9,
+            color: '#556677'
+          },
+          formatter: '{value}'
+        },
+        axisLine: {
+          show: true,
+          lineStyle: {
+            color: '#DCE2E8'
+          }
+        },
+        splitLine: {
+          show: false
+        }
+      }],
+      dataZoom: [{
+        type: 'inside',
+        start: 0,
+        end: 10,
+      }, {
+        start: 0,
+        end: 10,
+        handleSize: '80%',
+        height: 10,
+        bottom: 50,
+        handleStyle: {
+          width: 15, // 设置图片宽度为 20px
+          height: 15, // 设置图片高度为 20px
+          padding: 0,
+        },
+        moveHandleIcon: 'none',
+        moveHandleStyle: {
+          opacity: 0,
+        },
+        textStyle: {
+          color: '#fff',
+        },
+        borderColor: 'rgba(213, 211, 211, 0.8)',
+        dataBackground: {},
+        selectedDataBackground: {},
+      }],
+      series: [
+        ...listdata
+      ]
+    };
+    myChart.setOption(option);
+  </script>
+</body>
+
+</html>

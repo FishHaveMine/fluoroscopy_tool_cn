@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ECharts仪表盘</title>
+    <!-- 引入 ECharts -->
+    <script src="https://static-btri.midea.com/mfs/8318/1751504667986.js"></script>
+</head>
+<style>
+    body {
+        padding: 0;
+        margin: 0;
+    }
+
+    #report {
+        padding: 0;
+        margin: 0;
+        background: #8ee4fe;
+        /* display: flex;
+        align-items: center;
+        flex-flow: column; */
+        padding-bottom: 30px;
+    }
+
+    .float-container {
+
+        width: 640px;
+    }
+
+    .float-container::after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+
+    .float-item {
+        float: left;
+        width: 300px;
+        /* 减去间距 */
+        margin-right: 0;
+        padding: 0;
+    }
+
+    .float-item:last-child {
+        margin-right: 0;
+    }
+
+    #reportheader {
+        width: 720px;
+        height: 426px;
+        background: url('https://static-btri.midea.com/mfs/8318/1752459085616.png');
+    }
+
+    .reportbox {
+        background: #FFFFFF;
+        border-radius: 20px;
+        padding-top: 61px;
+        padding-bottom: 41px;
+        width: 640px;
+        position: relative;
+        margin-bottom: 30px;
+        margin-left: 40px;
+        /* margin: auto 0 30px; */
+    }
+
+    .reportheader {
+        font-family: FZDHTJW--GB1-0;
+        font-size: 34px;
+        color: #FFFFFF;
+        font-weight: 400;
+        background: #39B3F3;
+        background-image: linear-gradient(151deg, #39B3F3 0%, #007CFF 74%);
+        border-radius: 20px 0px 20px 0px;
+        padding: 12px 29px;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+
+    .reporttip {
+        font-family: FZLTHJW--GB1-0;
+        font-size: 18px;
+        color: #FF8519;
+        line-height: 24px;
+        font-weight: 400;
+        max-width: 80%;
+        margin: auto;
+        text-align: center;
+        display: flex;
+    }
+
+    .reporttipicon {
+        width: 32px;
+        height: 32px;
+
+        display: inline-block;
+        margin-right: 15px;
+    }
+
+
+    .radiobox {
+        text-align: center;
+        padding: 30px;
+    }
+
+    .radioboxtitle {
+        font-family: FZLTDHJW--GB1-0;
+        font-size: 41px;
+        color: #2B3448;
+        font-weight: 900;
+        padding-bottom: 30px;
+    }
+
+    .radioboxcon {
+        font-family: FZLTHJW--GB1-0;
+        font-size: 26px;
+        color: #595959;
+        font-weight: 400;
+    }
+
+    .indoorinfoBox {
+        position: relative;
+        text-align: center;
+        font-family: FZLTZHJW--GB1-0;
+        font-size: 18px;
+        color: #2B3448;
+        letter-spacing: 0;
+        text-align: center;
+        font-weight: 600;
+    }
+
+    .indoorinfo {
+        position: absolute;
+        top: 80px;
+        left: 0;
+        width: 220px;
+        height: 220px;
+    }
+
+    .indoorinfoal {
+        text-align: center;
+        margin: auto;
+    }
+
+
+    .sysinfo {
+        padding: 30px;
+    }
+
+    /* 每一行参数的容器：用 inline-block 让元素同行 */
+    .param-row {
+        width: 100%;
+        margin-bottom: 46px;
+        /* 清除 inline-block 间隙影响（可选，若用 float 则不需要） */
+        font-size: 0;
+    }
+
+    /* 参数名称：占固定宽度，右对齐 */
+    .param-label {
+        display: block;
+        text-align: left;
+        font-family: PingFangSC-Medium;
+        font-size: 24px;
+        color: #2B3448;
+        letter-spacing: 0;
+        font-weight: 500;
+        margin-bottom: 10px;
+    }
+
+    /* 进度条/状态容器：占剩余宽度 */
+    .param-value {
+        width: calc(100% - 80px);
+        display: inline-block;
+        vertical-align: middle;
+        font-size: 14px;
+    }
+
+    /* 进度条外层：模拟灰色背景 */
+    .progress-wrap {
+        width: 540px;
+        height: 12px;
+        background: #ebebeb;
+        border-radius: 6px;
+        overflow: hidden;
+    }
+
+    /* 进度条内层：不同参数不同颜色和宽度 */
+    .progress-low {
+        height: 12px;
+        width: 5%;
+        background: #4da6ff;
+        /* 低压压力颜色 */
+    }
+
+    .progress-high {
+        height: 12px;
+        width: 5%;
+        background: #66ccff;
+        /* 高压压力颜色 */
+    }
+
+    .progress-overheat {
+        height: 12px;
+        width: 5%;
+        background: #ff9966;
+        /* 排气过热度颜色 */
+    }
+
+    /* 状态组：多状态并排（冷媒量、外机散热） */
+    .status-group {
+        width: 540px;
+        text-align: justify;
+        /* 让子元素均匀分布（技巧：配合伪元素） */
+    }
+
+    .status-group::after {
+        content: "";
+        display: inline-block;
+        width: 100%;
+    }
+
+    .status-item {
+        display: inline-block;
+        width: 176px;
+        /* 3个元素，留出间隙 */
+        text-align: center;
+        color: #fff;
+        padding: 4px 0;
+        border-radius: 4px;
+        font-size: 12px;
+    }
+
+    /* 冷媒量状态颜色 */
+    .status-less {
+        background: #ff9933;
+    }
+
+    .status-normal {
+        background: #00cc66;
+    }
+
+    .status-much {
+        background: #ff3333;
+    }
+
+    /* 外机散热状态颜色 */
+    .status-excellent {
+        background: #00cc99;
+    }
+
+    .status-risk {
+        background: #3399ff;
+    }
+
+    .status-high-risk {
+        background: #ff3333;
+    }
+
+    /* 箭头标记当前状态（可选，用绝对定位微调） */
+    .arrow-marker {
+        position: relative;
+        padding-top: 6px;
+        /* 给箭头留空间 */
+    }
+
+    .arrow-marker::after {
+        /* content: "";
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        border-left: 6px solid transparent;
+        border-right: 6px solid transparent;
+        border-top: 6px solid #000; */
+    }
+
+    /* 单独调整冷媒量、外机散热的箭头位置（根据需求） */
+    .refrigerant .arrow-marker::after {
+        left: 136px;
+        /* 正常状态位置，可动态计算 */
+    }
+
+    .radiator .arrow-marker::after {
+        left: 44px;
+        /* 优秀状态位置，可动态计算 */
+    }
+
+    .arrow {
+        position: absolute;
+        left: 50%;
+        top: 35px;
+        width: 36px;
+    }
+
+    .arrow1 {
+        left: 70px;
+    }
+
+    .arrow2 {}
+
+    .arrow3 {
+        left: 430px;
+    }
+</style>
+
+<body>
+    <div id="report" style="width: 720px;">
+
+        <div id="reportheader">
+        </div>
+
+
+        <div class="reportbox">
+            <div class="reportheader">
+                系统配比率
+            </div>
+            <div class="radiobox">
+
+                <div class="radioboxtitle">131.2%</div>
+
+                <div class="radioboxcon">配比率=内机总能力/外机总能力*100%</div>
+            </div>
+
+            <div class="reporttip ">
+                <img src="https://static-btri.midea.com/mfs/8318/1752459080782.png" class="reporttipicon" />
+                外机配比超过130%，系统全开机运行时将被强制低风速运转，如在意请联系收货处理
+            </div>
+        </div>
+
+        <div class="reportbox">
+            <div class="reportheader">
+                制冷系统关键参数
+            </div>
+            <div class="sysinfo">
+
+                <!-- 低压压力 -->
+                <div class="param-row">
+                    <span class="param-label">低压压力</span>
+                    <div class="param-value">
+                        <div class="progress-wrap">
+                            <div class="progress-low" id="low-pressure-progress"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 高压压力 -->
+                <div class="param-row">
+                    <span class="param-label">高压压力</span>
+                    <div class="param-value">
+                        <div class="progress-wrap">
+                            <div class="progress-high" id="high-pressure-progress"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 排气过热度 -->
+                <div class="param-row">
+                    <span class="param-label">排气过热度</span>
+                    <div class="param-value">
+                        <div class="progress-wrap">
+                            <div class="progress-overheat" id="overheat-progress"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 冷媒量 -->
+                <div class="param-row refrigerant">
+                    <span class="param-label">冷媒量</span>
+                    <div class="param-value arrow-marker">
+                        <div class="status-group">
+                            <div class="status-item status-less">少</div>
+                            <div class="status-item status-normal">正常</div>
+                            <div class="status-item status-much">多</div>
+                            <img src="https://static-btri.midea.com/mfs/8318/1752488572353.png" id="refrigerant"
+                                class="arrow arrow3" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 外机散热 -->
+                <div class="param-row radiator">
+                    <span class="param-label">外机散热</span>
+                    <div class="param-value arrow-marker">
+                        <div class="status-group">
+                            <div class="status-item status-excellent">优秀</div>
+                            <div class="status-item status-risk">一般风险</div>
+                            <div class="status-item status-high-risk">高风险</div>
+                            <img src="https://static-btri.midea.com/mfs/8318/1752488140233.png" id="radiator"
+                                class="arrow arrow1" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="reportbox">
+            <div class="reportheader">
+                电参数
+            </div>
+            <div class="float-container">
+                <div class="float-item">
+                    <div id="main1" style="width: 190px;height:220px;margin: auto;"></div>
+                </div>
+                <div class="float-item">
+                    <div id="main" style="width: 190px;height:220px;margin: auto;"></div>
+                </div>
+            </div>
+            <div class="reporttip ">
+                <img src="https://static-btri.midea.com/mfs/8318/1752459080782.png" class="reporttipicon" />
+                检测到电压偏离铭牌值超过10%，请检查供电电压
+            </div>
+        </div>
+
+
+        <div class="reportbox">
+            <div class="reportheader">
+                内机信息
+            </div>
+            <div class="container">
+                <div class="indoorinfoBox" style="width: 220px;height:220px;margin: auto;">
+                    <div class="indoorinfo">
+                        <div class="indoorinfoal">
+                            <div class="indoorinfotitle">
+                                内机台数: 20
+                            </div>
+                            <div class="indoorinfotitle">
+                                总能力: 42HP
+                            </div>
+                        </div>
+                    </div>
+                    <div id="main2" style="width: 100%;height:100%;margin: auto;"></div>
+                </div>
+            </div>
+            <div class="reporttip ">
+                <img src="https://static-btri.midea.com/mfs/8318/1752459080782.png" class="reporttipicon" />
+                检测到系统中连接了旧内机，请注意这些内机不支持单独掉电，否则将引起系统故障
+            </div>
+        </div>
+    </div>
+    <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+    <script>
+        var getmax1 = 100;
+        var getvalue1 = 20;
+        var unit1 = 'V';
+        var getmax = 100;
+        var getvalue = 70;
+        var unit = 'A';
+        var lowPressureValue = 0.2; // 实际值从后端或其他地方获取
+        var heightPressureValue = 0.5; // 实际值从后端或其他地方获取
+        var overheatValue = 0.8; // 实际值从后端或其他地方获取
+        var refrigerant = 3;
+        var radiator = 1;
+    </script>
+
+    <script type="text/javascript">
+
+        // 基于准备好的dom，初始化echarts实例 ,.
+        var myChart = echarts.init(document.getElementById('main'));
+        option = {
+            backgroundColor: 'transparent',
+            title: [{
+                text: '',
+                bottom: '6%',
+                x: 'center',
+                borderColor: '#1962FF',
+                borderWidth: 0,
+                borderRadius: 0,
+                backgroundColor: '#1962FF',
+                padding: [0, 0],
+                textStyle: {
+                    fontWeight: 'bold',
+                    fontSize: 13,
+                    color: '#fff'
+                }
+            }],
+            angleAxis: {
+                show: false,
+                max: (getmax * 360 / 270) - 5, //-45度到225度，二者偏移值是270度除360度
+                type: 'value',
+                startAngle: 225, //极坐标初始角度
+                splitLine: {
+                    show: false
+                }
+            },
+            barMaxWidth: 12, //圆环宽度
+            radiusAxis: {
+                show: false,
+                type: 'category',
+            },
+            //圆环位置和大小
+            polar: {
+                center: ['50%', '50%'],
+                radius: '120%'
+            },
+            series: [{
+                type: 'bar',
+                data: [{ //上层圆环，显示数据
+                    value: getvalue,
+                    itemStyle: {
+                        color: '#1962FF',
+                    },
+                }],
+                barGap: '-100%', //柱间距离,上下两层圆环重合
+                coordinateSystem: 'polar',
+                roundCap: true, //顶端圆角
+                z: 3 //圆环层级，同zindex
+            },
+            { //下层圆环，显示最大值
+                type: 'bar',
+                data: [{
+                    value: getmax,
+                    itemStyle: {
+                        color: '#1962FF',
+                        opacity: 0.2,
+                        borderWidth: 0,
+                    },
+                }],
+                barGap: '-100%',
+                coordinateSystem: 'polar',
+                roundCap: true,
+                z: 1
+            },
+            //仪表盘
+            {
+                type: 'gauge',
+                startAngle: 225, //起始角度，同极坐标
+                endAngle: -45, //终止角度，同极坐标
+                axisLine: {
+                    show: false,
+                },
+                splitLine: {
+                    show: false
+                },
+                axisTick: {
+                    show: false
+                },
+                axisLabel: {
+                    show: false
+                },
+                splitLabel: {
+                    show: false
+                },
+                pointer: { // 分隔线
+                    shadowColor: 'auto', //默认透明
+                    shadowBlur: 10,
+                    length: '50%',
+                    width: "3",
+                },
+                itemStyle: {
+                    color: '#1962FF',
+                    borderColor: "#1962FF",
+                    borderWidth: 1
+                },
+                detail: {
+                    formatter: function (params) {
+                        return getvalue + `${unit}`;
+                    },
+                    color: '#2B3448',
+                    fontSize: 24,
+                    offsetCenter: [0, 45],
+                },
+                title: {
+                    show: false
+                },
+                data: [{
+                    value: getvalue,
+                }]
+            }, {
+                name: '外部刻度',
+                type: 'gauge',
+                //  center: ['20%', '50%'],
+                radius: '50%',
+                min: 0, //最小刻度
+                max: 100, //最大刻度
+                splitNumber: 10, //刻度数量
+                startAngle: 225,
+                endAngle: -45,
+                axisLine: {
+                    show: true,
+                    lineStyle: {
+                        width: 1,
+                        color: [
+                            [1, 'rgba(0,0,0,0)']
+                        ]
+                    }
+                }, //仪表盘轴线
+                axisLabel: {
+                    show: false,
+                    color: '#1962FF',
+                    distance: 25,
+                    splitNumber: 2,
+                }, //刻度标签。
+                axisTick: {
+                    show: true,
+                    splitNumber: 2,
+                    lineStyle: {
+                        color: '#C7CBCF', //用颜色渐变函数不起作用
+                        width: 2,
+                    },
+                    length: 5
+                }, //刻度样式
+                splitLine: {
+                    show: false,
+                    length: -20,
+                    splitNumber: 2,
+                    lineStyle: {
+                        color: '#C7CBCF', //用颜色渐变函数不起作用
+                    }
+                }, //分隔线样式
+                detail: {
+                    show: false
+                },
+                pointer: {
+                    show: false
+                }
+            },
+
+            ]
+        };
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option);
+
+
+        // 基于准备好的dom，初始化echarts实例 ,.
+        var myChart1 = echarts.init(document.getElementById('main1'));
+
+        option1 = {
+            backgroundColor: 'transparent',
+            title: [{
+                text: '',
+                bottom: '6%',
+                x: 'center',
+                borderColor: '#1962FF',
+                borderWidth: 0,
+                borderRadius: 0,
+                backgroundColor: '#1962FF',
+                padding: [0, 0],
+                textStyle: {
+                    fontWeight: 'bold',
+                    fontSize: 13,
+                    color: '#fff'
+                }
+            }],
+            angleAxis: {
+                show: false,
+                max: (getmax1 * 360 / 270) - 5, //-45度到225度，二者偏移值是270度除360度
+                type: 'value',
+                startAngle: 225, //极坐标初始角度
+                splitLine: {
+                    show: false
+                }
+            },
+            barMaxWidth: 12, //圆环宽度
+            radiusAxis: {
+                show: false,
+                type: 'category',
+            },
+            //圆环位置和大小
+            polar: {
+                center: ['50%', '50%'],
+                radius: '120%'
+            },
+            series: [{
+                type: 'bar',
+                data: [{ //上层圆环，显示数据
+                    value: getvalue1,
+                    itemStyle: {
+                        color: '#1962FF',
+                    },
+                }],
+                barGap: '-100%', //柱间距离,上下两层圆环重合
+                coordinateSystem: 'polar',
+                roundCap: true, //顶端圆角
+                z: 3 //圆环层级，同zindex
+            },
+            { //下层圆环，显示最大值
+                type: 'bar',
+                data: [{
+                    value: getmax1,
+                    itemStyle: {
+                        color: '#1962FF',
+                        opacity: 0.2,
+                        borderWidth: 0,
+                    },
+                }],
+                barGap: '-100%',
+                coordinateSystem: 'polar',
+                roundCap: true,
+                z: 1
+            },
+            //仪表盘
+            {
+                type: 'gauge',
+                startAngle: 225, //起始角度，同极坐标
+                endAngle: -45, //终止角度，同极坐标
+                axisLine: {
+                    show: false,
+                },
+                splitLine: {
+                    show: false
+                },
+                axisTick: {
+                    show: false
+                },
+                axisLabel: {
+                    show: false
+                },
+                splitLabel: {
+                    show: false
+                },
+                pointer: { // 分隔线
+                    shadowColor: 'auto', //默认透明
+                    shadowBlur: 10,
+                    length: '50%',
+                    width: "3",
+                },
+                itemStyle: {
+                    color: '#1962FF',
+                    borderColor: "#1962FF",
+                    borderWidth: 1
+                },
+                detail: {
+                    formatter: function (params) {
+                        return getvalue1 + `${unit1}`;
+                    },
+                    color: '#2B3448',
+                    fontSize: 24,
+                    offsetCenter: [0, 45],
+                },
+                title: {
+                    show: false
+                },
+                data: [{
+                    value: getvalue1,
+                }]
+            }, {
+                name: '外部刻度',
+                type: 'gauge',
+                //  center: ['20%', '50%'],
+                radius: '50%',
+                min: 0, //最小刻度
+                max: 100, //最大刻度
+                splitNumber: 10, //刻度数量
+                startAngle: 225,
+                endAngle: -45,
+                axisLine: {
+                    show: true,
+                    lineStyle: {
+                        width: 1,
+                        color: [
+                            [1, 'rgba(0,0,0,0)']
+                        ]
+                    }
+                }, //仪表盘轴线
+                axisLabel: {
+                    show: false,
+                    color: '#1962FF',
+                    distance: 25,
+                    splitNumber: 2,
+                }, //刻度标签。
+                axisTick: {
+                    show: true,
+                    splitNumber: 2,
+                    lineStyle: {
+                        color: '#C7CBCF', //用颜色渐变函数不起作用
+                        width: 2,
+                    },
+                    length: 5
+                }, //刻度样式
+                splitLine: {
+                    show: false,
+                    length: -20,
+                    splitNumber: 2,
+                    lineStyle: {
+                        color: '#C7CBCF', //用颜色渐变函数不起作用
+                    }
+                }, //分隔线样式
+                detail: {
+                    show: false
+                },
+                pointer: {
+                    show: false
+                }
+            },
+
+            ]
+        };
+        // 使用刚指定的配置项和数据显示图表。
+        myChart1.setOption(option1);
+
+    </script>
+    <script type="text/javascript">
+
+        var maxWidth = 540;
+
+        // 设置进度条宽度
+        document.getElementById('low-pressure-progress').style.width = `${lowPressureValue * maxWidth}px`;
+        document.getElementById('high-pressure-progress').style.width = `${heightPressureValue * maxWidth}px`;
+        document.getElementById('overheat-progress').style.width = `${overheatValue * maxWidth}px`;
+
+        var arrowmap = [{
+            "val": 1,
+            "class": "arrow1",
+            "src": "https://static-btri.midea.com/mfs/8318/1752488140233.png"
+        }, {
+            "val": 2,
+            "class": "arrow2",
+            "src": "https://static-btri.midea.com/mfs/8318/1752488140233.png"
+        }, {
+            "val": 3,
+            "class": "arrow3",
+            "src": "https://static-btri.midea.com/mfs/8318/1752488572353.png"
+        }]
+
+        // 查找匹配的箭头配置
+        var matchedArrow = arrowmap.find(item => item.val === refrigerant);
+        var arrowElement = document.getElementById('refrigerant');
+        arrowElement.className = `arrow ${matchedArrow.class}`;
+        arrowElement.src = matchedArrow.src;
+
+
+        var radiatorarrowmap = [{
+            "val": 1,
+            "class": "arrow1",
+            "src": "https://static-btri.midea.com/mfs/8318/1752488140233.png"
+        }, {
+            "val": 2,
+            "class": "arrow2",
+            "src": "https://static-btri.midea.com/mfs/8318/1752488140233.png"
+        }, {
+            "val": 3,
+            "class": "arrow3",
+            "src": "https://static-btri.midea.com/mfs/8318/1752488572353.png"
+        }]
+
+        // 查找匹配的箭头配置
+        var radiatormatchedArrow = arrowmap.find(item => item.val === radiator);
+        var radiatorarrowElement = document.getElementById('radiator');
+        radiatorarrowElement.className = `arrow ${radiatormatchedArrow.class}`;
+        radiatorarrowElement.src = radiatormatchedArrow.src;
+
+
+    </script>
+</body>
+
+</html>

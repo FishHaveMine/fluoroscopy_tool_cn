@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="198px" height="255px" viewBox="0 0 198 255" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>编组@3x</title>
+    <defs>
+        <linearGradient x1="20.8938017%" y1="1.87492978%" x2="50%" y2="100%" id="linearGradient-1">
+            <stop stop-color="#90D8FF" stop-opacity="0.341692731" offset="0%"></stop>
+            <stop stop-color="#0080FF" stop-opacity="0.316862093" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="19.0952226%" y1="5.90609161%" x2="71.9407985%" y2="100%" id="linearGradient-2">
+            <stop stop-color="#5DB7FF" offset="0%"></stop>
+            <stop stop-color="#0080FF" stop-opacity="0.817495493" offset="100%"></stop>
+        </linearGradient>
+        <ellipse id="path-3" cx="100.5" cy="101" rx="93.5" ry="94"></ellipse>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="linearGradient-5">
+            <stop stop-color="#FFFFFF" offset="0%"></stop>
+            <stop stop-color="#FFFFFF" offset="100%"></stop>
+        </linearGradient>
+        <rect id="path-6" x="26" y="-28" width="149" height="161" rx="4"></rect>
+        <filter x="-5.0%" y="-2.8%" width="110.1%" height="109.3%" filterUnits="objectBoundingBox" id="filter-7">
+            <feOffset dx="0" dy="3" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="2" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feComposite in="shadowBlurOuter1" in2="SourceAlpha" operator="out" result="shadowBlurOuter1"></feComposite>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.1 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="127.627063%" id="linearGradient-8">
+            <stop stop-color="#C7DEF4" offset="0%"></stop>
+            <stop stop-color="#A0CCF5" stop-opacity="0" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="页面-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="设备解锁-连接中" transform="translate(-262.000000, -312.000000)">
+            <g id="编组" transform="translate(262.000000, 312.000000)">
+                <g id="Group-22">
+                    <ellipse id="椭圆形备份-2" fill="url(#linearGradient-1)" cx="99" cy="99.5" rx="99" ry="99.5"></ellipse>
+                    <g id="Group" transform="translate(63.140330, 121.818624)">
+                        <polygon id="Path" fill="#F2F9FF" fill-rule="nonzero" transform="translate(36.403901, 24.069835) rotate(-45.000000) translate(-36.403901, -24.069835) " points="19.3870524 15.2600926 27.5879562 7.04679674 53.4207499 32.8795822 45.2183902 41.0928729"></polygon>
+                        <rect id="Rectangle" fill="#F2F2F2" x="33.6636509" y="62.7698417" width="5.47888997" height="45.4115346" rx="2"></rect>
+                        <path d="M27.6556985,69.1423111 L38.5873846,58.2092095 L38.5873846,58.2092095 L45.8208006,65.4426255 L34.8891323,76.3742939 C34.6938485,76.5695068 34.3772934,76.5695226 34.1819901,76.3743294 L27.6557569,69.8494053 C27.4604626,69.6541753 27.4604308,69.3375928 27.6556734,69.1423111 C27.6556776,69.1423069 27.6556817,69.1423027 27.6556985,69.1423111 Z" id="Path" fill="#E3EFFB" fill-rule="nonzero" transform="translate(36.561484, 67.468528) rotate(-45.000000) translate(-36.561484, -67.468528) "></path>
+                        <rect id="Rectangle" fill="#00A6FF" opacity="0.658052717" x="33.6636509" y="75.4850714" width="5.47888997" height="1"></rect>
+                        <path d="M40.1237648,69.6496272 L12.0493427,41.575205 C10.3862549,39.9117707 10.376677,37.2247568 12.0279483,35.5731365 L27.5919203,20.0091645 C29.2435406,18.3578932 31.9305546,18.367471 33.5939889,20.0305589 L61.6698671,48.1049861 C63.3331234,49.7689206 63.3427028,52.4563915 61.6912666,54.1085108 L46.1272894,69.6710267 C45.3340868,70.4644492 44.2558868,70.907953 43.12996,70.9039666 C42.0040332,70.8999263 40.9226439,70.4487247 40.1237648,69.6496272" id="Path" fill="#F4FDFF" fill-rule="nonzero" transform="translate(36.859669, 44.840458) rotate(-45.000000) translate(-36.859669, -44.840458) "></path>
+                    </g>
+                    <mask id="mask-4" fill="white">
+                        <use xlink:href="#path-3"></use>
+                    </mask>
+                    <use id="椭圆形" fill="url(#linearGradient-2)" xlink:href="#path-3"></use>
+                    <g id="Rectangle" mask="url(#mask-4)">
+                        <use fill="black" fill-opacity="1" filter="url(#filter-7)" xlink:href="#path-6"></use>
+                        <rect stroke="url(#linearGradient-5)" stroke-width="9" stroke-linejoin="square" fill="url(#linearGradient-5)" fill-rule="evenodd" x="30.5" y="-23.5" width="140" height="152" rx="4"></rect>
+                    </g>
+                    <path d="M76,117 L76,126 C76,128.209139 77.790861,130 80,130 L119,130 C121.209139,130 123,128.209139 123,126 L123,117 L123,117 L76,117 Z" id="Path-13" fill="url(#linearGradient-8)" mask="url(#mask-4)"></path>
+                </g>
+                <ellipse id="椭圆形" fill="#F5F0EF" fill-rule="nonzero" cx="98" cy="246" rx="60" ry="9"></ellipse>
+            </g>
+        </g>
+    </g>
+</svg>

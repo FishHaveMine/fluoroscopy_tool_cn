@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能水机健康报告</title>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #fff;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        .page {
+            position: relative;
+            width: 992px;
+            height: 1260px;
+            overflow: hidden;
+            page-break-before: always;
+            background-color: #f0f6ff;
+        }
+
+        .f-title {
+            position: absolute;
+            width: 100%;
+            /* display: flex; */
+            justify-content: space-between;
+            top: 54px;
+        }
+
+        .f-content {
+            position: absolute;
+            width: 100%;
+            /* display: flex; */
+            justify-content: space-between;
+            top: 138px;
+        }
+
+        .f-footer {
+            position: absolute;
+            width: 100%;
+            /* display: flex; */
+            justify-content: space-between;
+            bottom: 32px;
+        }
+
+        .r-name {
+            width: 480px;
+            height: 84px;
+            font-size: 60px;
+            font-family: PingFangSC-Semibold, PingFang SC;
+            font-weight: 600;
+            color: #0393D7;
+            line-height: 84px;
+            margin-bottom: 20px;
+        }
+
+        .r-des {
+            width: 644px;
+            height: 90px;
+            font-size: 22px;
+            font-family: PingFangSC-Semibold, PingFang SC;
+            font-weight: 600;
+            color: #0393D7;
+            line-height: 30px;
+        }
+
+        .r-list-item {
+            /* display: flex; */
+            /* margin-bottom: 12px; */
+        }
+
+        .r-list-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .r-lable {
+            width: 100px;
+            font-size: 20px;
+            font-family: MEIDITYPE-REGULAR, MEIDITYPE;
+            font-weight: 400;
+            color: #2B3448;
+            line-height: 40px;
+        }
+
+        .r-val {
+            width: 395px;
+            font-size: 20px;
+            font-family: MEIDITYPE-REGULAR, MEIDITYPE;
+            font-weight: 400;
+            color: #2B3448;
+            line-height: 40px;
+        }
+
+        #codejpg {
+            width: 80px;
+        }
+
+        .center {
+            /* display: flex; */
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .contentw {
+            width: 95%;
+            margin: auto;
+        }
+
+        .logo {
+            width: 241px;
+        }
+
+        .p1 {
+            width: 293px;
+            height: 20px;
+            font-size: 20px;
+            font-family: MEIDITYPE-REGULAR, MEIDITYPE;
+            font-weight: 400;
+            color: #666666;
+            line-height: 40px;
+        }
+
+
+        .contentpage {
+            border-radius: 6px;
+            overflow: hidden;
+            background-color: #fff;
+            padding: 19px 24px;
+        }
+
+        .flex {
+            /* display: flex; */
+        }
+
+        img {
+            width: 100%;
+        }
+
+
+        .table-container {
+            width: 100%;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 10px;
+            font-size: 14px;
+            font-family: PingFangSC-Regular, PingFang SC;
+            font-weight: 400;
+            color: rgba(13, 13, 13, 0.5);
+        }
+
+        th,
+        td {
+            border-bottom: 1px solid rgba(13, 13, 13, 0.1);
+            padding: 6.5px;
+            text-align: left;
+            max-width: 100px;
+            word-break: break-all;
+        }
+
+        th {
+            background-color: rgba(13, 13, 13, 0.1);
+            font-size: 14px;
+            font-family: PingFangSC-Regular, PingFang SC;
+            font-weight: 400;
+            color: rgba(13, 13, 13, 0.5);
+        }
+
+        .page4 {
+
+            height: 1033px;
+        }
+
+        .page4 td {
+            overflow: hidden;
+            word-break: normal;
+        }
+
+        .page4 .th1 {
+            width: 86px;
+        }
+
+        /* 测试项目 */
+        .page4 .th2 {
+            width: 98px;
+        }
+
+        /* FX */
+        .page4 .th3 {
+            width: 130px;
+        }
+
+        /* 时：分 */
+        .page4 .th4 {
+            text-align: center;
+        }
+
+        .page4 td:first-child,
+        .page4 td:nth-child(2),
+        .page4 .td {
+            background: rgba(0, 0, 0, 0.04);
+        }
+
+        /* 重点：给每个 tr 中前3个 td 设置背景色 */
+        .page4 tr>td:nth-child(-n+2) {
+            background: rgba(0, 0, 0, 0.04);
+        }
+
+        .page4title {
+            width: 180px;
+            font-size: 20px;
+            font-family: PingFangSC-Semibold, PingFang SC;
+            font-weight: 600;
+            color: #2B3448;
+            margin: auto;
+            padding-bottom: 16px;
+        }
+
+        .header {
+            padding-top: 53px;
+            padding-bottom: 25px;
+        }
+
+        .headerlogo {
+            width: 173px;
+        }
+
+        .footer {
+            width: 100%;
+            height: 67px;
+            line-height: 67px;
+            /* display: flex; */
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-family: MEIDITYPE-REGULAR, MEIDITYPE;
+            font-weight: 400;
+            color: #666666;
+            position: absolute;
+            left: 0;
+            bottom: 0;
+        }
+
+        .flexend {
+            /* display: flex; */
+            /* align-items: center;
+            justify-content: flex-end; */
+            text-align: right;
+        }
+
+
+
+
+        .halfpage {
+            width: 48%;
+        }
+
+        .infotable td {
+            padding: 5px;
+            border-bottom: 0px solid #ddd;
+
+            font-size: 14px;
+            font-family: PingFangSC-Regular, PingFang SC;
+            font-weight: 400;
+            color: #2B3448;
+        }
+
+        .baseinfo {
+            width: 100%;
+        }
+
+        .baseinfo tbody {
+
+            border: 1px solid rgba(13, 13, 13, 0.1);
+            ;
+        }
+
+        h2 {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .note {
+            font-size: 12px;
+            color: #666;
+            margin-top: 10px;
+        }
+
+
+        .section {
+            margin-top: 15px;
+            margin-bottom: 5px;
+        }
+
+        .halfpage .section:first-child {
+            margin-top: 0;
+        }
+
+        .section-title {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .page1 .section-title {
+
+            margin-bottom: 5px;
+        }
+
+        .page2 h5 {
+            margin: 0;
+            padding: 0;
+            padding-bottom: 5px;
+        }
+
+        .r-list-item,
+        .flex,
+        .contentpage-header,
+        .contentpage-header,
+        .sign,
+        .signature-section {
+
+            position: relative;
+        }
+
+        .r-list-item::after,
+        .r-list-item::after,
+        .sign::after,
+        .contentpage-header::after,
+        .signature-section::after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+
+        .column {
+            float: left;
+        }
+
+        .r-lable,
+        .r-val {
+            float: left;
+        }
+
+        .item {
+            /* display: flex; */
+            margin-left: 20px;
+            font-size: 16px !important;
+            font-weight: 400 !important;
+            padding-bottom: 10px;
+            color: #2B3448 !important;
+            position: relative;
+
+        }
+
+        /* 清除浮动方法二：使用 clear 伪元素 */
+        .item::after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+
+        .item-number {
+            width: 30px;
+            font-size: 12px !important;
+            font-weight: 400 !important;
+        }
+
+        .item-content {
+            color: #2B3448 !important;
+            font-size: 16px !important;
+            font-weight: 400 !important;
+            float: left;
+            max-width: 80%;
+        }
+
+        .item-result {
+            margin-left: 10px;
+            font-size: 12px !important;
+            color: #2B3448 !important;
+            font-weight: 400 !important;
+            float: right;
+            max-width: 50%;
+            overflow: hidden;
+        }
+
+        .leftpage {
+            float: left;
+        }
+
+        .rightpage {
+            float: right;
+        }
+
+
+        .contentpage-header {
+            margin-bottom: 10px;
+        }
+
+        .contentpage-header div {
+            font-size: 14px;
+            padding-right: 26px;
+            float: left;
+        }
+
+        .contentpage-footer {
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        .usemsg {
+
+            font-size: 14px;
+            font-family: PingFangSC-Regular, PingFang SC;
+            font-weight: 400;
+            color: #2B3448;
+            height: 1079px;
+            position: relative;
+        }
+
+        .sign {
+            width: 100%;
+            /* display: flex; */
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 16px;
+        }
+
+        .sign div {
+            min-width: 80px;
+            float: left;
+            width: 33.3%;
+        }
+
+        .signature-section {
+            /* display: flex; */
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 40px;
+            max-width: 800px;
+        }
+
+        .column {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .row {
+            /* display: flex; */
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .label {
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .value {
+            white-space: nowrap;
+        }
+
+        .signature {
+            height: 100px;
+            width: 100px;
+        }
+
+        .signature-line {
+            width: 100%;
+            height: 1px;
+            background: rgba(0, 0, 0, 0.08);
+            border-radius: 1px;
+            margin-top: 16px;
+            margin-bottom: 16px;
+        }
+
+        h5 {
+            padding: 0;
+            margin: 8px 0;
+        }
+
+        .mmw100 {
+            min-width: 50%;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 0 -->
+    <div class="page"
+        style="background-image: url(https://static-btri.midea.com/mfs/8318/1747992015399.png);    background-size: contain;">
+        <div class="f-title">
+            <div class="contentw center">
+                <img src="https://static-btri.midea.com/mfs/8318/1747992072862.png" class="logo">
+                <div class="p1">
+                    Midea Periodic Chiller Report
+                </div>
+            </div>
+        </div>
+
+        <div class="f-content">
+            <div class="contentw">
+                <div class="r-name" style="width: 100%;">
+                    智能水机健康报告
+                </div>
+                <div class="r-des">
+                    依托美的“水机博士”智慧解决方案，结合边缘智能和云智能技术，全方位持续洞悉水机 健康运行状况，为业主提供高效智能的水机售后运维建议与服务
+                </div>
+            </div>
+        </div>
+
+
+        <div class="f-footer">
+            <div class="contentw center">
+                <div class="r-list leftpage">
+                    <div class="r-list-item">
+                        <div class="r-lable">
+                            序列号
+                        </div>
+                        <div class="r-val" id="productSn">
+
+                        </div>
+                    </div>
+                    <div class="r-list-item">
+                        <div class="r-lable">
+                            项目名称
+                        </div>
+                        <div class="r-val" id="projectName">
+
+                        </div>
+                    </div>
+                    <div class="r-list-item">
+                        <div class="r-lable">
+                            项目地址
+                        </div>
+                        <div class="r-val" id="projectLocal">
+
+                        </div>
+                    </div>
+                    <div class="r-list-item">
+                        <div class="r-lable">
+                            报告期
+                        </div>
+                        <div class="r-val" id="reportTime">
+
+                        </div>
+                    </div>
+
+                </div>
+                <div class="r-code rightpage">
+                    <img src="https://static-btri.midea.com/mfs/8318/1747992069373.jpg" id="codejpg">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 1 -->
+    <div class="page page1">
+        <div class="header">
+            <div class="contentw flexend">
+                <img src="https://static-btri.midea.com/mfs/8318/1747992072862.png" class="headerlogo">
+            </div>
+        </div>
+
+
+
+        <div class="contentw">
+            <div class="contentpage">
+                <div class="baseinfo">
+                    <h2>基础信息</h2>
+                    <table>
+                        <tbody>
+                            <tr>
+                                <th>客户名称</th>
+                                <td id="customerName" class="mmw100"></td>
+                                <th>安装详细地址</th>
+                                <td id="installationAddress" class="mmw100"></td>
+                            </tr>
+                            <tr>
+                                <th>机组型号</th>
+                                <td id="unitModel" class="mmw100"></td>
+                                <th>产品编号</th>
+                                <td id="productCode" class="mmw100"></td>
+                            </tr>
+                            <tr>
+                                <th>控制程序版本号</th>
+                                <td id="controlProgramVersion" class="mmw100"></td>
+                                <th>电源</th>
+                                <td id="powerSupply" class="mmw100"></td>
+                            </tr>
+                            <tr>
+                                <th>触屏程序版本号</th>
+                                <td id="touchscreenProgramVersion" class="mmw100"></td>
+                                <th>出厂时间</th>
+                                <td id="factoryTime" class="mmw100"></td>
+                            </tr>
+                            <tr>
+                                <th>胀脉阀控制器版本</th>
+                                <td id="expansionValveControllerVersion" class="mmw100"></td>
+                                <th>调试时间</th>
+                                <td id="debugTime" class="mmw100"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="note">
+                        <p><strong>注 ：</strong></p>
+                        <p>1. 现场工作必须严格遵循国家法律法规和随附说明书相关的安全规范内容，以确保相关人员的安全！</p>
+                        <p>2. 操作设备必须具备相应的资质证书，且操作过程必须符合操作规程！</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="contentpage flex" style="margin-top: 15px;overflow: hidden;" id="contentpageFirst">
+
+            </div>
+        </div>
+        <div class="footer">
+            <div class="contentw flexend">
+                服务电话 ：400-8899-315
+            </div>
+        </div>
+    </div>
+
+
+    <!-- 2 -->
+    <div id="pageAuto"></div>
+
+    <!-- 3 -->
+    <div class="page">
+        <div class="header">
+            <div class="contentw flexend">
+                <img src="https://static-btri.midea.com/mfs/8318/1747992072862.png" class="headerlogo">
+            </div>
+        </div>
+        <div class="contentw">
+            <div class="contentpage usemsg">
+
+                <h4>尊敬的用户 ：</h4>
+                <div>
+                    非常感谢您选用美的楼宇科技的产品，“把复杂留给美的，让用户更简单”是我们的经营理念，我们将竭诚为您提供“快捷、专业、智能的用户服务”。
+                    为了给您带来更好的用户服务体验，请留下您的宝贵意见和建议，非常感谢您的支持！
+                </div>
+                <h4>用户意见 ：
+                </h4>
+                <div id="userFeedback">
+
+                </div>
+                <h4>现场培训效果 ：
+                </h4>
+                <div id="onSiteTrainingEffect">
+
+                </div>
+
+                <div style="padding: 16px;"></div>
+                <div class="sign">
+                    <div>美的服务人员 ：<p id="mideaServicePersonName-1"></p>
+                    </div>
+
+                    <div>电话 ：<p id="mideaServicePersonPhone-1"></p>
+                    </div>
+
+                    <div>日期 ：<p id="mideaServiceSignatureDate-1"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <div class="contentw flexend">
+                服务电话 ：400-8899-315
+            </div>
+        </div>
+    </div>
+
+    <!-- 4 -->
+    <div class="page">
+        <div class="header">
+            <div class="contentw flexend">
+                <img src="https://static-btri.midea.com/mfs/8318/1747992072862.png" class="headerlogo">
+            </div>
+        </div>
+
+        <div class="contentw">
+            <div class="page4title">机组运行数据记录表</div>
+            <div class="contentpage page4">
+
+                <div class="contentpage-header">
+                    <div>项目名称 ：<span id="projectName-1"></spa>
+                    </div>
+                    <div>机组型号 ：<span id="unitModel-1"></span></div>
+                    <div>出厂编号 ：<span id="productCode-1"></span></div>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th rowspan="2" class="th1">测试项目</th>
+                            <th rowspan="2" class="th2"></th>
+                            <th colspan="1" class="th3">FX</th>
+                            <th rowspan="2" class="th4">1</th>
+                            <th rowspan="2" class="th4">2</th>
+                            <th rowspan="2" class="th4">3</th>
+                            <th rowspan="2" class="th4">4</th>
+                            <th rowspan="2" class="th4">5</th>
+                            <th rowspan="2" class="th4">6</th>
+                        </tr>
+                        <tr>
+                            <th>时 ：分</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody">
+
+                    </tbody>
+                </table>
+
+                <div class="contentpage-footer">
+                    <strong>其他检查事项 ：</strong><br>
+                    1. 客户设定的目标温度<span id="customerTargetTemperature"></span>℃；用户侧供电电压为
+                    <span id="userSideSupplyVoltagePhase1"></span>/
+                    <span id="userSideSupplyVoltagePhase2"></span>/
+                    <span id="userSideSupplyVoltagePhase3"></span>V。<br>
+                    2. 运行状态下机组表现 ：喷管检查 ：<span id="unitVibrationNoiseCheck"></span>，请注明情况<br>
+                    3. 制冷系统检查，氟侧系统过滤器前后温差 ：<span
+                        id="fluorideSideFilterTemperatureDifference"></span>℃（平稳运行状态下，温差应低于5℃）<br>
+                    4.
+                    常规机组正常运行状态下蒸发压力正常范围220~400kPa,冷凝压力正常范围700~1000kPa。平稳运行状态下，换热器端温差应小于3℃℃，高于此温差时，换热器换热效率降低，需进行清洗，建议最长一年清洗一次，如果水质较差，清洗频次需增加。敬请关注日常水系统水质管理。(注:换热器清洗属于有偿服务项目。)<br>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="contentw flexend">
+                服务电话 ：400-8899-315
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- 5 -->
+    <div class="page">
+        <div class="header">
+            <div class="contentw flexend">
+                <img src="https://static-btri.midea.com/mfs/8318/1747992072862.png" class="headerlogo">
+            </div>
+        </div>
+        <div class="contentw">
+            <div class="contentpage usemsg">
+                <h4>问题及处理结果 ：</h4>
+                <div id="problemsAndSolutions">
+
+                </div>
+
+                <h4>机组状态评价及整改建议 ：
+                </h4>
+                <h5>1) 客户开机前检查情况 <span id="preStartupCheckStatus"></span></h5>
+                <div id="preStartupCheckDetails">
+
+                </div>
+
+                <h5>2) 运行状态下机组表现 <span id="operationStatus"></span></h5>
+                <div id="operationDetails">
+
+                </div>
+
+                <h5>3) 其它事项</h5>
+                <div id="otherMatters">
+
+                </div>
+
+                <div class="signature-line"></div>
+                <div>
+
+                    <h3>签字验收</h3>
+                    <div class="signature-section">
+                        <!-- 左边 -->
+                        <div class="column">
+                            <div class="row">
+                                <span class="label">美的服务人员姓名 ：</span>
+                                <span class="value" id="mideaServicePersonName"></span>
+                            </div>
+                            <div class="row"><span class="label">签名日期 ：</span>
+                                <span class="value" id="mideaServiceSignatureDate"></span>
+                            </div>
+                            <div style="width: 100px;height: 85px;"></div>
+                            <div class="row">
+                                <span class="label">客户代表人员姓名 ：</span>
+                                <span class="value" id="customerRepresentativeName"></span>
+                            </div>
+                            <div class="row">
+                                <span class="label">签名日期 ：</span>
+                                <span class="value" id="customerSignatureDate"></span>
+                            </div>
+                        </div>
+
+                        <!-- 右边 -->
+                        <div class="column">
+                            <div class="row"><span class="label">美的服务人员电话 ：</span><span class="value"
+                                    id="mideaServicePersonPhone">400-8899-315</span></div>
+                            <div class="row">
+                                <span class="label">美的服务人员签名 ：</span>
+                                <img style="width: auto;" src="" id="mideaServiceSignature" alt="签名" class="signature">
+                            </div>
+                            <div class="row"><span class="label">客户代表人员电话 ：</span><span class="value"
+                                    id="customerRepresentativePhone"></span></div>
+                            <div class="row">
+                                <span class="label">客户代表人员签名 ：</span>
+                                <img style="width: auto;" src="" id="customerSignature" alt="签名" class="signature">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <div class="contentw flexend">
+                服务电话 ：400-8899-315
+            </div>
+        </div>
+    </div>
+
+</body>
+
+
+<script>
+    var formdataMatch = {"customerName":"测试","customerPhone":"13726259684","installationAddress":"广东省佛山市顺德区美的工业城西区","projectLocal":"广东省佛山市顺德区美的工业城西区","branchName":"中央-广州中心","branchCode":"F4401000013","reportTime":"2025-06-25 14:08:14","productCode":"","unitModel":"1","controlProgramVersion":"1","touchscreenProgramVersion":"","expansionValveControllerVersion":"","productSn":"","powerSupply":"5","factoryTime":"2025-06-22","debugTime":"2025-06-25","projectCode":"test0620","projectName":"i管家体验项目（大型水机）","projectId":"7850193","debugModel":"离心机组","unitAppearanceDamage":"无","partsDamage":"无","insulationDamage":"无","other":"无","isSeparateWiring":"无","isCabinetCleanedMicro":"无","isCabinetCleanedStart":"无","isWiringCompliant":"无","controlPowerConnectionStatus":"异常","relayStatus":"异常","contactorStatus":"异常","powerWiringStatus":"异常","startCabinetGroundingStatus":"异常","lowVoltageInsulationResistance":"5","guidePageSwitchStatus":"正常","factoryStatus":"带氟出厂","airTightnessTestStatus":"正常","prePressureHoldingAirTightness":"5","postPressureHoldingAirTightness":"5","vacuumTestStatus":"正常","prePressureHoldingVacuum":"555","postPressureHoldingVacuum":"55","refrigerantChargeAmount":"2","refrigerantChargeAmountRadio":"带氟出厂","singlePointLeakRate":"5","isImpurityInContainer":"是","flowProtectionType":"靶流","coolingSideStatus":"正常","freezingSideStatus":"正常","chilledWaterPumpForm":"并联","chilledWaterPumpFlow":"3","chilledWaterPumpHead":"3","coolingWaterPumpForm":"并联","coolingWaterPumpFlow":"3","coolingWaterPumpHead":"3","coolingTowerForm":"开式","coolingTowerFlow":"22","coolingTowerHead":"2","chilledWaterPH":"5","chilledWaterConductivity":"5","isChilledWaterClear":"是","coolingWaterPH":"6","coolingWaterConductivity":"6","isCoolingWaterClear":"是","evaporationPressureLowAlarm":"","condensationPressureHighAlarm":"","windingTemperatureHighAlarm":"","startupTimeExceedAlarm":"","gatewayType":"普通网关","networkStatus":"信号强","gatewayFixedVersion":"5","isSetParamsSameAsFactory":"是","specificParams":"","waterControl":"出水控制","coolingHeatingTargetTemp":"0","evaporatorActualControlTemp":"7","exitPauseTempDiff":"0","enterPauseTempDiff":"0","capacityAdjustmentKeepTempDiff":"0","coolingTowerFanAdjustTempDiff":"0","coolingTowerFanUnit1ShutdownTemperature":"19","coolingTowerFanUnit1OpeningTemperature":"0","coolingTowerFanUnit2ShutdownTemperature":"17","coolingTowerFanUnit2OpeningTemperature":"34","baudRate":"9600","stationAddress":"","parityBit":"","exitPauseTemperatureDifference":"","enterPauseTemperatureDifference":"","controlMode":"就地","operationMode":"","ratedCurrent":"0","ratedFrequency":"","currentTransmitterRange":"","pressureSensorUpperLimit":"2000","evaporatorTargetLiquidLevel":"0","coolingFullLoadPower":"0","iceStorageFullLoadPower":"0","compressorShutdownInterval":"15","startupInterval":"90","quickStartSignalDelay":"1","inverter1SoftwareVersion":"","inverter2SoftwareVersion":"","inverter3SoftwareVersion":"","compressor1Version":"","maglev1Version":"","compressor2Version":"","maglev2Version":"","compressor3Version":"","maglev3Version":"","compressor1AZ":"","compressor1FX":"","compressor1FY":"","compressor1RX":"","compressor1RY":"","compressor2AZ":"","compressor2FX":"","compressor2FY":"","compressor2RX":"","compressor2RY":"","compressor3AZ":"","compressor3FX":"","compressor3FY":"","compressor3RX":"","compressor3RY":"","logTime1":"2025-06-25 14:03:51","chilledWaterInletTemp1":"-40","chilledWaterOutletTemp1":"-40","coolingWaterInletTemp1":"-40","coolingWaterOutletTemp1":"0","evaporatorEvaporationPressure1":"-100","evaporatorSaturationTemp1":"-26","evaporatorTerminalTempDiff1":"-13","condenserCondensationPressure1":"-100","condenserSaturationTemp1":"-26","condenserTerminalTempDiff1":"13","guideVane1Opening1":"0","guideVane2Opening1":"","guideVane3Opening1":"","currentPercentage1":"0","oilTankTemperature1":"-40","oilSupplyTemperature1":"-40","oilTankPressure1":"-100","oilSupplyPressure1":"0","oilSupplyPressureDifference1":"100","logTime2":"2025-06-25 14:05:52","chilledWaterInletTemp2":"-40","chilledWaterOutletTemp2":"-40","coolingWaterInletTemp2":"-40","coolingWaterOutletTemp2":"0","evaporatorEvaporationPressure2":"-100","evaporatorSaturationTemp2":"-26","evaporatorTerminalTempDiff2":"-13","condenserCondensationPressure2":"-100","condenserSaturationTemp2":"-26","condenserTerminalTempDiff2":"13","guideVane1Opening2":"0","guideVane2Opening2":"","guideVane3Opening2":"","currentPercentage2":"0","oilTankTemperature2":"-40","oilSupplyTemperature2":"-40","oilTankPressure2":"-100","oilSupplyPressure2":"0","oilSupplyPressureDifference2":"100","logTime3":"2025-06-25 14:06:04","chilledWaterInletTemp3":"-40","chilledWaterOutletTemp3":"-40","coolingWaterInletTemp3":"-40","coolingWaterOutletTemp3":"0","evaporatorEvaporationPressure3":"-100","evaporatorSaturationTemp3":"-26","evaporatorTerminalTempDiff3":"-13","condenserCondensationPressure3":"-100","condenserSaturationTemp3":"-26","condenserTerminalTempDiff3":"13","guideVane1Opening3":"0","guideVane2Opening3":"","guideVane3Opening3":"","currentPercentage3":"0","oilTankTemperature3":"-40","oilSupplyTemperature3":"-40","oilTankPressure3":"-100","oilSupplyPressure3":"0","oilSupplyPressureDifference3":"100","logTime4":"2025-06-25 14:06:15","chilledWaterInletTemp4":"-40","chilledWaterOutletTemp4":"-40","coolingWaterInletTemp4":"-40","coolingWaterOutletTemp4":"0","evaporatorEvaporationPressure4":"-100","evaporatorSaturationTemp4":"-26","evaporatorTerminalTempDiff4":"-13","condenserCondensationPressure4":"-100","condenserSaturationTemp4":"-26","condenserTerminalTempDiff4":"13","guideVane1Opening4":"0","guideVane2Opening4":"","guideVane3Opening4":"","currentPercentage4":"0","oilTankTemperature4":"-40","oilSupplyTemperature4":"-40","oilTankPressure4":"-100","oilSupplyPressure4":"0","oilSupplyPressureDifference4":"100","logTime5":"2025-06-25 14:06:25","chilledWaterInletTemp5":"-40","chilledWaterOutletTemp5":"-40","coolingWaterInletTemp5":"-40","coolingWaterOutletTemp5":"0","evaporatorEvaporationPressure5":"-100","evaporatorSaturationTemp5":"-26","evaporatorTerminalTempDiff5":"-13","condenserCondensationPressure5":"-100","condenserSaturationTemp5":"-26","condenserTerminalTempDiff5":"13","guideVane1Opening5":"0","guideVane2Opening5":"","guideVane3Opening5":"","currentPercentage5":"0","oilTankTemperature5":"-40","oilSupplyTemperature5":"-40","oilTankPressure5":"-100","oilSupplyPressure5":"0","oilSupplyPressureDifference5":"100","logTime6":"2025-06-25 14:06:35","chilledWaterInletTemp6":"-40","chilledWaterOutletTemp6":"-40","coolingWaterInletTemp6":"-40","coolingWaterOutletTemp6":"0","evaporatorEvaporationPressure6":"-100","evaporatorSaturationTemp6":"-26","evaporatorTerminalTempDiff6":"-13","condenserCondensationPressure6":"-100","condenserSaturationTemp6":"-26","condenserTerminalTempDiff6":"13","guideVane1Opening6":"0","guideVane2Opening6":"","guideVane3Opening6":"","currentPercentage6":"0","oilTankTemperature6":"-40","oilSupplyTemperature6":"-40","oilTankPressure6":"-100","oilSupplyPressure6":"0","oilSupplyPressureDifference6":"100","customerTargetTemperature":"25","userSideSupplyVoltagePhase1":"22","userSideSupplyVoltagePhase2":"22","userSideSupplyVoltagePhase3":"33","chilledWaterInletOutletPressureDifference":"5","coolingWaterInletOutletPressureDifference":"5","unitVibrationNoiseCheck":"无异常震动，无异响","fluorideSideFilterTemperatureDifference":"5","userFeedback":"无","onSiteTrainingEffect":"无","problemsAndSolutions":"无","preStartupCheckStatus":"正常","preStartupCheckDetails":"无","operationStatus":"正常","operationDetails":"无","otherMatters":"无","mideaServicePersonName":"—","mideaServicePersonPhone":"13726259684","mideaServiceSignatureDate":"2025-06-25","mideaServiceSignature":"https://apps-device-cloud-test.oss-cn-hangzhou.aliyuncs.com/submitReport/2025/06/25/427a32001f2a4c4490c5c5d0bddbbbfc_signature_1750831670609.jpg?Expires=1751436472&OSSAccessKeyId=LTAI5t9d5EspaGnUMP6PEhmy&Signature=MKA52Wxu8rK%2FKyqnuEqaXkY5E64%3D","customerRepresentativeName":"很好","customerRepresentativePhone":"13726259684","customerSignatureDate":"2025-06-25","customerSignature":"https://apps-device-cloud-test.oss-cn-hangzhou.aliyuncs.com/submitReport/2025/06/25/d96161e707a549109d7598c0a0ea17bb_signature_1750831691718.jpg?Expires=1751436491&OSSAccessKeyId=LTAI5t9d5EspaGnUMP6PEhmy&Signature=ItVk1V62LqU0mWJEMPkJXGodhZc%3D","controlCabinetStartupCabinetWiring":"否","startupCabinetHandoverTest":"异常","highVoltageInsulationResistance":"5","oilHeaterStatus":"否","oilLevelVisibility":"否","lubricantColor":"浑浊","oilTankTemperature":"5","oilPumpPressure":"55","oilPumpCurrent":"5","oilPumpInsulationResistance":"55","heatRecoveryForm":"并联","heatRecoveryFlow":"1","heatRecoveryHead":"1","heatRecoveryPH":"3","heatRecoveryConductivity":"3","isheatRecoveryClear":"是","centrifugeOperationMode":"制冷","localMinimumAtmosphericPressure":"98","oilReturnSolenoidOpenTime":"0","oilReturnSolenoidCloseTime":"500","oilHeatingOnTemperature":"41","oilHeatingOffTemperature":"46","oilPumpShutOffTime":"0","guideVaneActuatorStroke":"60","frequencyConverterType":"汇川","frequencyConverterBaudRate":"9600","readStartAddress":"12289","writeStartAddress":"16386","pageAutoFlex":["1、外观检查",{"required":true,"label":"机组外观是否有损坏","val":"无","type":"radio","unit":""},{"required":true,"label":"是否有零部件损坏","val":"无","type":"radio","unit":""},{"required":true,"label":"是否存在保温破损","val":"无","type":"radio","unit":""},{"required":true,"label":"其它","val":"无","type":"input","unit":""},"2、电气回路检查",{"required":true,"label":"强弱电是否分开布线","val":"无","type":"radio","unit":""},{"required":true,"label":"微机控制柜内部是否清扫","val":"无","type":"radio","unit":""},{"required":true,"label":"启动柜内部是否清扫","val":"无","type":"radio","unit":""},{"required":true,"label":"控制接线是否符合接线图","val":"无","type":"radio","unit":""},{"required":true,"label":"控制电源配线连接状态","val":"异常","type":"radio","unit":""},{"required":true,"label":"继电器状态","val":"异常","type":"radio","unit":""},{"required":true,"label":"接触器状态","val":"异常","type":"radio","unit":""},{"required":true,"label":"电源接线合规且无松动","val":"异常","type":"radio","unit":""},{"required":true,"label":"启动柜接地状态是否正常","val":"异常","type":"radio","unit":""},{"required":true,"label":"控制柜与启动柜之间的通讯线使用双绞屏蔽线且屏蔽层单侧接地","val":"否","type":"radio","unit":""},{"required":true,"label":"高压启动柜安装完成后，是否有做启动柜交接实验","val":"异常","type":"radio","unit":""},"3、压缩机状态检查",{"required":true,"label":"低压机组点击绝缘电阻","val":"5","type":"number","unit":""},{"required":true,"label":"高压机组电机绝缘电阻","val":"5","type":"number","unit":"MΩ"},{"required":true,"label":"导页手动开关零位至满位","val":"正常","type":"radio","unit":""},"4、油系统检查",{"required":true,"label":"油加热是否通电状态","val":"否","type":"radio","unit":""},{"required":true,"label":"高位油镜是否可见油位","val":"否","type":"radio","unit":""},{"required":true,"label":"润滑油颜色确认","val":"浑浊","type":"radio","unit":""},{"required":true,"label":"油箱温度","val":"5","type":"number","unit":"℃"},{"required":true,"label":"油泵状态：供油压差","val":"55","type":"number","unit":"kPa"},{"required":true,"label":"油泵电流","val":"5","type":"number","unit":"A"},{"required":true,"label":"油泵绝缘电阻","val":"55","type":"number","unit":"MΩ"},"5、氟系统检查",{"required":true,"label":"出厂状态","val":"带氟出厂","type":"radio","unit":""},{"required":false,"label":"不带氟出厂机组，气密性试验","val":"正常","type":"radio","unit":""},{"required":false,"label":"保压前（气密性试验）","val":"5","type":"number","unit":"MPa"},{"required":false,"label":"保压后（气密性试验）","val":"5","type":"number","unit":"MPa"},{"required":false,"label":"不带氟出厂机组，真空试验","val":"正常","type":"radio","unit":""},{"required":false,"label":"保压前（真空试验）","val":"555","type":"number","unit":"MPa"},{"required":false,"label":"保压后（真空试验）","val":"55","type":"number","unit":"MPa"},{"required":true,"label":"冷媒充注量（R134a）","val":"2","type":"number","unit":"kg"},{"required":false,"label":"","val":"带氟出厂","type":"radio","unit":""},{"required":true,"label":"单点漏率","val":"5","type":"number","unit":"g/年"},"6、水系统检查",{"required":true,"label":"管路清洗是否有杂质进入容器","val":"是","type":"radio","unit":""},{"required":true,"label":"用户流量保护装置类别","val":"靶流","type":"radio","unit":""},{"required":true,"label":"冷却侧动作是否正常","val":"正常","type":"radio","unit":""},{"required":true,"label":"冷冻侧动作是否正常","val":"正常","type":"radio","unit":""},"水泵、冷却塔检查（流量大于机组额定流量）",{"TableRow":["类别","形式","流量m³/h","扬程m"],"TableColum":[["冷冻水泵","并联","3","3"],["冷却水泵","并联","3","3"],["冷却塔","开式","22","2"],["热回收","并联","1","1"]]},"水质检查",{"TableRow":["项目","PH值","电导率","是否清澈"],"TableColum":[["冷冻水","5","5","是"],["冷却水","6","6","是"],["热回收","3","3","是"]]},"7、报警及网络检查",{"required":true,"label":"网关类型","val":"普通网关","type":"radio","unit":""},{"required":true,"label":"网络状态","val":"信号强","type":"radio","unit":""},{"required":true,"label":"网关固定版本","val":"5","type":"input","unit":""},"8、微机控制柜参数检查",{"required":true,"label":"设定参数与出厂参数是否一致","val":"是","type":"radio","unit":""},{"required":false,"label":"具体差异","val":"","type":"input","unit":""},"用户参数设置",{"required":true,"label":"制冷/制热目标温度","val":"0","type":"number","unit":"°C"},{"required":true,"label":"蒸发器实际控制温度","val":"7","type":"number","unit":"°C"},{"required":true,"label":"退出暂停温差","val":"0","type":"number","unit":"°C"},{"required":true,"label":"进入暂停温差","val":"0","type":"number","unit":"°C"},{"required":true,"label":"容量调节保持温差","val":"0","type":"number","unit":"°C"},{"required":true,"label":"冷却塔风机调节温差","val":"0","type":"number","unit":"°C"},{"required":true,"label":"冷却塔风机组1关闭温度","val":"19","type":"number","unit":"°C"},{"required":true,"label":"冷却塔风机组1开启温度","val":"0","type":"number","unit":"°C"},{"required":true,"label":"冷却塔风机组2关闭温度","val":"17","type":"number","unit":"°C"},{"required":true,"label":"冷却塔风机组2开启温度","val":"34","type":"number","unit":"°C"},"串口设置",{"required":true,"label":"波特率","val":"9600","type":"radio","unit":""},{"required":false,"label":"站号地址","val":"","type":"input","unit":""},{"required":false,"label":"校验位","val":"","type":"input","unit":""},"模式设置",{"required":true,"label":"控制模式","val":"就地","type":"radio","unit":""},{"required":true,"label":"运行模式","val":"制冷","type":"radio","unit":""},{"required":true,"label":"进出水控制","val":"出水控制","type":"radio","unit":""},"常规设置",{"required":true,"label":"主机额定电流","val":"0","type":"number","unit":"A"},{"required":true,"label":"当地最低大气压力","val":"98","type":"number","unit":"kPa"},{"required":true,"label":"压力传感器上限设置","val":"2000","type":"number","unit":"kPa"},{"required":true,"label":"蒸发器目标液位","val":"0","type":"number","unit":"mm"},{"required":true,"label":"制冷满载功率","val":"0","type":"number","unit":"kW"},{"required":true,"label":"蓄冰满载功率","val":"0","type":"number","unit":"kW"},{"required":false,"label":"压缩机停机间隔","val":"15","type":"number","unit":"S"},{"required":false,"label":"启动间隔","val":"90","type":"number","unit":"S"},{"required":false,"label":"快速启动备妥信号判断延时","val":"1","type":"number","unit":"S"},"控制参数",{"required":true,"label":"回油电磁阀开启时间","val":"0","type":"number","unit":"s"},{"required":true,"label":"回油电磁阀关闭时间","val":"500","type":"number","unit":"s"},{"required":true,"label":"油加热开启温度","val":"41","type":"number","unit":"℃"},{"required":true,"label":"油加热关闭温度","val":"46","type":"number","unit":"℃"},{"required":true,"label":"油泵关闭时间","val":"0","type":"number","unit":"s"},{"required":true,"label":"导叶执行器行程","val":"60","type":"number","unit":"s"},"变频器参数",{"required":true,"label":"变频器类型","val":"汇川","type":"select","unit":""},{"required":true,"label":"波特率(bps)","val":"9600","type":"number","unit":""},{"required":true,"label":"读起始地址","val":"12289","type":"number","unit":""},{"required":true,"label":"写起始地址","val":"16386","type":"number","unit":""}],"runningdataGroup":[{"记录时间":[{"formkey":"logTime","name":"记录时间1","unit":""}]},{"冷冻水":[{"formkey":"chilledWaterInletTemp","name":"冷冻水入口温度","unit":"°C"},{"formkey":"chilledWaterOutletTemp","name":"冷冻水出口温度","unit":"°C"}]},{"冷却水":[{"formkey":"coolingWaterInletTemp","name":"冷却水入口温度","unit":"°C"},{"formkey":"coolingWaterOutletTemp","name":"冷却水出口温度","unit":"°C"}]},{"蒸发器":[{"formkey":"evaporatorEvaporationPressure","name":"蒸发器蒸发压力","unit":"kPa"},{"formkey":"evaporatorSaturationTemp","name":"蒸发器饱和温度","unit":"°C"},{"formkey":"evaporatorTerminalTempDiff","name":"蒸发器端温差","unit":"°C"}]},{"冷凝器":[{"formkey":"condenserCondensationPressure","name":"冷凝器冷凝压力","unit":"kPa"},{"formkey":"condenserSaturationTemp","name":"冷凝器饱和温度","unit":"°C"},{"formkey":"condenserTerminalTempDiff","name":"冷凝器端温差","unit":"°C"}]},{"油系统":[{"formkey":"oilTankTemperature","name":"油箱温度","unit":"℃"},{"formkey":"oilSupplyTemperature","name":"供油温度","unit":"℃"},{"formkey":"oilTankPressure","name":"油箱压力","unit":"MPa"},{"formkey":"oilSupplyPressure","name":"供油压力","unit":"MPa"},{"formkey":"oilSupplyPressureDifference","name":"供油压差","unit":"MPa"}]},{"导叶开度":[{"formkey":"guideVane1Opening","name":"1#导叶开度","unit":"%"}]},{"电流百分比":[{"formkey":"currentPercentage","name":"电流百分比","unit":"%"}]}]}
+    
+    function createrRunning(jsonData) {
+        // 清空表格
+        var runningtdKey = [];
+        var resultTable = document.getElementById("tbody");
+        resultTable.innerHTML = '';
+        try {
+            if (!isArray(jsonData) || jsonData.length === 0) {
+                throw new Error('请输入有效的JSON数组');
+            }
+
+            // 生成表格内容
+            for (var g = 0; g < jsonData.length; g++) {
+                var group = jsonData[g];
+                var groupName = getFirstKey(group);
+                var items = group[groupName];
+                
+                if (items.length === 1) {
+                    // 单行数据
+                    var item = items[0];
+                    if(runningtdKey.indexOf(item.formkey) == -1) {
+                        runningtdKey.push(item.formkey)
+                    }
+                    var tr = document.createElement('tr');
+                    tr.innerHTML =
+                        "<td>" + groupName + "</td>" +
+                        "<td colspan=\"2\"></td>" +
+                        "<td class=\"" + item.formkey + " runningtd\">—</td>" +
+                        "<td class=\"" + item.formkey + " runningtd\">—</td>" +
+                        "<td class=\"" + item.formkey + " runningtd\">—</td>" +
+                        "<td class=\"" + item.formkey + " runningtd\">—</td>" +
+                        "<td class=\"" + item.formkey + " runningtd\">—</td>" +
+                        "<td class=\"" + item.formkey + " runningtd\">—</td>";
+                    resultTable.appendChild(tr);
+                } else {
+                    // 多行数据 - 使用rowspan
+                    for (var i = 0; i < items.length; i++) {
+                        var item = items[i];
+                        var tr = document.createElement('tr');
+                        if(runningtdKey.indexOf(item.formkey) == -1) {
+                        runningtdKey.push(item.formkey)
+                    }
+                        if (i === 0) {
+                            tr.innerHTML =
+                                "<td rowspan=\"" + items.length + "\" class=\"td\">" + groupName + "</td>" +
+                                "<td class=\"td\">" + item.name.replace(groupName, "") + "</td>" +
+                                "<td class=\"td\">" + item.unit + "</td>" +
+                                "<td class=\"" + item.formkey + " runningtd\">—</td>" +
+                                "<td class=\"" + item.formkey + " runningtd\">—</td>" +
+                                "<td class=\"" + item.formkey + " runningtd\">—</td>" +
+                                "<td class=\"" + item.formkey + " runningtd\">—</td>" +
+                                "<td class=\"" + item.formkey + " runningtd\">—</td>" +
+                                "<td class=\"" + item.formkey + " runningtd\">—</td>";
+                        } else {
+                            tr.innerHTML =
+                                "<td class=\"td\">" + item.name.replace(groupName, "") + "</td>" +
+                                "<td class=\"td\">" + item.unit + "</td>" +
+                                "<td class=\"" + item.formkey + " runningtd\">—</td>" +
+                                "<td class=\"" + item.formkey + " runningtd\">—</td>" +
+                                "<td class=\"" + item.formkey + " runningtd\">—</td>" +
+                                "<td class=\"" + item.formkey + " runningtd\">—</td>" +
+                                "<td class=\"" + item.formkey + " runningtd\">—</td>" +
+                                "<td class=\"" + item.formkey + " runningtd\">—</td>";
+                        }
+                        resultTable.appendChild(tr);
+                    }
+                }
+            }
+
+        } catch (error) {
+            resultTable.innerHTML =
+                "<tr>" +
+                "<td colspan=\"9\" class=\"py-8 text-center text-red-500\">" +
+                "<i class=\"fa fa-exclamation-circle mr-2\"></i> JSON解析错误: " + error.message +
+                "</td>" +
+                "</tr>";
+        }
+        return runningtdKey;
+    }
+
+    function generateTableFromJson(jsonData) {
+        // 创建表格容器
+        var tableContainer = document.createElement('div');
+        tableContainer.style.marginLeft = '20px';
+        tableContainer.style.marginTop = '5px';
+
+        // 创建表格元素
+        var table = document.createElement('table');
+        table.cellPadding = '6';
+        table.cellSpacing = '0';
+        table.style.marginBottom = '20px';
+        table.style.borderCollapse = 'collapse';
+        
+
+        // 创建表格主体
+        var tbody = document.createElement('tbody');
+
+        // 添加表头行
+        var headerRow = document.createElement('tr');
+        for (var i = 0; i < jsonData.TableRow.length; i++) {
+            var th = document.createElement('th');
+            th.appendChild(document.createTextNode(jsonData.TableRow[i]));
+            headerRow.appendChild(th);
+        }
+        tbody.appendChild(headerRow);
+
+        // 添加数据行
+        for (var i = 0; i < jsonData.TableColum.length; i++) {
+            var rowData = jsonData.TableColum[i];
+            var tr = document.createElement('tr');
+            tr.style.height = '54px';
+            for (var j = 0; j < rowData.length; j++) {
+                var td = document.createElement('td');
+                td.appendChild(document.createTextNode(rowData[j]));
+                tr.appendChild(td);
+            }
+            tbody.appendChild(tr);
+        }
+
+        // 将表格主体添加到表格
+        table.appendChild(tbody);
+
+        // 将表格添加到容器
+        tableContainer.appendChild(table);
+
+        return tableContainer.innerHTML;
+    }
+
+    function generatePaginatedLayout(data, maxHeight) {
+        if (maxHeight === undefined) maxHeight = 400;
+
+        var pages = [];
+        var currentPage = {
+            left: [],
+            right: [],
+            leftHeight: 0,
+            rightHeight: 0
+        };
+
+        for (var i = 0; i < data.length; i++) {
+            var item = data[i];
+            var _maxHeight = pages.length == 0 ? maxHeight : 1040;
+            var itemHeight = typeof item === 'string' ? 25+15 : 34;
+
+            if (item['TableRow']) {
+                // 当前内容是表格
+                itemHeight = 5 + 10 + 54 * (item['TableColum'].length) + 33.5 + 20;
+                console.log("itemHeight: " + itemHeight);
+            }
+
+            var canAddToLeft = (currentPage.leftHeight + itemHeight) < _maxHeight;
+            var canAddToRight = (currentPage.rightHeight + itemHeight) < _maxHeight;
+
+            // 策略：先左后右，无法添加则创建新页
+            if (canAddToLeft) {
+                currentPage.left.push(item);
+                currentPage.leftHeight += itemHeight;
+            } else if (canAddToRight) {
+                currentPage.right.push(item);
+                currentPage.rightHeight += itemHeight;
+            } else {
+                // 左右都放不下，创建新页
+                pages.push(currentPage);
+                currentPage = {
+                    left: [item],
+                    right: [],
+                    leftHeight: itemHeight,
+                    rightHeight: 0
+                };
+                console.log(currentPage);
+            }
+        }
+
+        // 添加最后一页
+        if (currentPage.left.length > 0) {
+            pages.push(currentPage);
+        }
+
+        // 生成HTML
+        var htmlPages = [];
+        for (var p = 0; p < pages.length; p++) {
+            var page = pages[p];
+
+            var generateColumnHtml = function (items) {
+                var htmlItems = [];
+                for (var i = 0; i < items.length; i++) {
+                    var item = items[i];
+                    if (item['TableRow']) {
+                        htmlItems.push(generateTableFromJson(item));
+                    } else if (typeof item === 'string') {
+                        htmlItems.push(
+                            "<div class=\"section\">" +
+                            "<div class=\"section-title\">" + item + "</div>" +
+                            "</div>"
+                        );
+                    } else {
+                        htmlItems.push(
+                            "<div class=\"item\">" +
+                            "<div class=\"item-content\">" + (item.label == "" ? '' : item.label + '：') + "</div>" +
+                            "<div class=\"item-result\">" + item.val + " " + item.unit + "</div>" +
+                            "</div>"
+                        );
+                    }
+                }
+                return htmlItems.join('');
+            };
+
+            htmlPages.push(
+                "<div class=\"page-container\">" +
+                "<div class=\"leftpage halfpage\">" +
+                generateColumnHtml(page.left) +
+                "</div>" +
+                "<div class=\"rightpage halfpage\">" +
+                generateColumnHtml(page.right) +
+                "</div>" +
+                "</div>"
+            );
+        }
+
+        return htmlPages;
+    }
+
+    function init() {
+        // 自动计算高度并生成 pageAuto 内容
+        var pageAuto = [];
+        var currentHeight = 0;
+        pageAuto = generatePaginatedLayout(formdataMatch['pageAutoFlex'], 670);
+        document.getElementById("contentpageFirst").innerHTML = pageAuto[0];
+
+        if (pageAuto.length > 1) {
+            for (var index = 1; index < pageAuto.length; index++) {
+                var element = pageAuto[index];
+                // 创建页面容器
+                var page = document.createElement('div');
+                page.className = 'page page2';
+
+                // 创建头部
+                var header = document.createElement('div');
+                header.className = 'header';
+
+                var headerContent = document.createElement('div');
+                headerContent.className = 'contentw flexend';
+
+                var logoImg = document.createElement('img');
+                logoImg.src = 'https://static-btri.midea.com/mfs/8318/1747992072862.png';
+                logoImg.className = 'headerlogo';
+
+                headerContent.appendChild(logoImg);
+                header.appendChild(headerContent);
+
+                // 创建内容区域
+                var contentWrapper = document.createElement('div');
+                contentWrapper.className = 'contentw';
+
+                var contentPage = document.createElement('div');
+                contentPage.className = 'contentpage flex usemsg';
+
+                // 将之前生成的左右页内容添加到这里
+                contentPage.innerHTML = element;
+
+                contentWrapper.appendChild(contentPage);
+
+                // 创建页脚
+                var footer = document.createElement('div');
+                footer.className = 'footer';
+
+                var footerContent = document.createElement('div');
+                footerContent.className = 'contentw flexend';
+                footerContent.appendChild(document.createTextNode('服务电话 ：400-8899-315'));
+
+                footer.appendChild(footerContent);
+
+                // 组装整个页面
+                page.appendChild(header);
+                page.appendChild(contentWrapper);
+                page.appendChild(footer);
+
+                document.getElementById("pageAuto").appendChild(page);
+            }
+        }
+
+        var runningtdKey = createrRunning(formdataMatch['runningdataGroup']);
+
+        // 第一部分：处理 runningtdKey 相关单元格
+        // var runningtdKey = [
+        //     "logTime", "chilledWaterInletTemp", "chilledWaterOutletTemp",
+        //     "coolingWaterInletTemp", "coolingWaterOutletTemp", "evaporatorEvaporationPressure",
+        //     "evaporatorSaturationTemp", "evaporatorTerminalTempDiff", "condenserCondensationPressure",
+        //     "condenserSaturationTemp", "condenserTerminalTempDiff", "guideVane1Opening",
+        //     "guideVane2Opening", "guideVane3Opening", "currentPercentage"
+        // ];
+
+        for (var i = 0; i < runningtdKey.length; i++) {
+            var element = runningtdKey[i];
+            // 获取所有带有对应类的单元格
+            var cells = getElementsByClass(document, element + ' runningtd');
+
+            for (var j = 0; j < cells.length; j++) {
+                var cell = cells[j];
+                var key = element + (j + 1);
+                if (formdataMatch.hasOwnProperty(key)) {
+                    cell.innerHTML = formdataMatch[key];
+                }
+            }
+        }
+
+        // 第二部分：处理通用元素替换
+        for (var key in formdataMatch) {
+            if (formdataMatch.hasOwnProperty(key)) {
+                var target = document.getElementById(key);
+                if (target) {
+                    if (target.tagName === "IMG") {
+                        target.src = formdataMatch[key];
+                    } else {
+                        target.innerHTML = formdataMatch[key] === "" ? "-" : formdataMatch[key];
+                    }
+                }
+                try {
+                    var findkey = key + "-1";
+                    var target1 = document.getElementById(findkey);
+                    if (target1) {
+                        if (target1.tagName === "IMG") {
+                            target1.src = formdataMatch[key];
+                        } else {
+                            target1.innerHTML = formdataMatch[key] === "" ? "-" : formdataMatch[key];
+                        }
+                    }
+                } catch (e) {
+                    // 忽略错误
+                }
+            }
+        }
+    }
+
+    // ES3 辅助函数
+    function isArray(obj) {
+        return Object.prototype.toString.call(obj) === '[object Array]';
+    }
+
+    function getFirstKey(obj) {
+        for (var key in obj) {
+            if (obj.hasOwnProperty(key)) {
+                return key;
+            }
+        }
+        return null;
+    }
+
+    function getElementsByClass(root, className) {
+        var elements = root.getElementsByTagName('*');
+        var result = [];
+        var classNames = className.split(' ');
+
+        for (var i = 0; i < elements.length; i++) {
+            var elementClasses = elements[i].className.split(' ');
+            var matches = true;
+
+            for (var j = 0; j < classNames.length; j++) {
+                if (elementClasses.indexOf(classNames[j]) === -1) {
+                    matches = false;
+                    break;
+                }
+            }
+
+            if (matches) {
+                result.push(elements[i]);
+            }
+        }
+
+        return result;
+    }
+    init();
+</script>
+
+</html>

@@ -1,0 +1,443 @@
+:root {
+    --a4-width: 794px;
+    /* A4 宽度 (96 DPI) */
+    --a4-height: 1123px;
+    /* A4 高度 (96 DPI) */
+    --main-color: #f0f6ff;
+    /* 主要颜色 */
+    --sizeflex: 0.8
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #fff;
+}
+
+@page {
+    size: A4 portrait;
+    /* A4 纵向 */
+
+    margin: 0;
+    padding: 0;
+    /* 设置边距 */
+    background-color: var(--main-color);
+}
+
+.reportpage {}
+
+.page {
+    width: var(--a4-width);
+    height: var(--a4-height);
+    /* A4 高度（96 DPI） */
+    page-break-before: always;
+    /* 每个 .page 开始新的一页 */
+    /* break-before: page; */
+    /* 现代浏览器支持 */
+    margin: auto;
+    position: relative;
+    background-color: var(--main-color);
+    overflow: hidden;
+}
+
+.f-title {
+    position: absolute;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    top: calc(55px * var(--sizeflex));
+}
+
+.f-content {
+    position: absolute;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    top: calc(173px * var(--sizeflex));
+}
+
+.f-footer {
+    position: absolute;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    bottom: calc(40px * var(--sizeflex));
+}
+
+.r-name {
+    width: 480px;
+    height: 84px;
+    font-size: 60px;
+    font-family: PingFangSC-Semibold, PingFang SC;
+    font-weight: 600;
+    color: #0393D7;
+    line-height: 84px;
+    -webkit-text-stroke: 1px #0393D7;
+    text-stroke: 1px #0393D7;
+    margin-bottom: 20px;
+}
+
+.r-des {
+    width: 644px;
+    height: 90px;
+    font-size: 22px;
+    font-family: PingFangSC-Semibold, PingFang SC;
+    font-weight: 600;
+    color: #0393D7;
+    line-height: 30px;
+}
+
+.r-list-item {
+    display: flex;
+    margin-bottom: 12px;
+}
+
+.r-list-item:last-child {
+    margin-bottom: 0;
+}
+
+.r-lable {
+    width: 100px;
+    height: 20px;
+    font-size: 20px;
+    font-family: MEIDITYPE-REGULAR, MEIDITYPE;
+    font-weight: 400;
+    color: #2B3448;
+    line-height: 40px;
+}
+
+.r-val {
+    width: 395px;
+    height: 20px;
+    font-size: 20px;
+    font-family: MEIDITYPE-REGULAR, MEIDITYPE;
+    font-weight: 400;
+    color: #2B3448;
+    line-height: 40px;
+}
+
+#codejpg {
+    width: 80px;
+}
+
+.center {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.contentw {
+    width: calc(862px * var(--sizeflex));
+    margin: auto;
+}
+
+.logo {
+    width: 241px;
+}
+
+.p1 {
+    width: 293px;
+    height: 20px;
+    font-size: 20px;
+    font-family: MEIDITYPE-REGULAR, MEIDITYPE;
+    font-weight: 400;
+    color: #666666;
+    line-height: 40px;
+}
+
+
+.contentpage {
+    border-radius: 6px;
+    overflow: hidden;
+    background-color: #fff;
+    padding: calc(24px * var(--sizeflex)) calc(30px * var(--sizeflex));
+}
+
+.flex {
+    display: flex;
+}
+
+img {
+    width: 100%;
+}
+
+
+.table-container {
+    width: 100%;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 10px;
+    font-size: 14px;
+    font-family: PingFangSC-Regular, PingFang SC;
+    font-weight: 400;
+    color: rgba(13, 13, 13, 0.5);
+}
+
+th,
+td {
+    border-bottom: 1px solid #0000000F;
+    padding: 6.5px;
+    text-align: left;
+    max-width: 100px;
+    word-break: break-all;
+}
+
+th {
+    background-color: #0000000A;
+    font-size: 14px;
+    font-family: PingFangSC-Regular, PingFang SC;
+    font-weight: 400;
+    color: rgba(13, 13, 13, 0.5);
+}
+
+.page4 .th1 {
+    width: 86px;
+}
+
+/* 测试项目 */
+.page4 .th2 {
+    width: 98px;
+}
+
+/* FX */
+.page4 .th3 {
+    width: 130px;
+}
+
+/* 时：分 */
+.page4 .th4 {
+    text-align: center;
+}
+
+.page4 td:first-child,
+.page4 td:nth-child(2),
+.page4 .td {
+    background: rgba(0, 0, 0, 0.04);
+}
+
+/* 重点：给每个 tr 中前3个 td 设置背景色 */
+.page4 tr>td:nth-child(-n+2) {
+    background: rgba(0, 0, 0, 0.04);
+}
+
+.page4title {
+    width: 180px;
+    font-size: 20px;
+    font-family: PingFangSC-Semibold, PingFang SC;
+    font-weight: 600;
+    color: #2B3448;
+    margin: auto;
+    padding-bottom: 16px;
+}
+
+.header {
+    padding-top: 53px;
+    padding-bottom: 25px;
+}
+
+.headerlogo {
+    width: 173px;
+}
+
+.footer {
+    width: 100%;
+    height: 67px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-family: MEIDITYPE-REGULAR, MEIDITYPE;
+    font-weight: 400;
+    color: #666666;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+}
+
+.flexend {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+
+
+
+.halfpage {
+    width: 50%;
+}
+
+.infotable td {
+    padding: 5px;
+    border-bottom: 0px solid #ddd;
+
+    font-size: 14px;
+    font-family: PingFangSC-Regular, PingFang SC;
+    font-weight: 400;
+    color: #2B3448;
+}
+
+.baseinfo {
+    width: 100%;
+}
+
+.baseinfo tbody {
+
+    border: 1px solid #0000000F;
+}
+
+h2 {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.note {
+    font-size: 12px;
+    color: #666;
+    margin-top: 10px;
+}
+
+
+.section {
+    margin-bottom: 5px;
+}
+
+.section-title {
+    font-weight: bold;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.page1 .section-title {
+
+    margin-bottom: 5px;
+}
+
+.page2 h5 {
+    margin: 0;
+    padding: 0;
+    padding-bottom: 5px;
+}
+
+.item {
+    display: flex;
+    margin-left: 20px;
+    font-size: 12px !important;
+    font-weight: 400 !important;
+    padding-bottom: 5px;
+    color: #2B3448 !important;
+}
+
+.item-number {
+    width: 30px;
+    font-size: 12px !important;
+    font-weight: 400 !important;
+}
+
+.item-content {
+    flex: 1;
+    color: #2B3448 !important;
+    font-size: 12px !important;
+    font-weight: 400 !important;
+}
+
+.item-result {
+    margin-left: 10px;
+    font-size: 12px !important;
+    color: #2B3448 !important;
+    font-weight: 400 !important;
+}
+
+.leftpage {
+    padding-right: 10px;
+}
+
+.rightpage {
+    padding-left: 10px;
+}
+
+
+.contentpage-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.contentpage-header div {
+    font-size: 14px;
+}
+
+.contentpage-footer {
+    font-size: 14px;
+    line-height: 1.8;
+}
+
+.usemsg {
+
+    font-size: 14px;
+    font-family: PingFangSC-Regular, PingFang SC;
+    font-weight: 400;
+    color: #2B3448;
+    height: 905px;
+    position: relative;
+}
+
+.sign {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 16px;
+}
+
+.sign div {
+    min-width: 80px;
+}
+
+.signature-section {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 40px;
+    max-width: 800px;
+}
+
+.column {
+    flex: 1;
+    min-width: 300px;
+}
+
+.row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.label {
+    font-weight: bold;
+    margin-right: 8px;
+}
+
+.value {
+    white-space: nowrap;
+}
+
+.signature {
+    height: 40px;
+}
+.signature-line{
+    width: 100%;
+    height: 1px;
+    background: rgba(0,0,0,0.08);
+    border-radius: 1px;
+    margin-top: 16px;
+    margin-bottom: 16px;
+}
+
+h5{
+    padding: 0;margin:  8px 0;
+} 

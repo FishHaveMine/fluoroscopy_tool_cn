@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="70px" height="70px" viewBox="0 0 70 70" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>弹层-风速滑动</title>
+    <defs>
+        <circle id="path-1" cx="29" cy="29" r="29"></circle>
+        <filter x="-19.0%" y="-12.1%" width="137.9%" height="137.9%" filterUnits="objectBoundingBox" id="filter-2">
+            <feOffset dx="0" dy="4" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="3" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0.669481781   0 0 0 0 0.752956988   0 0 0 0 0.885443646  0 0 0 0.661458902 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+    </defs>
+    <g id="页面-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="集控-模式控制-风档（根据档位改变图标转速）" transform="translate(-347.000000, -1059.000000)">
+            <g id="编组-7" transform="translate(96.000000, 1061.000000)">
+                <g id="弹层-风速滑动" transform="translate(257.000000, 0.000000)">
+                    <g id="椭圆形" opacity="0.916557675">
+                        <use fill="black" fill-opacity="1" filter="url(#filter-2)" xlink:href="#path-1"></use>
+                        <use fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-1"></use>
+                    </g>
+                    <path d="M29,14 C29.5522847,14 30,14.5165945 30,15.1538462 L30,42.8461538 C30,43.4834055 29.5522847,44 29,44 C28.4477153,44 28,43.4834055 28,42.8461538 L28,15.1538462 C28,14.5165945 28.4477153,14 29,14 Z" id="直线" fill="#DFDFDF" fill-rule="nonzero"></path>
+                    <path d="M19,19 C19.5522847,19 20,19.5223345 20,20.1666667 L20,38.8333333 C20,39.4776655 19.5522847,40 19,40 C18.4477153,40 18,39.4776655 18,38.8333333 L18,20.1666667 C18,19.5223345 18.4477153,19 19,19 Z" id="直线备份" fill="#DFDFDF" fill-rule="nonzero"></path>
+                    <path d="M38,19 C38.5522847,19 39,19.5223345 39,20.1666667 L39,38.8333333 C39,39.4776655 38.5522847,40 38,40 C37.4477153,40 37,39.4776655 37,38.8333333 L37,20.1666667 C37,19.5223345 37.4477153,19 38,19 Z" id="直线备份-2" fill="#DFDFDF" fill-rule="nonzero"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

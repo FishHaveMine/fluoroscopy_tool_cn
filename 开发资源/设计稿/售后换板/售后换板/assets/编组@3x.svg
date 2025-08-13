@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="686px" height="390px" viewBox="0 0 686 390" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>编组</title>
+    <defs>
+        <filter x="-3.0%" y="-5.6%" width="106.1%" height="111.1%" filterUnits="objectBoundingBox" id="filter-1">
+            <feOffset dx="2" dy="2" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="4" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.0775137948 0" type="matrix" in="shadowBlurOuter1" result="shadowMatrixOuter1"></feColorMatrix>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                <feMergeNode in="SourceGraphic"></feMergeNode>
+            </feMerge>
+        </filter>
+    </defs>
+    <g id="页面-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="室外机主板-输入条码完成" transform="translate(-17.000000, -719.000000)">
+            <g id="编组" filter="url(#filter-1)" transform="translate(32.000000, 734.000000)">
+                <path d="M640,0.5 C644.280207,0.5 648.155207,2.23489659 650.960155,5.03984489 C653.765103,7.84479319 655.5,11.7197932 655.5,16 L655.5,304 C655.5,308.280207 653.765103,312.155207 650.960155,314.960155 C648.155207,317.765103 644.280207,319.5 640,319.5 L347.690983,319.5 L328,358.881966 L308.309017,319.5 L16,319.5 C11.7197932,319.5 7.84479319,317.765103 5.03984489,314.960155 C2.23489659,312.155207 0.5,308.280207 0.5,304 L0.5,16 C0.5,11.7197932 2.23489659,7.84479319 5.03984489,5.03984489 C7.84479319,2.23489659 11.7197932,0.5 16,0.5 Z" id="形状结合" stroke="#DFDFDF" fill="#FFFFFF"></path>
+                <text id="售后二维码示例：" font-family="PingFangSC-Regular, PingFang SC" font-size="28" font-weight="normal" fill="#333333">
+                    <tspan x="24" y="60.2997275">售后二维码示例：</tspan>
+                </text>
+                <text id="包含SW1、SW2、SW3、SW4、SW" font-family="PingFangSC-Regular, PingFang SC" font-size="24" font-weight="normal" fill="#333333">
+                    <tspan x="24" y="109.043597">包含SW1、SW2、SW3、SW4、SW5等字样</tspan>
+                </text>
+                <g id="Group" transform="translate(111.000000, 153.000000)" fill="#272636" fill-rule="nonzero">
+                    <polygon id="Path" points="66 111 75 111 75 120 66 120"></polygon>
+                    <path d="M49,47.3846154 L49,0 L0,0 L0,47.3846154 L8.90909091,47.3846154 L8.90909091,56 L17.8181818,56 L17.8181818,47.3846154 L49,47.3846154 Z M8.90909091,38.7692308 L8.90909091,8.61538462 L40.0909091,8.61538462 L40.0909091,38.7692308 L8.90909091,38.7692308 Z" id="Shape"></path>
+                    <polygon id="Path" points="18 17 31 17 31 30 18 30"></polygon>
+                    <path d="M75,0 L75,47 L124,47 L124,0 L75,0 Z M115.090909,38.4545455 L83.9090909,38.4545455 L83.9090909,8.54545455 L115.090909,8.54545455 L115.090909,38.4545455 Z" id="Shape"></path>
+                    <polygon id="Path" points="93 17 106 17 106 30 93 30"></polygon>
+                    <polygon id="Path" points="18 90 31 90 31 103 18 103"></polygon>
+                    <polygon id="Path" points="0 56 9 56 9 65 0 65"></polygon>
+                    <polygon id="Path" points="17 56 26 56 26 65 17 65"></polygon>
+                    <path d="M26.7272727,72.6153846 L0,72.6153846 L0,120 L49,120 L49,72.6153846 L35.6363636,72.6153846 L35.6363636,64 L26.7272727,64 L26.7272727,72.6153846 Z M40.0909091,81.2307692 L40.0909091,111.384615 L8.90909091,111.384615 L8.90909091,81.2307692 L40.0909091,81.2307692 Z" id="Shape"></path>
+                    <polygon id="Path" points="57 5 66 5 66 18 57 18"></polygon>
+                    <polygon id="Path" points="57 26 66 26 66 35 57 35"></polygon>
+                    <polygon id="Path" points="84 55.8571429 75.0909091 55.8571429 66.1818182 55.8571429 66.1818182 43 57.2727273 43 57.2727273 55.8571429 35 55.8571429 35 64.4285714 57.2727273 64.4285714 66.1818182 64.4285714 75.0909091 64.4285714 75.0909091 73 84 73 84 64.4285714"></polygon>
+                    <polygon id="Path" points="84 73 93 73 93 82 84 82"></polygon>
+                    <polygon id="Path" points="57 74 66 74 66 87 57 87"></polygon>
+                    <polygon id="Path" points="57 94 66 94 66 111 57 111"></polygon>
+                    <polygon id="Path" points="75 85 84 85 84 111 75 111"></polygon>
+                    <polygon id="Path" points="102 73 124 73 124 82 102 82"></polygon>
+                    <polygon id="Path" points="115 56 124 56 124 65 115 65"></polygon>
+                    <polygon id="Path" points="93 56 111 56 111 65 93 65"></polygon>
+                    <polygon id="Path" points="93 86 102 86 102 95 93 95"></polygon>
+                    <polygon id="Path" points="115.333333 95.5 111 95.5 111 104 119.666667 104 119.666667 95.5 124 95.5 124 87 115.333333 87"></polygon>
+                    <polygon id="Path" points="93 103 102 103 102 112 93 112"></polygon>
+                    <polygon id="Path" points="102 111 124 111 124 120 102 120"></polygon>
+                </g>
+                <text id="SW1-XXXX#SW2-XXXX#-S" font-family="PingFangSC-Regular, PingFang SC" font-size="24" font-weight="normal" fill="#333333">
+                    <tspan x="269" y="171.912807">SW1-XXXX#SW2-XXXX#</tspan>
+                    <tspan x="269" y="204.912807">SW3-XXXX#SW4-XXXX#</tspan>
+                    <tspan x="269" y="237.912807">SW5-XXXX#SW6-XXXX#</tspan>
+                    <tspan x="269" y="270.912807">ENC1-X#ENC2-X#ENC3-X</tspan>
+                </text>
+            </g>
+        </g>
+    </g>
+</svg>

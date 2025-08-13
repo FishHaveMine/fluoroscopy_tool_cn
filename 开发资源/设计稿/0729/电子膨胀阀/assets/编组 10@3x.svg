@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="59px" height="30px" viewBox="0 0 59 30" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>编组 10@3x</title>
+    <g id="页面-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="故障智能解析-连接指引备份-9" transform="translate(-606.000000, -586.000000)" fill="#33D053">
+            <g id="编组-8" transform="translate(104.500000, 454.000000)">
+                <g id="编组-10" transform="translate(531.000000, 147.000000) rotate(-180.000000) translate(-531.000000, -147.000000) translate(501.750000, 132.000000)">
+                    <rect id="background" x="0" y="0" width="52.5" height="30" rx="3"></rect>
+                    <polygon id="arrow" transform="translate(52.136039, 15.000000) rotate(45.000000) translate(-52.136039, -15.000000) " points="47.636039 10.5 56.636039 10.5 56.636039 19.5 47.636039 19.5"></polygon>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

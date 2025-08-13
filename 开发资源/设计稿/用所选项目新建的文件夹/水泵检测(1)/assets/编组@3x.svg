@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="48px" height="48px" viewBox="0 0 48 48" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>编组</title>
+    <g id="页面-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="水泵检测-查看详情" transform="translate(-640.000000, -63.000000)">
+            <g id="编组" transform="translate(640.000000, 63.000000)">
+                <rect id="矩形" x="0" y="0" width="48" height="48"></rect>
+                <rect id="矩形" stroke="#595959" stroke-width="3" fill="#FFFFFF" x="24.5" y="5.5" width="19" height="37" rx="2"></rect>
+                <path d="M18,5 C10,5.33333333 6,9.83333333 6,18.5 L3,14.5" id="路径-2" stroke="#1C6CEC" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M20,23.5 L6,23.5 C4.8954305,23.5 4,24.3954305 4,25.5 L4,40.5 C4,41.6045695 4.8954305,42.5 6,42.5 L20,42.5 L20,42.5" id="路径-4" stroke="#1C6CEC" stroke-width="3" stroke-linejoin="round"></path>
+            </g>
+        </g>
+    </g>
+</svg>

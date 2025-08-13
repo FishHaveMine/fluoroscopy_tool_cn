@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="48px" height="48px" viewBox="0 0 48 48" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>编组备份</title>
+    <g id="页面-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="设备解锁-扫码成功" transform="translate(-610.000000, -934.000000)">
+            <g id="5.Notification消息提醒/1.BackTop返回顶部/圆形带文字备份" transform="translate(596.000000, 918.000000)">
+                <g id="编组备份" transform="translate(14.000000, 16.000000)">
+                    <rect id="矩形" x="0" y="0" width="48" height="48"></rect>
+                    <path d="M17,3 C9.53333333,3.34567901 5.8,8.01234568 5.8,17 L3,12.8518519" id="路径-2" stroke="#1C6CEC" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>
+                    <line x1="4.5" y1="43.5" x2="43.5" y2="43.5" id="路径-3" stroke="#8C8C8C" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></line>
+                    <path d="M25.4142136,0.5 C26.3807119,0.5 27.2557119,0.891750844 27.8890873,1.52512627 C28.5224627,2.15850169 28.9142136,3.03350169 28.9142136,4 L28.9142136,35.4415243 C28.9142136,36.48693 28.662064,37.516913 28.1791551,38.444098 L25.4142136,43.7527858 L22.649272,38.444098 C22.1663632,37.516913 21.9142136,36.48693 21.9142136,35.4415243 L21.9142136,4 C21.9142136,3.03350169 22.3059644,2.15850169 22.9393398,1.52512627 C23.5727153,0.891750844 24.4477153,0.5 25.4142136,0.5 Z" id="矩形" stroke="#1962FF" stroke-width="3" transform="translate(25.414214, 23.000000) rotate(-315.000000) translate(-25.414214, -23.000000) "></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

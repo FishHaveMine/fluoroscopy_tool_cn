@@ -1,0 +1,2212 @@
+import 'package:easy_localization/easy_localization.dart';
+
+/** 本地功能参数设置的配置属性 */
+var typeSettingBase = {
+  0: {
+    0: {
+      "priorModeSetting": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["priorModeSetting"]
+      },
+      "silentMode": {"type": "select", "val": 1, "op": selectMap["silentMode"]},
+      "fallSetting": {
+        // 自动模式制冷制热温差设定
+        "type": "input",
+        "val": "",
+      },
+    },
+    1: {
+      "outdoorPriorAutoT4Setting": {
+        "type": "input",
+        "val": "",
+      },
+      "compressorRestartWaitTime": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["compressorRestartWaitTime"]
+      },
+      "lowNoiseDefrostSetting": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["lowNoiseDefrostSetting"]
+      },
+      "taketurnsSetting": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["taketurnsSetting"]
+      },
+    },
+    2: {
+      "powerLimit": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["powerLimit"]
+      },
+      "antiSnowSetting": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["antiSnowSetting"]
+      },
+      "backupSensor": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["backupSensor"]
+      },
+      "backupRunDays": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["backupRunDays"]
+      },
+      "tecChoice": {"type": "select", "val": "", "op": selectMap["tecChoice"]},
+      "mpc": {"type": "select", "val": "", "op": selectMap["mpc"]},
+      "mpcSelect3": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["mpcSelect3"],
+        "visabel": (date, set) {
+          if (set["mpc"] != null) {
+            return set["mpc"] == 1;
+          }
+          if (date["mpc"] == null) {
+            return false;
+          }
+          return date["mpc"]['val'] == "SETTING_ENUM_1" ||
+              date["mpc"]['val'] == 1;
+        },
+      },
+      "mpcSelect4": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["mpcSelect4"],
+        "visabel": (date, set) {
+          if (set["mpc"] != null) {
+            return set["mpc"] == 1;
+          }
+          if (date["mpc"] == null) {
+            return false;
+          }
+          return date["mpc"]['val'] == "SETTING_ENUM_1" ||
+              date["mpc"]['val'] == 1;
+        },
+      },
+      "dryContactInputSetting1": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["dryContactInputSetting1"]
+      },
+      "dryContactInputSetting2": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["dryContactInputSetting2"]
+      },
+      "dryContactInputSetting3": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["dryContactInputSetting3"]
+      },
+    },
+    3: {
+      "emergenceStop": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["emergenceStop"]
+      },
+    },
+    4: {
+      "sprayEnabling": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["sprayEnabling"]
+      },
+      "sprayLevelSetting": {
+        "type": "select",
+        "val": "",
+        "visabel": (date, set) {
+          bool checkSprayEnabling(Map set, Map date) {
+            if (set["sprayEnabling"] != null) {
+              return set["sprayEnabling"] == 1;
+            }
+            if (date["sprayEnabling"] == null) {
+              return false;
+            }
+            return date["sprayEnabling"]['val'] == "SETTING_ENUM_1" ||
+                date["sprayEnabling"]['val'] == 1;
+          }
+
+          bool ispassBefore = checkSprayEnabling(set, date);
+          if (ispassBefore) {
+            if (set["sprayOpen"] != null) {
+              return set["sprayOpen"] == 1;
+            }
+            if (date["sprayOpen"] == null) {
+              return false;
+            }
+            return date["sprayOpen"]['val'] == "SETTING_ENUM_1" ||
+                date["sprayOpen"]['val'] == 1;
+          } else {
+            return false;
+          }
+        },
+        "op": selectMap["sprayLevelSetting"]
+      },
+      "sprayOpen": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["sprayOpen"],
+        "visabel": (date, set) {
+          if (set["sprayEnabling"] != null) {
+            return set["sprayEnabling"] == 1;
+          }
+          if (date["sprayEnabling"] == null) {
+            return false;
+          }
+          return date["sprayEnabling"]['val'] == "SETTING_ENUM_1" ||
+              date["sprayEnabling"]['val'] == 1;
+        },
+      },
+      "sprayTempSetting": {
+        "type": "input",
+        "val": "",
+        "visabel": (date, set) {
+          bool checkSprayEnabling(Map set, Map date) {
+            if (set["sprayEnabling"] != null) {
+              return set["sprayEnabling"] == 1;
+            }
+            if (date["sprayEnabling"] == null) {
+              return false;
+            }
+            return date["sprayEnabling"]['val'] == "SETTING_ENUM_1" ||
+                date["sprayEnabling"]['val'] == 1;
+          }
+
+          bool ispassBefore = checkSprayEnabling(set, date);
+          if (ispassBefore) {
+            if (set["sprayOpen"] != null) {
+              return set["sprayOpen"] == 1;
+            }
+            if (date["sprayOpen"] == null) {
+              return false;
+            }
+            return date["sprayOpen"]['val'] == "SETTING_ENUM_1" ||
+                date["sprayOpen"]['val'] == 1;
+          } else {
+            return false;
+          }
+        },
+      }
+    }
+  },
+  1: {
+    0: {
+      "indoorStaticPressureSetting": {
+        //室内机静压设置
+        "type": "select",
+        "val": "",
+        "op": selectMap["indoorStaticPressureSetting"]
+      },
+      "lockLineControl": {
+        // 锁定线控
+        "type": "select",
+        "val": "",
+        "op": selectMap["lockLineControl"]
+      },
+      "buzzerSetting": {
+        // 室内机蜂鸣器是否响
+        "type": "select",
+        "val": "",
+        "op": selectMap["buzzerSetting"]
+      },
+      "displayBoardLightSetting": {
+        // 灯光（显示板）设定
+        "type": "select",
+        "val": "",
+        "op": selectMap["displayBoardLightSetting"]
+      },
+      "autoModeSwitchTime": {
+        // 自动模式下模式切换时间间隔
+        "type": "select",
+        "val": "",
+        "op": selectMap["autoModeSwitchTime"]
+      },
+      "autoModeD2": {
+        // 自动模式制冷制热温差设定
+        "type": "input",
+        "val": "",
+      },
+      "elecHeaterT4": {
+        // 电辅热开启条件室外温度设置值
+        "type": "input",
+        "val": "",
+      },
+    },
+    1: {
+      "elecHeatingTempT1Setting": {
+        "type": "input",
+        "val": "",
+      },
+      "elecHeatingOpenDisTemp": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["elecHeatingOpenDisTemp"]
+      },
+      "elecHeatingCloseDisTemp": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["elecHeatingCloseDisTemp"]
+      },
+      "independentElectHeating": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["independentElectHeating"]
+      },
+      "dehumidityStandbyFanSpeed": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["dehumidityStandbyFanSpeed"]
+      },
+      "termalStopFanTime": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["termalStopFanTime"]
+      },
+      "coolingAutoFanSpeedUpperLimit": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["coolingAutoFanSpeedUpperLimit"]
+      },
+      "heatingAutoFanSpeedUpperLimit": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["heatingAutoFanSpeedUpperLimit"]
+      },
+      "constantAirVolumeSetting": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["constantAirVolumeSetting"]
+      },
+      "highPatioCorrectionFactor": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["highPatioCorrectionFactor"]
+      },
+      "independentSwing1Sel": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["independentSwing1Sel"]
+      },
+      "independentSwing2Sel": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["independentSwing1Sel"]
+      },
+      "independentSwing3Sel": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["independentSwing1Sel"]
+      },
+      "independentSwing4Sel": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["independentSwing1Sel"]
+      },
+      "multipleControlSetting": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["multipleControlSetting"]
+      },
+      "remoteShutdownSetting": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["remoteShutdownSetting"]
+      },
+      "remoteOnOffDelayTime": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["remoteOnOffDelayTime"]
+      },
+      "indoorAlarmSetting": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["indoorAlarmSetting"]
+      },
+      "preheatingOpenTemp": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["preheatingOpenTemp"]
+      },
+    },
+    2: {
+      "isSterilizing": {
+        "type": "text",
+        "val": "",
+      },
+      "sterilizationSetting": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["sterilizationSetting"]
+      },
+      "selfCleanDryingTimeSetting": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["selfCleanDryingTimeSetting"]
+      },
+      "antiMouldyBlowTimeSetting": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["antiMouldyBlowTimeSetting"]
+      },
+      "antiBlowDirtyCeilingSetting": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["antiBlowDirtyCeilingSetting"]
+      },
+      "antiCondensationSetting": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["antiCondensationSetting"]
+      },
+      "humanSensorNomanTime": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["humanSensorNomanTime"]
+      },
+      "humanSensorDiffTemp": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["humanSensorDiffTemp"]
+      },
+      "nomanStopDelayTimeSetting": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["nomanStopDelayTimeSetting"]
+      },
+      "coolingMpcLevel": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["coolingMpcLevel"]
+      },
+      "heatingMpcLevel": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["heatingMpcLevel"]
+      },
+      "powerDownSetting": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["powerDownSetting"]
+      },
+    },
+    3: {
+      "heatingIdleOpenningSetting": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["heatingIdleOpenningSetting"]
+      },
+      "fieldCorrectionFactor": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["fieldCorrectionFactor"]
+      },
+      "diffPressureStartToEnd": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["diffPressureStartToEnd"]
+      },
+      "openDegreeOfOilReturnSet": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["openDegreeOfOilReturnSet"]
+      }
+    }
+  }
+};
+
+/** 本地功能参数设置的配置属性 枚举项 */
+var selectMap = {
+  "indoorStaticPressureSetting": List.generate(
+    20,
+    (index) => {
+      'label': "${index > 10 ? index : '0$index'}",
+      'name': "${index > 10 ? index : '0$index'}",
+      'value1': "$index",
+      "value": index
+    },
+  ),
+  "silentMode": [
+    {
+      "label": tr("setting_silentMode0"),
+      "name": tr("setting_silentMode0"),
+      "value1": "SilenceMode_0",
+      "value": 0
+    },
+    {
+      "label": tr("setting_silentMode1"),
+      "name": tr("setting_silentMode1"),
+      "value1": "SilenceMode_1",
+      "value": 1
+    },
+    {
+      "label": tr("setting_silentMode2"),
+      "name": tr("setting_silentMode2"),
+      "value1": "SilenceMode_2",
+      "value": 2
+    },
+    {
+      "label": tr("setting_silentMode3"),
+      "name": tr("setting_silentMode3"),
+      "value1": "SilenceMode_3",
+      "value": 3
+    },
+    {
+      "label": tr("setting_silentMode4"),
+      "name": tr("setting_silentMode4"),
+      "value1": "SilenceMode_4",
+      "value": 4
+    },
+    {
+      "label": tr("setting_silentMode5"),
+      "name": tr("setting_silentMode5"),
+      "value1": "SilenceMode_5",
+      "value": 5
+    },
+    {
+      "label": tr("setting_silentMode6"),
+      "name": tr("setting_silentMode6"),
+      "value1": "SilenceMode_6",
+      "value": 6
+    },
+    {
+      "label": tr("setting_silentMode7"),
+      "name": tr("setting_silentMode7"),
+      "value1": "SilenceMode_7",
+      "value": 7
+    },
+    {
+      "label": tr("setting_silentMode8"),
+      "name": tr("setting_silentMode8"),
+      "value1": "SilenceMode_8",
+      "value": 8
+    },
+    {
+      "label": tr("setting_silentMode9"),
+      "name": tr("setting_silentMode9"),
+      "value1": "SilenceMode_9",
+      "value": 9
+    },
+    {
+      "label": tr("setting_silentMode10"),
+      "name": tr("setting_silentMode10"),
+      "value1": "SilenceMode_10",
+      "value": 10
+    },
+    {
+      "label": tr("setting_silentMode11"),
+      "name": tr("setting_silentMode11"),
+      "value1": "SilenceMode_11",
+      "value": 11
+    },
+    {
+      "label": tr("setting_silentMode12"),
+      "name": tr("setting_silentMode12"),
+      "value1": "SilenceMode_12",
+      "value": 12
+    },
+    {
+      "label": tr("setting_silentMode13"),
+      "name": tr("setting_silentMode13"),
+      "value1": "SilenceMode_13",
+      "value": 13
+    },
+    {
+      "label": tr("setting_silentMode14"),
+      "name": tr("setting_silentMode14"),
+      "value1": "SilenceMode_14",
+      "value": 14
+    }
+  ],
+  "compressorRestartWaitTime": [
+    {
+      "label": tr("setting_compressorRestartWaitTime0"),
+      "name": tr("setting_compressorRestartWaitTime0"),
+      "value1": "SETTING_ENUM_0",
+      "value": 0
+    },
+    {
+      "label": tr("setting_compressorRestartWaitTime1"),
+      "name": tr("setting_compressorRestartWaitTime1"),
+      "value1": "SETTING_ENUM_1",
+      "value": 1
+    },
+    {
+      "label": tr("setting_compressorRestartWaitTime2"),
+      "name": tr("setting_compressorRestartWaitTime2"),
+      "value1": "SETTING_ENUM_2",
+      "value": 2
+    }
+  ],
+  "lowNoiseDefrostSetting": [
+    {
+      "label": tr("setting_lowNoiseDefrostSetting0"),
+      "name": tr("setting_lowNoiseDefrostSetting0"),
+      "value1": "NOT_STOP",
+      "value": 0
+    },
+    {
+      "label": tr("setting_lowNoiseDefrostSetting1"),
+      "name": tr("setting_lowNoiseDefrostSetting1"),
+      "value1": "STOP",
+      "value": 1
+    }
+  ],
+  "taketurnsSetting": [
+    {
+      "label": tr("setting_taketurnsSetting0"),
+      "name": tr("setting_taketurnsSetting0"),
+      "value1": "SETTING_ENUM_0",
+      "value": 0
+    },
+    {
+      "label": tr("setting_taketurnsSetting1"),
+      "name": tr("setting_taketurnsSetting1"),
+      "value1": "SETTING_ENUM_1",
+      "value": 1
+    },
+    {
+      "label": tr("setting_taketurnsSetting2"),
+      "name": tr("setting_taketurnsSetting2"),
+      "value1": "SETTING_ENUM_2",
+      "value": 2
+    },
+    {
+      "label": tr("setting_taketurnsSetting3"),
+      "name": tr("setting_taketurnsSetting3"),
+      "value1": "SETTING_ENUM_3",
+      "value": 3
+    }
+  ],
+  "powerLimit": [
+    {
+      "label": tr("setting_powerLimit40"),
+      "name": tr("setting_powerLimit40"),
+      "value1": "SETTING_ENUM_40",
+      "value": 40
+    },
+    {
+      "label": tr("setting_powerLimit41"),
+      "name": tr("setting_powerLimit41"),
+      "value1": "SETTING_ENUM_41",
+      "value": 41
+    },
+    {
+      "label": tr("setting_powerLimit42"),
+      "name": tr("setting_powerLimit42"),
+      "value1": "SETTING_ENUM_42",
+      "value": 42
+    },
+    {
+      "label": tr("setting_powerLimit43"),
+      "name": tr("setting_powerLimit43"),
+      "value1": "SETTING_ENUM_43",
+      "value": 43
+    },
+    {
+      "label": tr("setting_powerLimit44"),
+      "name": tr("setting_powerLimit44"),
+      "value1": "SETTING_ENUM_44",
+      "value": 44
+    },
+    {
+      "label": tr("setting_powerLimit45"),
+      "name": tr("setting_powerLimit45"),
+      "value1": "SETTING_ENUM_45",
+      "value": 45
+    },
+    {
+      "label": tr("setting_powerLimit46"),
+      "name": tr("setting_powerLimit46"),
+      "value1": "SETTING_ENUM_46",
+      "value": 46
+    },
+    {
+      "label": tr("setting_powerLimit47"),
+      "name": tr("setting_powerLimit47"),
+      "value1": "SETTING_ENUM_47",
+      "value": 47
+    },
+    {
+      "label": tr("setting_powerLimit48"),
+      "name": tr("setting_powerLimit48"),
+      "value1": "SETTING_ENUM_48",
+      "value": 48
+    },
+    {
+      "label": tr("setting_powerLimit49"),
+      "name": tr("setting_powerLimit49"),
+      "value1": "SETTING_ENUM_49",
+      "value": 49
+    },
+    {
+      "label": tr("setting_powerLimit50"),
+      "name": tr("setting_powerLimit50"),
+      "value1": "SETTING_ENUM_50",
+      "value": 50
+    },
+    {
+      "label": tr("setting_powerLimit51"),
+      "name": tr("setting_powerLimit51"),
+      "value1": "SETTING_ENUM_51",
+      "value": 51
+    },
+    {
+      "label": tr("setting_powerLimit52"),
+      "name": tr("setting_powerLimit52"),
+      "value1": "SETTING_ENUM_52",
+      "value": 52
+    },
+    {
+      "label": tr("setting_powerLimit53"),
+      "name": tr("setting_powerLimit53"),
+      "value1": "SETTING_ENUM_53",
+      "value": 53
+    },
+    {
+      "label": tr("setting_powerLimit54"),
+      "name": tr("setting_powerLimit54"),
+      "value1": "SETTING_ENUM_54",
+      "value": 54
+    },
+    {
+      "label": tr("setting_powerLimit55"),
+      "name": tr("setting_powerLimit55"),
+      "value1": "SETTING_ENUM_55",
+      "value": 55
+    },
+    {
+      "label": tr("setting_powerLimit56"),
+      "name": tr("setting_powerLimit56"),
+      "value1": "SETTING_ENUM_56",
+      "value": 56
+    },
+    {
+      "label": tr("setting_powerLimit57"),
+      "name": tr("setting_powerLimit57"),
+      "value1": "SETTING_ENUM_57",
+      "value": 57
+    },
+    {
+      "label": tr("setting_powerLimit58"),
+      "name": tr("setting_powerLimit58"),
+      "value1": "SETTING_ENUM_58",
+      "value": 58
+    },
+    {
+      "label": tr("setting_powerLimit59"),
+      "name": tr("setting_powerLimit59"),
+      "value1": "SETTING_ENUM_59",
+      "value": 59
+    },
+    {
+      "label": tr("setting_powerLimit60"),
+      "name": tr("setting_powerLimit60"),
+      "value1": "SETTING_ENUM_60",
+      "value": 60
+    },
+    {
+      "label": tr("setting_powerLimit61"),
+      "name": tr("setting_powerLimit61"),
+      "value1": "SETTING_ENUM_61",
+      "value": 61
+    },
+    {
+      "label": tr("setting_powerLimit62"),
+      "name": tr("setting_powerLimit62"),
+      "value1": "SETTING_ENUM_62",
+      "value": 62
+    },
+    {
+      "label": tr("setting_powerLimit63"),
+      "name": tr("setting_powerLimit63"),
+      "value1": "SETTING_ENUM_63",
+      "value": 63
+    },
+    {
+      "label": tr("setting_powerLimit64"),
+      "name": tr("setting_powerLimit64"),
+      "value1": "SETTING_ENUM_64",
+      "value": 64
+    },
+    {
+      "label": tr("setting_powerLimit65"),
+      "name": tr("setting_powerLimit65"),
+      "value1": "SETTING_ENUM_65",
+      "value": 65
+    },
+    {
+      "label": tr("setting_powerLimit66"),
+      "name": tr("setting_powerLimit66"),
+      "value1": "SETTING_ENUM_66",
+      "value": 66
+    },
+    {
+      "label": tr("setting_powerLimit67"),
+      "name": tr("setting_powerLimit67"),
+      "value1": "SETTING_ENUM_67",
+      "value": 67
+    },
+    {
+      "label": tr("setting_powerLimit68"),
+      "name": tr("setting_powerLimit68"),
+      "value1": "SETTING_ENUM_68",
+      "value": 68
+    },
+    {
+      "label": tr("setting_powerLimit69"),
+      "name": tr("setting_powerLimit69"),
+      "value1": "SETTING_ENUM_69",
+      "value": 69
+    },
+    {
+      "label": tr("setting_powerLimit70"),
+      "name": tr("setting_powerLimit70"),
+      "value1": "SETTING_ENUM_70",
+      "value": 70
+    },
+    {
+      "label": tr("setting_powerLimit71"),
+      "name": tr("setting_powerLimit71"),
+      "value1": "SETTING_ENUM_71",
+      "value": 71
+    },
+    {
+      "label": tr("setting_powerLimit72"),
+      "name": tr("setting_powerLimit72"),
+      "value1": "SETTING_ENUM_72",
+      "value": 72
+    },
+    {
+      "label": tr("setting_powerLimit73"),
+      "name": tr("setting_powerLimit73"),
+      "value1": "SETTING_ENUM_73",
+      "value": 73
+    },
+    {
+      "label": tr("setting_powerLimit74"),
+      "name": tr("setting_powerLimit74"),
+      "value1": "SETTING_ENUM_74",
+      "value": 74
+    },
+    {
+      "label": tr("setting_powerLimit75"),
+      "name": tr("setting_powerLimit75"),
+      "value1": "SETTING_ENUM_75",
+      "value": 75
+    },
+    {
+      "label": tr("setting_powerLimit76"),
+      "name": tr("setting_powerLimit76"),
+      "value1": "SETTING_ENUM_76",
+      "value": 76
+    },
+    {
+      "label": tr("setting_powerLimit77"),
+      "name": tr("setting_powerLimit77"),
+      "value1": "SETTING_ENUM_77",
+      "value": 77
+    },
+    {
+      "label": tr("setting_powerLimit78"),
+      "name": tr("setting_powerLimit78"),
+      "value1": "SETTING_ENUM_78",
+      "value": 78
+    },
+    {
+      "label": tr("setting_powerLimit79"),
+      "name": tr("setting_powerLimit79"),
+      "value1": "SETTING_ENUM_79",
+      "value": 79
+    },
+    {
+      "label": tr("setting_powerLimit80"),
+      "name": tr("setting_powerLimit80"),
+      "value1": "SETTING_ENUM_80",
+      "value": 80
+    },
+    {
+      "label": tr("setting_powerLimit81"),
+      "name": tr("setting_powerLimit81"),
+      "value1": "SETTING_ENUM_81",
+      "value": 81
+    },
+    {
+      "label": tr("setting_powerLimit82"),
+      "name": tr("setting_powerLimit82"),
+      "value1": "SETTING_ENUM_82",
+      "value": 82
+    },
+    {
+      "label": tr("setting_powerLimit83"),
+      "name": tr("setting_powerLimit83"),
+      "value1": "SETTING_ENUM_83",
+      "value": 83
+    },
+    {
+      "label": tr("setting_powerLimit84"),
+      "name": tr("setting_powerLimit84"),
+      "value1": "SETTING_ENUM_84",
+      "value": 84
+    },
+    {
+      "label": tr("setting_powerLimit85"),
+      "name": tr("setting_powerLimit85"),
+      "value1": "SETTING_ENUM_85",
+      "value": 85
+    },
+    {
+      "label": tr("setting_powerLimit86"),
+      "name": tr("setting_powerLimit86"),
+      "value1": "SETTING_ENUM_86",
+      "value": 86
+    },
+    {
+      "label": tr("setting_powerLimit87"),
+      "name": tr("setting_powerLimit87"),
+      "value1": "SETTING_ENUM_87",
+      "value": 87
+    },
+    {
+      "label": tr("setting_powerLimit88"),
+      "name": tr("setting_powerLimit88"),
+      "value1": "SETTING_ENUM_88",
+      "value": 88
+    },
+    {
+      "label": tr("setting_powerLimit89"),
+      "name": tr("setting_powerLimit89"),
+      "value1": "SETTING_ENUM_89",
+      "value": 89
+    },
+    {
+      "label": tr("setting_powerLimit90"),
+      "name": tr("setting_powerLimit90"),
+      "value1": "SETTING_ENUM_90",
+      "value": 90
+    },
+    {
+      "label": tr("setting_powerLimit91"),
+      "name": tr("setting_powerLimit91"),
+      "value1": "SETTING_ENUM_91",
+      "value": 91
+    },
+    {
+      "label": tr("setting_powerLimit92"),
+      "name": tr("setting_powerLimit92"),
+      "value1": "SETTING_ENUM_92",
+      "value": 92
+    },
+    {
+      "label": tr("setting_powerLimit93"),
+      "name": tr("setting_powerLimit93"),
+      "value1": "SETTING_ENUM_93",
+      "value": 93
+    },
+    {
+      "label": tr("setting_powerLimit94"),
+      "name": tr("setting_powerLimit94"),
+      "value1": "SETTING_ENUM_94",
+      "value": 94
+    },
+    {
+      "label": tr("setting_powerLimit95"),
+      "name": tr("setting_powerLimit95"),
+      "value1": "SETTING_ENUM_95",
+      "value": 95
+    },
+    {
+      "label": tr("setting_powerLimit96"),
+      "name": tr("setting_powerLimit96"),
+      "value1": "SETTING_ENUM_96",
+      "value": 96
+    },
+    {
+      "label": tr("setting_powerLimit97"),
+      "name": tr("setting_powerLimit97"),
+      "value1": "SETTING_ENUM_97",
+      "value": 97
+    },
+    {
+      "label": tr("setting_powerLimit98"),
+      "name": tr("setting_powerLimit98"),
+      "value1": "SETTING_ENUM_98",
+      "value": 98
+    },
+    {
+      "label": tr("setting_powerLimit99"),
+      "name": tr("setting_powerLimit99"),
+      "value1": "SETTING_ENUM_99",
+      "value": 99
+    },
+    {
+      "label": tr("setting_powerLimit100"),
+      "name": tr("setting_powerLimit100"),
+      "value1": "SETTING_ENUM_100",
+      "value": 100
+    }
+  ],
+  "antiSnowSetting": [
+    {
+      "label": tr("setting_antiSnowSetting0"),
+      "name": tr("setting_antiSnowSetting0"),
+      "value1": "SETTING_ENUM_0",
+      "value": 0
+    },
+    {
+      "label": tr("setting_antiSnowSetting1"),
+      "name": tr("setting_antiSnowSetting1"),
+      "value1": "SETTING_ENUM_1",
+      "value": 1
+    },
+    {
+      "label": tr("setting_antiSnowSetting2"),
+      "name": tr("setting_antiSnowSetting2"),
+      "value1": "SETTING_ENUM_2",
+      "value": 2
+    }
+  ],
+  "backupSensor": [
+    {
+      "label": tr("setting_backupSensor0"),
+      "name": tr("setting_backupSensor0"),
+      "value1": "SETTING_ENUM_0",
+      "value": 0
+    },
+    {
+      "label": tr("setting_backupSensor1"),
+      "name": tr("setting_backupSensor1"),
+      "value1": "SETTING_ENUM_1",
+      "value": 1
+    },
+    {
+      "label": tr("setting_backupSensor2"),
+      "name": tr("setting_backupSensor2"),
+      "value1": "SETTING_ENUM_2",
+      "value": 2
+    }
+  ],
+  "backupRunDays": [
+    {
+      "label": tr("setting_backupRunDays1"),
+      "name": tr("setting_backupRunDays1"),
+      "value1": "SETTING_ENUM_1",
+      "value": 1
+    },
+    {
+      "label": tr("setting_backupRunDays2"),
+      "name": tr("setting_backupRunDays2"),
+      "value1": "SETTING_ENUM_2",
+      "value": 2
+    },
+    {
+      "label": tr("setting_backupRunDays3"),
+      "name": tr("setting_backupRunDays3"),
+      "value1": "SETTING_ENUM_3",
+      "value": 3
+    },
+    {
+      "label": tr("setting_backupRunDays4"),
+      "name": tr("setting_backupRunDays4"),
+      "value1": "SETTING_ENUM_4",
+      "value": 4
+    },
+    {
+      "label": tr("setting_backupRunDays5"),
+      "name": tr("setting_backupRunDays5"),
+      "value1": "SETTING_ENUM_5",
+      "value": 5
+    },
+    {
+      "label": tr("setting_backupRunDays6"),
+      "name": tr("setting_backupRunDays6"),
+      "value1": "SETTING_ENUM_6",
+      "value": 6
+    },
+    {
+      "label": tr("setting_backupRunDays7"),
+      "name": tr("setting_backupRunDays7"),
+      "value1": "SETTING_ENUM_7",
+      "value": 7
+    }
+  ],
+  "tecChoice": [
+    {
+      "label": tr("setting_tecChoice0"),
+      "name": tr("setting_tecChoice0"),
+      "value1": "SETTING_ENUM_0",
+      "value": 0
+    },
+    {
+      "label": tr("setting_tecChoice1"),
+      "name": tr("setting_tecChoice1"),
+      "value1": "SETTING_ENUM_1",
+      "value": 1
+    },
+    {
+      "label": tr("setting_tecChoice2"),
+      "name": tr("setting_tecChoice2"),
+      "value1": "SETTING_ENUM_2",
+      "value": 2
+    }
+  ],
+  "mpc": [
+    {
+      "label": tr("setting_mpc0"),
+      "name": tr("setting_mpc0"),
+      "value1": "SETTING_ENUM_0",
+      "value": 0
+    },
+    {
+      "label": tr("setting_mpc1"),
+      "name": tr("setting_mpc1"),
+      "value1": "SETTING_ENUM_1",
+      "value": 1
+    }
+  ],
+  "lockLineControl": [
+    {
+      "label": tr("setting_lockLineControlFalse"),
+      "name": tr("setting_lockLineControlFalse"),
+      "value1": "SETTING_ENUM_0",
+      "value": false
+    },
+    {
+      "label": tr("setting_lockLineControlTrue"),
+      "name": tr("setting_lockLineControlTrue"),
+      "value1": "SETTING_ENUM_1",
+      "value": true
+    }
+  ],
+  "mpcSelect3": [
+    {
+      "label": tr("setting_mpcSelect30"),
+      "name": tr("setting_mpcSelect30"),
+      "value1": "SETTING_ENUM_0",
+      "value": 0
+    },
+    {
+      "label": tr("setting_mpcSelect31"),
+      "name": tr("setting_mpcSelect31"),
+      "value1": "SETTING_ENUM_1",
+      "value": 1
+    },
+    {
+      "label": tr("setting_mpcSelect32"),
+      "name": tr("setting_mpcSelect32"),
+      "value1": "SETTING_ENUM_2",
+      "value": 2
+    }
+  ],
+  "mpcSelect4": [
+    {
+      "label": tr("setting_mpcSelect40"),
+      "name": tr("setting_mpcSelect40"),
+      "value1": "SETTING_ENUM_0",
+      "value": 0
+    },
+    {
+      "label": tr("setting_mpcSelect41"),
+      "name": tr("setting_mpcSelect41"),
+      "value1": "SETTING_ENUM_1",
+      "value": 1
+    },
+    {
+      "label": tr("setting_mpcSelect42"),
+      "name": tr("setting_mpcSelect42"),
+      "value1": "SETTING_ENUM_2",
+      "value": 2
+    }
+  ],
+  "dryContactInputSetting1": [
+    {
+      "label": tr("setting_dryContactInputSetting10"),
+      "name": tr("setting_dryContactInputSetting10"),
+      "value1": "SETTING_ENUM_0",
+      "value": 0
+    },
+    {
+      "label": tr("setting_dryContactInputSetting11"),
+      "name": tr("setting_dryContactInputSetting11"),
+      "value1": "SETTING_ENUM_1",
+      "value": 1
+    },
+    {
+      "label": tr("setting_dryContactInputSetting12"),
+      "name": tr("setting_dryContactInputSetting12"),
+      "value1": "SETTING_ENUM_2",
+      "value": 2
+    },
+    {
+      "label": tr("setting_dryContactInputSetting13"),
+      "name": tr("setting_dryContactInputSetting13"),
+      "value1": "SETTING_ENUM_3",
+      "value": 3
+    }
+  ],
+  "dryContactInputSetting2": [
+    {
+      "label": tr("setting_dryContactInputSetting20"),
+      "name": tr("setting_dryContactInputSetting20"),
+      "value1": "SETTING_ENUM_0",
+      "value": 0
+    },
+    {
+      "label": tr("setting_dryContactInputSetting21"),
+      "name": tr("setting_dryContactInputSetting21"),
+      "value1": "SETTING_ENUM_1",
+      "value": 1
+    },
+    {
+      "label": tr("setting_dryContactInputSetting22"),
+      "name": tr("setting_dryContactInputSetting22"),
+      "value1": "SETTING_ENUM_2",
+      "value": 2
+    },
+    {
+      "label": tr("setting_dryContactInputSetting23"),
+      "name": tr("setting_dryContactInputSetting23"),
+      "value1": "SETTING_ENUM_3",
+      "value": 3
+    }
+  ],
+  "dryContactInputSetting3": [
+    {
+      "label": tr("setting_dryContactInputSetting30"),
+      "name": tr("setting_dryContactInputSetting30"),
+      "value1": "SETTING_ENUM_0",
+      "value": 0
+    },
+    {
+      "label": tr("setting_dryContactInputSetting31"),
+      "name": tr("setting_dryContactInputSetting31"),
+      "value1": "SETTING_ENUM_1",
+      "value": 1
+    },
+    {
+      "label": tr("setting_dryContactInputSetting32"),
+      "name": tr("setting_dryContactInputSetting32"),
+      "value1": "SETTING_ENUM_2",
+      "value": 2
+    },
+    {
+      "label": tr("setting_dryContactInputSetting33"),
+      "name": tr("setting_dryContactInputSetting33"),
+      "value1": "SETTING_ENUM_3",
+      "value": 3
+    },
+    {
+      "label": tr("setting_dryContactInputSetting34"),
+      "name": tr("setting_dryContactInputSetting34"),
+      "value1": "SETTING_ENUM_4",
+      "value": 4
+    }
+  ],
+  "emergenceStop": [
+    {
+      "label": tr("setting_emergenceStop0"),
+      "name": tr("setting_emergenceStop0"),
+      "value1": "SETTING_ENUM_0",
+      "value": 0
+    },
+    {
+      "label": tr("setting_emergenceStop1"),
+      "name": tr("setting_emergenceStop1"),
+      "value1": "SETTING_ENUM_1",
+      "value": 1
+    }
+  ],
+  "sprayEnabling": [
+    {
+      "label": tr("setting_sprayEnabling0"),
+      "name": tr("setting_sprayEnabling0"),
+      "value1": "SETTING_ENUM_0",
+      "value": 0
+    },
+    {
+      "label": tr("setting_sprayEnabling1"),
+      "name": tr("setting_sprayEnabling1"),
+      "value1": "SETTING_ENUM_1",
+      "value": 1
+    }
+  ],
+  "sprayLevelSetting": [
+    {
+      "label": tr("setting_sprayLevelSetting0"),
+      "name": tr("setting_sprayLevelSetting0"),
+      "value1": "SETTING_ENUM_0",
+      "value": 0
+    },
+    {
+      "label": tr("setting_sprayLevelSetting1"),
+      "name": tr("setting_sprayLevelSetting1"),
+      "value1": "SETTING_ENUM_1",
+      "value": 1
+    },
+    {
+      "label": tr("setting_sprayLevelSetting2"),
+      "name": tr("setting_sprayLevelSetting2"),
+      "value1": "SETTING_ENUM_2",
+      "value": 2
+    },
+    {
+      "label": tr("setting_sprayLevelSetting3"),
+      "name": tr("setting_sprayLevelSetting3"),
+      "value1": "SETTING_ENUM_3",
+      "value": 3
+    },
+    {
+      "label": tr("setting_sprayLevelSetting4"),
+      "name": tr("setting_sprayLevelSetting4"),
+      "value1": "SETTING_ENUM_4",
+      "value": 4
+    }
+  ],
+  "sprayOpen": [
+    {
+      "label": tr("setting_sprayOpen0"),
+      "name": tr("setting_sprayOpen0"),
+      "value1": "SETTING_ENUM_0",
+      "value": 0
+    },
+    {
+      "label": tr("setting_sprayOpen1"),
+      "name": tr("setting_sprayOpen1"),
+      "value1": "SETTING_ENUM_1",
+      "value": 1
+    }
+  ],
+  "buzzerSetting": [
+    {
+      "label": tr("setting_buzzerSetting0"),
+      "name": tr("setting_buzzerSetting0"),
+      "value1": "SETTING_ENUM_0",
+      "value": 0
+    },
+    {
+      "label": tr("setting_buzzerSetting1"),
+      "name": tr("setting_buzzerSetting1"),
+      "value1": "SETTING_ENUM_1",
+      "value": 1
+    },
+    {
+      "label": tr("setting_buzzerSetting2"),
+      "name": tr("setting_buzzerSetting2"),
+      "value1": "SETTING_ENUM_2",
+      "value": 2
+    }
+  ],
+  "displayBoardLightSetting": [
+    {
+      "label": tr("setting_displayBoardLightSetting0"),
+      "name": tr("setting_displayBoardLightSetting0"),
+      "value1": "SETTING_ENUM_0",
+      "value": 0
+    },
+    {
+      "label": tr("setting_displayBoardLightSetting1"),
+      "name": tr("setting_displayBoardLightSetting1"),
+      "value1": "SETTING_ENUM_1",
+      "value": 1
+    }
+  ],
+  "autoModeSwitchTime": [
+    {
+      "label": tr("setting_autoModeSwitchTime0"),
+      "name": tr("setting_autoModeSwitchTime0"),
+      "value1": "SETTING_ENUM_0",
+      "value": 0
+    },
+    {
+      "label": tr("setting_autoModeSwitchTime1"),
+      "name": tr("setting_autoModeSwitchTime1"),
+      "value1": "SETTING_ENUM_1",
+      "value": 1
+    },
+    {
+      "label": tr("setting_autoModeSwitchTime2"),
+      "name": tr("setting_autoModeSwitchTime2"),
+      "value1": "SETTING_ENUM_2",
+      "value": 2
+    },
+    {
+      "label": tr("setting_autoModeSwitchTime3"),
+      "name": tr("setting_autoModeSwitchTime3"),
+      "value1": "SETTING_ENUM_3",
+      "value": 3
+    }
+  ],
+  "elecHeatingOpenDisTemp": [
+    {
+      "label": tr("setting_elecHeatingOpenDisTemp0"),
+      "name": tr("setting_elecHeatingOpenDisTemp0"),
+      "value1": "SETTING_ENUM_0",
+      "value": 0
+    },
+    {
+      "label": tr("setting_elecHeatingOpenDisTemp1"),
+      "name": tr("setting_elecHeatingOpenDisTemp1"),
+      "value1": "SETTING_ENUM_1",
+      "value": 1
+    },
+    {
+      "label": tr("setting_elecHeatingOpenDisTemp2"),
+      "name": tr("setting_elecHeatingOpenDisTemp2"),
+      "value1": "SETTING_ENUM_2",
+      "value": 2
+    },
+    {
+      "label": tr("setting_elecHeatingOpenDisTemp3"),
+      "name": tr("setting_elecHeatingOpenDisTemp3"),
+      "value1": "SETTING_ENUM_3",
+      "value": 3
+    },
+    {
+      "label": tr("setting_elecHeatingOpenDisTemp4"),
+      "name": tr("setting_elecHeatingOpenDisTemp4"),
+      "value1": "SETTING_ENUM_4",
+      "value": 4
+    },
+    {
+      "label": tr("setting_elecHeatingOpenDisTemp5"),
+      "name": tr("setting_elecHeatingOpenDisTemp5"),
+      "value1": "SETTING_ENUM_5",
+      "value": 5
+    },
+    {
+      "label": tr("setting_elecHeatingOpenDisTemp6"),
+      "name": tr("setting_elecHeatingOpenDisTemp6"),
+      "value1": "SETTING_ENUM_6",
+      "value": 6
+    },
+    {
+      "label": tr("setting_elecHeatingOpenDisTemp7"),
+      "name": tr("setting_elecHeatingOpenDisTemp7"),
+      "value1": "SETTING_ENUM_7",
+      "value": 7
+    }
+  ],
+  "elecHeatingCloseDisTemp": [
+    {
+      "label": tr("setting_elecHeatingCloseDisTemp0"),
+      "name": tr("setting_elecHeatingCloseDisTemp0"),
+      "value1": "SETTING_ENUM_0",
+      "value": 0
+    },
+    {
+      "label": tr("setting_elecHeatingCloseDisTemp1"),
+      "name": tr("setting_elecHeatingCloseDisTemp1"),
+      "value1": "SETTING_ENUM_1",
+      "value": 1
+    },
+    {
+      "label": tr("setting_elecHeatingCloseDisTemp2"),
+      "name": tr("setting_elecHeatingCloseDisTemp2"),
+      "value1": "SETTING_ENUM_2",
+      "value": 2
+    },
+    {
+      "label": tr("setting_elecHeatingCloseDisTemp3"),
+      "name": tr("setting_elecHeatingCloseDisTemp3"),
+      "value1": "SETTING_ENUM_3",
+      "value": 3
+    },
+    {
+      "label": tr("setting_elecHeatingCloseDisTemp4"),
+      "name": tr("setting_elecHeatingCloseDisTemp4"),
+      "value1": "SETTING_ENUM_4",
+      "value": 4
+    },
+    {
+      "label": tr("setting_elecHeatingCloseDisTemp5"),
+      "name": tr("setting_elecHeatingCloseDisTemp5"),
+      "value1": "SETTING_ENUM_5",
+      "value": 5
+    },
+    {
+      "label": tr("setting_elecHeatingCloseDisTemp6"),
+      "name": tr("setting_elecHeatingCloseDisTemp6"),
+      "value1": "SETTING_ENUM_6",
+      "value": 6
+    },
+    {
+      "label": tr("setting_elecHeatingCloseDisTemp7"),
+      "name": tr("setting_elecHeatingCloseDisTemp7"),
+      "value1": "SETTING_ENUM_7",
+      "value": 7
+    },
+    {
+      "label": tr("setting_elecHeatingCloseDisTemp8"),
+      "name": tr("setting_elecHeatingCloseDisTemp8"),
+      "value1": "SETTING_ENUM_8",
+      "value": 8
+    },
+    {
+      "label": tr("setting_elecHeatingCloseDisTemp9"),
+      "name": tr("setting_elecHeatingCloseDisTemp9"),
+      "value1": "SETTING_ENUM_9",
+      "value": 9
+    },
+    {
+      "label": tr("setting_elecHeatingCloseDisTemp10"),
+      "name": tr("setting_elecHeatingCloseDisTemp10"),
+      "value1": "SETTING_ENUM_10",
+      "value": 10
+    }
+  ],
+  "independentElectHeating": [
+    {
+      "label": tr("setting_independentElectHeating0"),
+      "name": tr("setting_independentElectHeating0"),
+      "value1": "SETTING_ENUM_0",
+      "value": 0
+    },
+    {
+      "label": tr("setting_independentElectHeating1"),
+      "name": tr("setting_independentElectHeating1"),
+      "value1": "SETTING_ENUM_1",
+      "value": 1
+    },
+    {
+      "label": tr("setting_independentElectHeating2"),
+      "name": tr("setting_independentElectHeating2"),
+      "value1": "SETTING_ENUM_2",
+      "value": 2
+    }
+  ],
+  "dehumidityStandbyFanSpeed": [
+    {
+      "label": tr("setting_dehumidityStandbyFanSpeed0"),
+      "name": tr("setting_dehumidityStandbyFanSpeed0"),
+      "value1": "SETTING_ENUM_0",
+      "value": 0
+    },
+    {
+      "label": tr("setting_dehumidityStandbyFanSpeed1"),
+      "name": tr("setting_dehumidityStandbyFanSpeed1"),
+      "value1": "SETTING_ENUM_1",
+      "value": 1
+    },
+    {
+      "label": tr("setting_dehumidityStandbyFanSpeed2"),
+      "name": tr("setting_dehumidityStandbyFanSpeed2"),
+      "value1": "SETTING_ENUM_2",
+      "value": 2
+    },
+    {
+      "label": tr("setting_dehumidityStandbyFanSpeed3"),
+      "name": tr("setting_dehumidityStandbyFanSpeed3"),
+      "value1": "SETTING_ENUM_3",
+      "value": 3
+    }
+  ],
+  "termalStopFanTime": [
+    {
+      "label": tr("setting_termalStopFanTime0"),
+      "name": tr("setting_termalStopFanTime0"),
+      "value1": "SETTING_ENUM_0",
+      "value": 0
+    },
+    {
+      "label": tr("setting_termalStopFanTime1"),
+      "name": tr("setting_termalStopFanTime1"),
+      "value1": "SETTING_ENUM_1",
+      "value": 1
+    },
+    {
+      "label": tr("setting_termalStopFanTime2"),
+      "name": tr("setting_termalStopFanTime2"),
+      "value1": "SETTING_ENUM_2",
+      "value": 2
+    },
+    {
+      "label": tr("setting_termalStopFanTime3"),
+      "name": tr("setting_termalStopFanTime3"),
+      "value1": "SETTING_ENUM_3",
+      "value": 3
+    },
+    {
+      "label": tr("setting_termalStopFanTime4"),
+      "name": tr("setting_termalStopFanTime4"),
+      "value1": "SETTING_ENUM_4",
+      "value": 4
+    }
+  ],
+  "coolingAutoFanSpeedUpperLimit": [
+    {
+      "label": tr("setting_coolingAutoFanSpeedUpperLimit4"),
+      "name": tr("setting_coolingAutoFanSpeedUpperLimit4"),
+      "value1": "SETTING_ENUM_4",
+      "value": 4
+    },
+    {
+      "label": tr("setting_coolingAutoFanSpeedUpperLimit5"),
+      "name": tr("setting_coolingAutoFanSpeedUpperLimit5"),
+      "value1": "SETTING_ENUM_5",
+      "value": 5
+    },
+    {
+      "label": tr("setting_coolingAutoFanSpeedUpperLimit6"),
+      "name": tr("setting_coolingAutoFanSpeedUpperLimit6"),
+      "value1": "SETTING_ENUM_6",
+      "value": 6
+    },
+    {
+      "label": tr("setting_coolingAutoFanSpeedUpperLimit7"),
+      "name": tr("setting_coolingAutoFanSpeedUpperLimit7"),
+      "value1": "SETTING_ENUM_7",
+      "value": 7
+    }
+  ],
+  "heatingAutoFanSpeedUpperLimit": [
+    {
+      "label": tr("setting_heatingAutoFanSpeedUpperLimit4"),
+      "name": tr("setting_heatingAutoFanSpeedUpperLimit4"),
+      "value1": "SETTING_ENUM_4",
+      "value": 4
+    },
+    {
+      "label": tr("setting_heatingAutoFanSpeedUpperLimit5"),
+      "name": tr("setting_heatingAutoFanSpeedUpperLimit5"),
+      "value1": "SETTING_ENUM_5",
+      "value": 5
+    },
+    {
+      "label": tr("setting_heatingAutoFanSpeedUpperLimit6"),
+      "name": tr("setting_heatingAutoFanSpeedUpperLimit6"),
+      "value1": "SETTING_ENUM_6",
+      "value": 6
+    },
+    {
+      "label": tr("setting_heatingAutoFanSpeedUpperLimit7"),
+      "name": tr("setting_heatingAutoFanSpeedUpperLimit7"),
+      "value1": "SETTING_ENUM_7",
+      "value": 7
+    }
+  ],
+  "constantAirVolumeSetting": [
+    {
+      "label": tr("setting_constantAirVolumeSetting0"),
+      "name": tr("setting_constantAirVolumeSetting0"),
+      "value1": "SETTING_ENUM_0",
+      "value": 0
+    },
+    {
+      "label": tr("setting_constantAirVolumeSetting1"),
+      "name": tr("setting_constantAirVolumeSetting1"),
+      "value1": "SETTING_ENUM_1",
+      "value": 1
+    },
+    {
+      "label": tr("setting_constantAirVolumeSetting2"),
+      "name": tr("setting_constantAirVolumeSetting2"),
+      "value1": "SETTING_ENUM_2",
+      "value": 2
+    }
+  ],
+  "highPatioCorrectionFactor": [
+    {
+      "label": tr("setting_highPatioCorrectionFactor0"),
+      "name": tr("setting_highPatioCorrectionFactor0"),
+      "value1": "SETTING_ENUM_0",
+      "value": 0
+    },
+    {
+      "label": tr("setting_highPatioCorrectionFactor1"),
+      "name": tr("setting_highPatioCorrectionFactor1"),
+      "value1": "SETTING_ENUM_1",
+      "value": 1
+    },
+    {
+      "label": tr("setting_highPatioCorrectionFactor2"),
+      "name": tr("setting_highPatioCorrectionFactor2"),
+      "value1": "SETTING_ENUM_2",
+      "value": 2
+    }
+  ],
+  "independentSwing1Sel": [
+    {
+      "label": tr("setting_independentSwing1Sel0"),
+      "name": tr("setting_independentSwing1Sel0"),
+      "value1": "SETTING_ENUM_0",
+      "value": 0
+    },
+    {
+      "label": tr("setting_independentSwing1Sel1"),
+      "name": tr("setting_independentSwing1Sel1"),
+      "value1": "SETTING_ENUM_1",
+      "value": 1
+    }
+  ],
+  "multipleControlSetting": [
+    {
+      "label": tr("setting_multipleControlSetting0"),
+      "name": tr("setting_multipleControlSetting0"),
+      "value1": "SETTING_ENUM_0",
+      "value": 0
+    },
+    {
+      "label": tr("setting_multipleControlSetting1"),
+      "name": tr("setting_multipleControlSetting1"),
+      "value1": "SETTING_ENUM_1",
+      "value": 1
+    }
+  ],
+  "remoteShutdownSetting": [
+    {
+      "label": tr("setting_remoteShutdownSetting0"),
+      "name": tr("setting_remoteShutdownSetting0"),
+      "value1": "SETTING_ENUM_0",
+      "value": 0
+    },
+    {
+      "label": tr("setting_remoteShutdownSetting1"),
+      "name": tr("setting_remoteShutdownSetting1"),
+      "value1": "SETTING_ENUM_1",
+      "value": 1
+    }
+  ],
+  "remoteOnOffDelayTime": [
+    {
+      "label": tr("setting_remoteOnOffDelayTime0"),
+      "name": tr("setting_remoteOnOffDelayTime0"),
+      "value1": "SETTING_ENUM_0",
+      "value": 0
+    },
+    {
+      "label": tr("setting_remoteOnOffDelayTime1"),
+      "name": tr("setting_remoteOnOffDelayTime1"),
+      "value1": "SETTING_ENUM_1",
+      "value": 1
+    },
+    {
+      "label": tr("setting_remoteOnOffDelayTime2"),
+      "name": tr("setting_remoteOnOffDelayTime2"),
+      "value1": "SETTING_ENUM_2",
+      "value": 2
+    },
+    {
+      "label": tr("setting_remoteOnOffDelayTime3"),
+      "name": tr("setting_remoteOnOffDelayTime3"),
+      "value1": "SETTING_ENUM_3",
+      "value": 3
+    },
+    {
+      "label": tr("setting_remoteOnOffDelayTime4"),
+      "name": tr("setting_remoteOnOffDelayTime4"),
+      "value1": "SETTING_ENUM_4",
+      "value": 4
+    },
+    {
+      "label": tr("setting_remoteOnOffDelayTime5"),
+      "name": tr("setting_remoteOnOffDelayTime5"),
+      "value1": "SETTING_ENUM_5",
+      "value": 5
+    },
+    {
+      "label": tr("setting_remoteOnOffDelayTime6"),
+      "name": tr("setting_remoteOnOffDelayTime6"),
+      "value1": "SETTING_ENUM_6",
+      "value": 6
+    }
+  ],
+  "indoorAlarmSetting": [
+    {
+      "label": tr("setting_indoorAlarmSetting0"),
+      "name": tr("setting_indoorAlarmSetting0"),
+      "value1": "SETTING_ENUM_0",
+      "value": 0
+    },
+    {
+      "label": tr("setting_indoorAlarmSetting1"),
+      "name": tr("setting_indoorAlarmSetting1"),
+      "value1": "SETTING_ENUM_1",
+      "value": 1
+    }
+  ],
+  "preheatingOpenTemp": [
+    {
+      "label": tr("setting_preheatingOpenTemp0"),
+      "name": tr("setting_preheatingOpenTemp0"),
+      "value1": "SETTING_ENUM_0",
+      "value": 0
+    },
+    {
+      "label": tr("setting_preheatingOpenTemp1"),
+      "name": tr("setting_preheatingOpenTemp1"),
+      "value1": "SETTING_ENUM_1",
+      "value": 1
+    },
+    {
+      "label": tr("setting_preheatingOpenTemp2"),
+      "name": tr("setting_preheatingOpenTemp2"),
+      "value1": "SETTING_ENUM_2",
+      "value": 2
+    }
+  ],
+  "sterilizationSetting": [
+    {
+      "label": tr("setting_sterilizationSetting0"),
+      "name": tr("setting_sterilizationSetting0"),
+      "value1": "SETTING_ENUM_0",
+      "value": 0
+    },
+    {
+      "label": tr("setting_sterilizationSetting1"),
+      "name": tr("setting_sterilizationSetting1"),
+      "value1": "SETTING_ENUM_1",
+      "value": 1
+    }
+  ],
+  "selfCleanDryingTimeSetting": [
+    {
+      "label": tr("setting_selfCleanDryingTimeSetting0"),
+      "name": tr("setting_selfCleanDryingTimeSetting0"),
+      "value1": "SETTING_ENUM_0",
+      "value": 0
+    },
+    {
+      "label": tr("setting_selfCleanDryingTimeSetting1"),
+      "name": tr("setting_selfCleanDryingTimeSetting1"),
+      "value1": "SETTING_ENUM_1",
+      "value": 1
+    },
+    {
+      "label": tr("setting_selfCleanDryingTimeSetting2"),
+      "name": tr("setting_selfCleanDryingTimeSetting2"),
+      "value1": "SETTING_ENUM_2",
+      "value": 2
+    },
+    {
+      "label": tr("setting_selfCleanDryingTimeSetting3"),
+      "name": tr("setting_selfCleanDryingTimeSetting3"),
+      "value1": "SETTING_ENUM_3",
+      "value": 3
+    }
+  ],
+  "antiMouldyBlowTimeSetting": [
+    {
+      "label": tr("setting_antiMouldyBlowTimeSetting0"),
+      "name": tr("setting_antiMouldyBlowTimeSetting0"),
+      "value1": "SETTING_ENUM_0",
+      "value": 0
+    },
+    {
+      "label": tr("setting_antiMouldyBlowTimeSetting1"),
+      "name": tr("setting_antiMouldyBlowTimeSetting1"),
+      "value1": "SETTING_ENUM_1",
+      "value": 1
+    },
+    {
+      "label": tr("setting_antiMouldyBlowTimeSetting2"),
+      "name": tr("setting_antiMouldyBlowTimeSetting2"),
+      "value1": "SETTING_ENUM_2",
+      "value": 2
+    },
+    {
+      "label": tr("setting_antiMouldyBlowTimeSetting3"),
+      "name": tr("setting_antiMouldyBlowTimeSetting3"),
+      "value1": "SETTING_ENUM_3",
+      "value": 3
+    }
+  ],
+  "antiBlowDirtyCeilingSetting": [
+    {
+      "label": tr("setting_antiBlowDirtyCeilingSetting0"),
+      "name": tr("setting_antiBlowDirtyCeilingSetting0"),
+      "value1": "SETTING_ENUM_0",
+      "value": 0
+    },
+    {
+      "label": tr("setting_antiBlowDirtyCeilingSetting1"),
+      "name": tr("setting_antiBlowDirtyCeilingSetting1"),
+      "value1": "SETTING_ENUM_1",
+      "value": 1
+    }
+  ],
+  "antiCondensationSetting": [
+    {
+      "label": tr("setting_antiCondensationSetting0"),
+      "name": tr("setting_antiCondensationSetting0"),
+      "value1": "SETTING_ENUM_0",
+      "value": 0
+    },
+    {
+      "label": tr("setting_antiCondensationSetting1"),
+      "name": tr("setting_antiCondensationSetting1"),
+      "value1": "SETTING_ENUM_1",
+      "value": 1
+    }
+  ],
+  "humanSensorNomanTime": [
+    {
+      "label": tr("setting_humanSensorNomanTime0"),
+      "name": tr("setting_humanSensorNomanTime0"),
+      "value1": "SETTING_ENUM_0",
+      "value": 0
+    },
+    {
+      "label": tr("setting_humanSensorNomanTime1"),
+      "name": tr("setting_humanSensorNomanTime1"),
+      "value1": "SETTING_ENUM_1",
+      "value": 1
+    },
+    {
+      "label": tr("setting_humanSensorNomanTime2"),
+      "name": tr("setting_humanSensorNomanTime2"),
+      "value1": "SETTING_ENUM_2",
+      "value": 2
+    },
+    {
+      "label": tr("setting_humanSensorNomanTime3"),
+      "name": tr("setting_humanSensorNomanTime3"),
+      "value1": "SETTING_ENUM_3",
+      "value": 3
+    },
+    {
+      "label": tr("setting_humanSensorNomanTime4"),
+      "name": tr("setting_humanSensorNomanTime4"),
+      "value1": "SETTING_ENUM_4",
+      "value": 4
+    },
+    {
+      "label": tr("setting_humanSensorNomanTime5"),
+      "name": tr("setting_humanSensorNomanTime5"),
+      "value1": "SETTING_ENUM_5",
+      "value": 5
+    }
+  ],
+  "humanSensorDiffTemp": [
+    {
+      "label": tr("setting_humanSensorDiffTemp0"),
+      "name": tr("setting_humanSensorDiffTemp0"),
+      "value1": "SETTING_ENUM_0",
+      "value": 0
+    },
+    {
+      "label": tr("setting_humanSensorDiffTemp1"),
+      "name": tr("setting_humanSensorDiffTemp1"),
+      "value1": "SETTING_ENUM_1",
+      "value": 1
+    },
+    {
+      "label": tr("setting_humanSensorDiffTemp2"),
+      "name": tr("setting_humanSensorDiffTemp2"),
+      "value1": "SETTING_ENUM_2",
+      "value": 2
+    },
+    {
+      "label": tr("setting_humanSensorDiffTemp3"),
+      "name": tr("setting_humanSensorDiffTemp3"),
+      "value1": "SETTING_ENUM_3",
+      "value": 3
+    }
+  ],
+  "nomanStopDelayTimeSetting": [
+    {
+      "label": tr("setting_nomanStopDelayTimeSetting0"),
+      "name": tr("setting_nomanStopDelayTimeSetting0"),
+      "value1": "SETTING_ENUM_0",
+      "value": 0
+    },
+    {
+      "label": tr("setting_nomanStopDelayTimeSetting1"),
+      "name": tr("setting_nomanStopDelayTimeSetting1"),
+      "value1": "SETTING_ENUM_1",
+      "value": 1
+    },
+    {
+      "label": tr("setting_nomanStopDelayTimeSetting2"),
+      "name": tr("setting_nomanStopDelayTimeSetting2"),
+      "value1": "SETTING_ENUM_2",
+      "value": 2
+    },
+    {
+      "label": tr("setting_nomanStopDelayTimeSetting3"),
+      "name": tr("setting_nomanStopDelayTimeSetting3"),
+      "value1": "SETTING_ENUM_3",
+      "value": 3
+    },
+    {
+      "label": tr("setting_nomanStopDelayTimeSetting4"),
+      "name": tr("setting_nomanStopDelayTimeSetting4"),
+      "value1": "SETTING_ENUM_4",
+      "value": 4
+    },
+    {
+      "label": tr("setting_nomanStopDelayTimeSetting5"),
+      "name": tr("setting_nomanStopDelayTimeSetting5"),
+      "value1": "SETTING_ENUM_5",
+      "value": 5
+    }
+  ],
+  "coolingMpcLevel": [
+    {
+      "label": tr("setting_coolingMpcLevel0"),
+      "name": tr("setting_coolingMpcLevel0"),
+      "value1": "SETTING_ENUM_0",
+      "value": 0
+    },
+    {
+      "label": tr("setting_coolingMpcLevel1"),
+      "name": tr("setting_coolingMpcLevel1"),
+      "value1": "SETTING_ENUM_1",
+      "value": 1
+    },
+    {
+      "label": tr("setting_coolingMpcLevel2"),
+      "name": tr("setting_coolingMpcLevel2"),
+      "value1": "SETTING_ENUM_2",
+      "value": 2
+    }
+  ],
+  "heatingMpcLevel": [
+    {
+      "label": tr("setting_heatingMpcLevel0"),
+      "name": tr("setting_heatingMpcLevel0"),
+      "value1": "SETTING_ENUM_0",
+      "value": 0
+    },
+    {
+      "label": tr("setting_heatingMpcLevel1"),
+      "name": tr("setting_heatingMpcLevel1"),
+      "value1": "SETTING_ENUM_1",
+      "value": 1
+    },
+    {
+      "label": tr("setting_heatingMpcLevel2"),
+      "name": tr("setting_heatingMpcLevel2"),
+      "value1": "SETTING_ENUM_2",
+      "value": 2
+    }
+  ],
+  "powerDownSetting": [
+    {
+      "label": tr("setting_powerDownSetting0"),
+      "name": tr("setting_powerDownSetting0"),
+      "value1": "SETTING_ENUM_0",
+      "value": 0
+    },
+    {
+      "label": tr("setting_powerDownSetting1"),
+      "name": tr("setting_powerDownSetting1"),
+      "value1": "SETTING_ENUM_1",
+      "value": 1
+    }
+  ],
+  "heatingIdleOpenningSetting": [
+    {
+      "label": tr("setting_heatingIdleOpenningSetting0"),
+      "name": tr("setting_heatingIdleOpenningSetting0"),
+      "value1": "SETTING_ENUM_0",
+      "value": 0
+    },
+    {
+      "label": tr("setting_heatingIdleOpenningSetting1"),
+      "name": tr("setting_heatingIdleOpenningSetting1"),
+      "value1": "SETTING_ENUM_1",
+      "value": 1
+    },
+    {
+      "label": tr("setting_heatingIdleOpenningSetting2"),
+      "name": tr("setting_heatingIdleOpenningSetting2"),
+      "value1": "SETTING_ENUM_2",
+      "value": 2
+    },
+    {
+      "label": tr("setting_heatingIdleOpenningSetting14"),
+      "name": tr("setting_heatingIdleOpenningSetting14"),
+      "value1": "SETTING_ENUM_14",
+      "value": 14
+    }
+  ],
+  "fieldCorrectionFactor": [
+    {
+      "label": tr("setting_fieldCorrectionFactor0"),
+      "name": tr("setting_fieldCorrectionFactor0"),
+      "value1": "SETTING_ENUM_0",
+      "value": 0
+    },
+    {
+      "label": tr("setting_fieldCorrectionFactor1"),
+      "name": tr("setting_fieldCorrectionFactor1"),
+      "value1": "SETTING_ENUM_1",
+      "value": 1
+    },
+    {
+      "label": tr("setting_fieldCorrectionFactor2"),
+      "name": tr("setting_fieldCorrectionFactor2"),
+      "value1": "SETTING_ENUM_2",
+      "value": 2
+    },
+    {
+      "label": tr("setting_fieldCorrectionFactor3"),
+      "name": tr("setting_fieldCorrectionFactor3"),
+      "value1": "SETTING_ENUM_3",
+      "value": 3
+    },
+    {
+      "label": tr("setting_fieldCorrectionFactor4"),
+      "name": tr("setting_fieldCorrectionFactor4"),
+      "value1": "SETTING_ENUM_4",
+      "value": 4
+    },
+    {
+      "label": tr("setting_fieldCorrectionFactor5"),
+      "name": tr("setting_fieldCorrectionFactor5"),
+      "value1": "SETTING_ENUM_5",
+      "value": 5
+    },
+    {
+      "label": tr("setting_fieldCorrectionFactor6"),
+      "name": tr("setting_fieldCorrectionFactor6"),
+      "value1": "SETTING_ENUM_6",
+      "value": 6
+    }
+  ],
+  "diffPressureStartToEnd": [
+    {
+      "label": tr("setting_diffPressureStartToEnd0"),
+      "name": tr("setting_diffPressureStartToEnd0"),
+      "value1": "SETTING_ENUM_0",
+      "value": 0
+    },
+    {
+      "label": tr("setting_diffPressureStartToEnd1"),
+      "name": tr("setting_diffPressureStartToEnd1"),
+      "value1": "SETTING_ENUM_0",
+      "value": 1
+    },
+    {
+      "label": tr("setting_diffPressureStartToEnd2"),
+      "name": tr("setting_diffPressureStartToEnd2"),
+      "value1": "SETTING_ENUM_0",
+      "value": 2
+    },
+    {
+      "label": tr("setting_diffPressureStartToEnd3"),
+      "name": tr("setting_diffPressureStartToEnd3"),
+      "value1": "SETTING_ENUM_0",
+      "value": 3
+    },
+    {
+      "label": tr("setting_diffPressureStartToEnd4"),
+      "name": tr("setting_diffPressureStartToEnd4"),
+      "value1": "SETTING_ENUM_0",
+      "value": 4
+    },
+    {
+      "label": tr("setting_diffPressureStartToEnd5"),
+      "name": tr("setting_diffPressureStartToEnd5"),
+      "value1": "SETTING_ENUM_0",
+      "value": 5
+    },
+    {
+      "label": tr("setting_diffPressureStartToEnd6"),
+      "name": tr("setting_diffPressureStartToEnd6"),
+      "value1": "SETTING_ENUM_0",
+      "value": 6
+    },
+    {
+      "label": tr("setting_diffPressureStartToEnd7"),
+      "name": tr("setting_diffPressureStartToEnd7"),
+      "value1": "SETTING_ENUM_0",
+      "value": 7
+    },
+    {
+      "label": tr("setting_diffPressureStartToEnd8"),
+      "name": tr("setting_diffPressureStartToEnd8"),
+      "value1": "SETTING_ENUM_0",
+      "value": 8
+    },
+    {
+      "label": tr("setting_diffPressureStartToEnd9"),
+      "name": tr("setting_diffPressureStartToEnd9"),
+      "value1": "SETTING_ENUM_0",
+      "value": 9
+    },
+    {
+      "label": tr("setting_diffPressureStartToEnd10"),
+      "name": tr("setting_diffPressureStartToEnd10"),
+      "value1": "SETTING_ENUM_0",
+      "value": 10
+    },
+    {
+      "label": tr("setting_diffPressureStartToEnd11"),
+      "name": tr("setting_diffPressureStartToEnd11"),
+      "value1": "SETTING_ENUM_0",
+      "value": 11
+    },
+    {
+      "label": tr("setting_diffPressureStartToEnd12"),
+      "name": tr("setting_diffPressureStartToEnd12"),
+      "value1": "SETTING_ENUM_0",
+      "value": 12
+    },
+    {
+      "label": tr("setting_diffPressureStartToEnd13"),
+      "name": tr("setting_diffPressureStartToEnd13"),
+      "value1": "SETTING_ENUM_0",
+      "value": 13
+    },
+    {
+      "label": tr("setting_diffPressureStartToEnd14"),
+      "name": tr("setting_diffPressureStartToEnd14"),
+      "value1": "SETTING_ENUM_0",
+      "value": 14
+    },
+    {
+      "label": tr("setting_diffPressureStartToEnd15"),
+      "name": tr("setting_diffPressureStartToEnd15"),
+      "value1": "SETTING_ENUM_0",
+      "value": 15
+    },
+    {
+      "label": tr("setting_diffPressureStartToEnd16"),
+      "name": tr("setting_diffPressureStartToEnd16"),
+      "value1": "SETTING_ENUM_0",
+      "value": 16
+    },
+    {
+      "label": tr("setting_diffPressureStartToEnd17"),
+      "name": tr("setting_diffPressureStartToEnd17"),
+      "value1": "SETTING_ENUM_0",
+      "value": 17
+    },
+    {
+      "label": tr("setting_diffPressureStartToEnd18"),
+      "name": tr("setting_diffPressureStartToEnd18"),
+      "value1": "SETTING_ENUM_0",
+      "value": 18
+    },
+    {
+      "label": tr("setting_diffPressureStartToEnd19"),
+      "name": tr("setting_diffPressureStartToEnd19"),
+      "value1": "SETTING_ENUM_0",
+      "value": 19
+    }
+  ],
+  "openDegreeOfOilReturnSet": generateData()
+};
+
+List<Map<String, dynamic>> generateData() {
+  List<Map<String, dynamic>> data = [];
+
+  for (int i = 0; i < 50; i++) {
+    data.add({
+      "label": "$i",
+      "name": "$i",
+      "value1": "$i",
+      "value": i,
+    });
+  }
+
+  return data;
+}

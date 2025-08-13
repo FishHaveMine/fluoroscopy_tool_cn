@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="80px" height="80px" viewBox="0 0 80 80" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>unlock remote</title>
+    <g id="页面-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="集控-二设控制" transform="translate(-456.000000, -994.000000)">
+            <g id="unlock-remote" transform="translate(456.000000, 994.000000)">
+                <rect id="矩形备份-15" fill="#FFFFFF" x="0" y="0" width="80" height="80" rx="40"></rect>
+                <path d="M55,70.5 L40.5,70.5 C39.3954305,70.5 38.5,69.6045695 38.5,68.5 L38.5,18 C38.5,16.8954305 39.3954305,16 40.5,16 L64,16 C65.1045695,16 66,16.8954305 66,18 L66,49.5" id="路径备份" stroke="#0080FF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" transform="translate(52.250000, 43.250000) scale(-1, 1) translate(-52.250000, -43.250000) "></path>
+                <rect id="矩形备份-7" stroke="#0080FF" stroke-width="3" x="45.9166667" y="22.6851852" width="12.1666667" height="9.44444444" rx="2"></rect>
+                <g id="编组-2备份-2" transform="translate(13.000000, 40.500000)" stroke="#0080FF" stroke-width="3">
+                    <rect id="矩形" x="8.5" y="16" width="23" height="14" rx="2"></rect>
+                    <path d="M0,12 L0,7 C-4.73447626e-16,3.13400675 3.13400675,7.10171439e-16 7,0 C10.8659932,-7.10171439e-16 14,3.13400675 14,7 L14,12 L14,12" id="路径-4" stroke-linecap="round"></path>
+                    <line x1="20" y1="20.5" x2="20" y2="25.5" id="路径-5" stroke-linecap="round"></line>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

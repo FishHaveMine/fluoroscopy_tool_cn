@@ -1,0 +1,20 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- 创建一个圆形的背景 -->
+    <item>
+        <shape android:shape="oval">
+            <solid android:color="#FFFFFF" /> <!-- 这是圆形的背景颜色，可以根据需要调整 -->
+        </shape>
+    </item>
+
+    <!-- 你的 icon 图片 -->
+    <item>
+        <bitmap
+            android:src="@drawable/splashs"
+        android:gravity="center"
+        android:antialias="true"
+        android:filter="true"
+        android:tileMode="disabled" />
+    </item>
+
+</layer-list>
