@@ -38,7 +38,7 @@ dependencies:
   flutter_easy_permission: ^1.1.2
   flutter_screenutil: ^5.7.0
   easy_localization:
-    path: /Users/hanlf2/Desktop/midea/applib/easy_localization-3.0.1
+    path: ./packages/easy_localization-3.0.1 
   roundcheckbox: ^2.0.5
   flutter_easyloading: ^3.0.5
   empty_widget: ^0.0.5
