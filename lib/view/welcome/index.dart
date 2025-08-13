@@ -210,44 +210,44 @@ class _welcomePageState extends State<welcomePage> {
                           },
                         )
                       : Container(
-                          width: 80,
-                          height: 150,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              IconTextButton(
-                                icon: Icons.import_export_sharp,
-                                text: 'USB测试',
-                                onPressed: () {
-                                  // _test();
-                                  EmailInputDialog.show(
-                                    context,
-                                    onConfirm: (email) {
-                                      downlown(email);
-                                    },
-                                  );
-                                },
-                              ),
-                              // SizedBox(
-                              //   height: 15,
-                              // ),
-                              // IconTextButton(
-                              //   icon: Icons.import_export_sharp,
-                              //   text: 'USB测试2',
-                              //   onPressed: () {
-                              //     _test2();
-                              //     // EmailInputDialog.show(
-                              //     //   context,
-                              //     //   onConfirm: (email) {
-                              //     //     downlown(email);
-                              //     //   },
-                              //     // );
-                              //   },
-                              // )
-                            ],
+                          // width: 80,
+                          // height: 150,
+                          // child: Column(
+                          //   mainAxisAlignment: MainAxisAlignment.end,
+                          //   crossAxisAlignment: CrossAxisAlignment.end,
+                          //   children: [
+                          //     IconTextButton(
+                          //       icon: Icons.import_export_sharp,
+                          //       text: 'USB测试',
+                          //       onPressed: () {
+                          //         // _test();
+                          //         EmailInputDialog.show(
+                          //           context,
+                          //           onConfirm: (email) {
+                          //             downlown(email);
+                          //           },
+                          //         );
+                          //       },
+                          //     ),
+                          //     // SizedBox(
+                          //     //   height: 15,
+                          //     // ),
+                          //     // IconTextButton(
+                          //     //   icon: Icons.import_export_sharp,
+                          //     //   text: 'USB测试2',
+                          //     //   onPressed: () {
+                          //     //     _test2();
+                          //     //     // EmailInputDialog.show(
+                          //     //     //   context,
+                          //     //     //   onConfirm: (email) {
+                          //     //     //     downlown(email);
+                          //     //     //   },
+                          //     //     // );
+                          //     //   },
+                          //     // )
+                          //   ],
+                          // ),
                           ),
-                        ),
                   bottomNavigationBar: BottomNavigationBar(
                     selectedItemColor: Theme.of(context).colorScheme.primary,
                     currentIndex: _currentIndex,
