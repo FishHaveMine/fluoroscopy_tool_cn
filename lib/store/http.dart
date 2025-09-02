@@ -7,6 +7,17 @@ import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart'; // 示例：使用本地存储
 
 class MideaApi {
+  static const env = String.fromEnvironment('ENV', defaultValue: 'dev');
+  static final Dio _dioWebus = Dio(
+    BaseOptions(
+        baseUrl: env == 'dev'
+            ? 'https://us-test.mideaibp.com/'
+            : 'https://us.ibuildinghvac.com/api/apps-device-cloud/v1/',
+        connectTimeout: Duration(seconds: 5),
+        receiveTimeout: Duration(seconds: 5),
+        headers: {'language': 'zh-CN'}),
+  );
+
   static final Dio _dioWeb = Dio(
     BaseOptions(
       baseUrl: 'https://$apiHost/api/mibp-basic-ota/v1/',
@@ -25,6 +36,7 @@ class MideaApi {
 
   // 初始化（建议在应用启动时调用）
   static Future<void> init() async {
+    print(apiHost);
     // 添加请求拦截器（可在此处获取动态令牌，如从本地存储）
     _dio.interceptors.add(
       InterceptorsWrapper(
@@ -81,7 +93,7 @@ class MideaApi {
 
             // 处理未登录错误
             if (errorCode == 1001) {
-              tologout(); // 调用登出方法
+              // tologout(); // 调用登出方法
               return handler.reject(DioError(
                 requestOptions: response.requestOptions,
                 error: '未登录: $errorMsg',
@@ -297,11 +309,44 @@ class MideaApi {
     return response.data;
   }
 
+  // 水机 - 查询水机串口记录
+  static Future<Map<String, dynamic>> getWaterSerialPortRecordList(
+      Map<String, dynamic> data) async {
+    final response = await _dio
+        .post('/professionalTools/getWaterSerialPortRecordList', data: data);
+    return response.data;
+  }
+
+  // 水机 - 上传水机串口记录
+  static Future<Map<String, dynamic>> uploadWaterSerialPortRecord(
+      Map<String, dynamic> data) async {
+    final response = await _dio
+        .post('/professionalTools/uploadWaterSerialPortRecord', data: data);
+    return response.data;
+  }
+
   // 水机 - 查询水机设备状态
   static Future<Map<String, dynamic>> queryWaterMachineStatus(
       Map<String, dynamic> data) async {
     final response = await _dio
         .post('/professionalTools/queryWaterMachineStatus', data: data);
+    return response.data;
+  }
+
+  // 水机 - 查询水机设备状态
+  static Future<Map<String, dynamic>> queryWaterMachineStatusUs(
+      Map<String, dynamic> data) async {
+    print('queryWaterMachineStatusUs:' + _dioWebus.options.baseUrl);
+    final response = await _dioWebus
+        .post('/professionalTools/queryWaterMachineStatus', data: data);
+    return response.data;
+  }
+
+  // 水机 - 查询水机设备状态上报
+  static Future<Map<String, dynamic>> saveQueryRecord(
+      Map<String, dynamic> data) async {
+    final response =
+        await _dio.post('/professionalTools/saveQueryRecord', data: data);
     return response.data;
   }
 

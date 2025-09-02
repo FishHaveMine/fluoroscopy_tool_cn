@@ -256,18 +256,20 @@ class _localDeviceState extends State<localDevice> {
                   image: DecorationImage(
                       image: AssetImage('public/images/devicePageBg.png'),
                       fit: BoxFit.fill)),
-              child: Column(
-                key: ValueKey(
-                    'localMain_${_deviceInfoController.updateTime.value}'),
-                children: [
-                  const deviceVersion(),
-                  deviceInfoPage(onStart: () {
-                    intList();
-                  }),
-                  publicFunctionList(),
-                  const otaCard(),
-                  const cardFunList()
-                ],
+              child: SingleChildScrollView(
+                child: Column(
+                  key: ValueKey(
+                      'localMain_${_deviceInfoController.updateTime.value}'),
+                  children: [
+                    const deviceVersion(),
+                    deviceInfoPage(onStart: () {
+                      intList();
+                    }),
+                    publicFunctionList(),
+                    const otaCard(),
+                    const cardFunList()
+                  ],
+                ),
               ),
             ));
   }

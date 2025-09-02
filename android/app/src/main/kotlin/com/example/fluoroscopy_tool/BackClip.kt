@@ -48,7 +48,7 @@ class BackClip (private val channel: MethodChannel) : MethodChannel.MethodCallHa
 
         if (call.method == "TestServiceob2") {
             try {
-                TestServiceob.testEle();
+                // TestServiceob.testEle();
 
                 val js = JSONObject()
                 js.put("errorCode", 1000);
@@ -82,73 +82,6 @@ class BackClip (private val channel: MethodChannel) : MethodChannel.MethodCallHa
             );
         }
 
-
-         if (call.method == "getHistoryDataExcel") {
-            HttpUtilContainer.executor.execute(
-                Runnable {
-                    try {
-
-                        println("getHistoryDataExcel ------------------------------------------------------ start")
-                        val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
-                        val fileName = "excel_$timestamp.xlsx"
-                        println("getHistoryDataExcel $fileName")
-                        var back = CacheFile.getHistoryData();
-                        val decodedBytes = Base64.decode(back.data, Base64.DEFAULT)
-
-                        val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-                        val file = File(downloadsDir, fileName)
-
-                        val outputStream = FileOutputStream(file)
-                        outputStream.write(decodedBytes)
-                        outputStream.close()
-                        println("getHistoryDataExcel --------------------- ${file.path} ------------------------------ end")
-                        println("getHistoryDataExcel --------------------- ${file.absolutePath} ------------------------------ end")
-                        val js = JSONObject()
-                        js.put("errorCode", 200);
-                        js.put("data", file.path)
-                        val json: String = gson.toJson(js)
-                        result.success(json)
-//                        CoroutineScope(Dispatchers.Main).launch {
-
-//                            try {
-//                                val sendMailWithAttachmentresult = MailSender.sendMailWithAttachment(
-//                                    senderEmail = "lifeng7032025@163.com",
-//                                    senderPassword = "XGcWWi5u4vajh9aF",
-//                                    recipientEmail = "hanlf2@midea.com",
-//                                    subject = "自动发送文件",
-//                                    body = "请查收附件。",
-//                                    file =  File(downloadsDir, fileName)
-//                                )
-//                                println("sendMailWithAttachment $sendMailWithAttachmentresult")
-//                                val js = JSONObject()
-//                                js.put("errorCode", 200);
-//                                js.put("data", fileName);
-//
-//                                val json: String = gson.toJson(back)
-//                                result.success(json)
-//                            }  catch (e: Exception) {
-//                                println("sendMailWithAttachment $e")
-//                                val js = JSONObject()
-//                                js.put("errorCode", 200);
-//                                js.put("data", fileName);
-//
-//                                val json: String = gson.toJson(back)
-//                                result.success(json)
-//                            }
-//                        }
-
-
-                    } catch (e: Exception) {
-                        println("getHistoryDataExcel error $e")
-                        val js = JSONObject()
-                        js.put("errorMsg", "getHistoryDataExcel error $e");
-                        js.put("errorCode", 1000);
-                        js.put("data", intArrayOf());
-                        result.success(js)
-                    }
-                }
-            );
-        }
 
 
 

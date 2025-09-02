@@ -7,26 +7,26 @@ import cn.hutool.json.JSONObject
 import com.alibaba.fastjson.JSON
 import com.google.gson.Gson
 import com.mideaibp.agent.container.HttpUtilContainer
-import com.mideaibp.apps.model.dto.MonitorData
 import com.mideaibp.apps.service.ApplicationService
 import com.mideaibp.apps.service.waterMachine.ConnectionService
+import com.mideaibp.apps.service.waterMachine.DeviceCheckService
 import com.mideaibp.apps.service.waterMachine.DeviceUnlockService
 import com.mideaibp.apps.service.waterMachine.constant.WaterDeviceTypeEnum
 import com.mideaibp.apps.service.waterMachine.dto.CentrifugalChiller
+import com.mideaibp.apps.service.waterMachine.dto.DeviceCheckQuery
 import com.mideaibp.apps.service.waterMachine.dto.GenerateCodeRequest
-import com.mideaibp.apps.service.waterMachine.dto.MagneticLevitationChiller
+import com.mideaibp.apps.service.waterMachine.dto.SerialPortDataQueue
 import com.mideaibp.apps.service.waterMachine.dto.WaterCooledChiller
 import com.mideaibp.apps.service.waterMachine.dto.WaterMachineDTO
-import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
-import java.util.Calendar
-import kotlin.random.Random
 
 class waterpumbBasicHandler(flutterEngine: BinaryMessenger, private val channel: MethodChannel) : MethodChannel.MethodCallHandler {
     var DeviceUnlock =  DeviceUnlockService.getInstance();
     var Connection =  ConnectionService.getInstance();
+
+    var DeviceCheckServiceConnection =  DeviceCheckService.getInstance();
     val gson: Gson = Gson()
     init {
         channel.setMethodCallHandler(this)
@@ -44,10 +44,13 @@ class waterpumbBasicHandler(flutterEngine: BinaryMessenger, private val channel:
             "getWaterDeviceTypeEnum" -> getWaterDeviceTypeEnum(call,result)
             "sendPassword" -> sendPassword(call,result)
             "toOffLineToGenCode" -> offLineToGenCodefun(call,result)
+            "checkDevice" -> checkDevice(call,result)
+            "setStop" -> setStop(call,result)
+            "getSentCommands" -> getSentCommands(call,result)
         }
     }
     private fun gettypebyName( devicetype:String): WaterDeviceTypeEnum {
-        var enumObj:WaterDeviceTypeEnum  = WaterDeviceTypeEnum.CENTRIFUGAL_CHILLER;
+        var enumObj:WaterDeviceTypeEnum = WaterDeviceTypeEnum.CENTRIFUGAL_CHILLER;
         var back = WaterDeviceTypeEnum.values()
         back.forEach { file ->
             if (file.cn == devicetype || file.en == devicetype ) {
@@ -935,6 +938,126 @@ class waterpumbBasicHandler(flutterEngine: BinaryMessenger, private val channel:
             }
         );
     }
+
+
+    private fun getSentCommands(call: MethodCall, result: MethodChannel.Result) {
+        HttpUtilContainer.executor.execute(
+            Runnable {
+                try{
+                    var back = SerialPortDataQueue.getInstance().getTotalCommands();
+                    val json: String = gson.toJson(back)
+                    result.success(json)
+                } catch (e: Exception) {
+                    println("offLineToGenCode: $e");
+                    val js = JSONObject()
+                    js.put("errorCode", 1000);
+                    js.put("data", intArrayOf());
+                    result.success(js)
+                }
+            }
+        );
+    }
+
+
+
+
+
+
+
+
+    private fun checkDevice(call: MethodCall, result: MethodChannel.Result) {
+        val debugModel = call.argument<String>("debugModel")
+        val baudRate = call.argument<String>("baudRate")
+        val parity = call.argument<String>("parity")
+        val stopBit = call.argument<String>("stopBit")
+        val address = call.argument<String>("address")
+        val readstart = call.argument<String>("readstart")
+        val readlength = call.argument<String>("readlength")
+        HttpUtilContainer.executor.execute(
+            Runnable {
+                try{
+
+                    var enumObj: WaterDeviceTypeEnum? = if (debugModel == "selfSettingCheck") {
+                        null
+                    } else {
+                        debugModel?.let { gettypebyName(it) }
+                    }
+                    println(debugModel);
+                    println(enumObj);
+                    var device: DeviceCheckQuery = DeviceCheckQuery();
+
+                    device.en = (enumObj?.en ?: debugModel).toString() //设备类型
+                    device.baudRate =  baudRate?.toInt() // 波特率
+                    device.stopBits =  stopBit?.toInt() //停止位
+                    device.parity = when (parity) {
+                        "None" -> 0
+                        "Odd" -> 1  // 假设 "Odd" 对应 1（奇校验）
+                        "Even" -> 2 // 假设 "Even" 对应 2（偶校验）
+                        else -> 0   // 默认无校验（根据需求调整默认值）
+                    }
+                    device.dataBits =  8
+                    if (address != null) {
+                        device.slavedId = address.toInt() // 从站地址
+                    } //停止位
+                    if (enumObj != null) {
+                        device.addressList = enumObj.addressList
+                    } else {
+                        // 解析 readstart 和 readlength 为整数（处理可能的格式错误）
+                        val start = readstart?.toIntOrNull() ?: 0 // 解析失败默认从 0 开始
+                        val length = readlength?.toIntOrNull() ?: 0 // 解析失败默认长度为 0
+
+                        // 生成从 start 开始，共 length 个连续地址的数组
+                        device.addressList = if (length > 0) {
+                            (start until start + length).toList() // 例如：start=10, length=3 → [10,11,12]
+                        } else {
+                            emptyList() // 长度为 0 时返回空列表
+                        }
+                    }
+
+                    println(device);
+                    var back = DeviceCheckServiceConnection.checkDevice(device)
+                    val json: String = gson.toJson(back)
+                    result.success(json)
+                } catch (e: Exception) {
+                    println("offLineToGenCode: $e");
+                    val js = JSONObject()
+                    js.put("errorCode", 1000);
+                    js.put("data", intArrayOf());
+                    result.success(js)
+                }
+            }
+        );
+
+
+    }
+
+
+
+    private fun setStop(call: MethodCall, result: MethodChannel.Result) {
+
+
+
+        HttpUtilContainer.executor.execute(
+            Runnable {
+                try{
+                    var back = DeviceCheckServiceConnection.setStop()
+                    val json: String = gson.toJson(back)
+                    result.success(json)
+                } catch (e: Exception) {
+                    println("offLineToGenCode: $e");
+                    val js = JSONObject()
+                    js.put("errorCode", 1000);
+                    js.put("data", intArrayOf());
+                    result.success(js)
+                }
+            }
+        );
+
+
+    }
+
+
+
 
 
 

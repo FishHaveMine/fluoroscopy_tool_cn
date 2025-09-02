@@ -42,7 +42,6 @@ class _scanPageState extends State<scanPage>
           return;
         }
         print(call.arguments);
-        _controller.dispose(); // 释放动画控制器资源
         methodChannel.setMethodCallHandler(null);
         Get.back(result: call.arguments);
       }
@@ -51,7 +50,9 @@ class _scanPageState extends State<scanPage>
 
   @override
   void dispose() {
-    _controller.dispose(); // 释放动画控制器资源
+    try {
+      _controller.dispose(); // 释放动画控制器资源
+    } catch (e) {}
     methodChannel.setMethodCallHandler(null);
     super.dispose();
   }

@@ -65,6 +65,7 @@ class DeviceGatewayController extends GetxController {
     "waterCooledChiller": "水冷螺杆机组",
     "airCooledChiller": "风冷螺杆机组",
     "magneticLevitationChiller": "磁悬浮机组",
+    "airCompressor": "空压机",
   };
 
   String getFormattedDisplayValue(String key) {

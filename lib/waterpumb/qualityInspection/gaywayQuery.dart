@@ -14,6 +14,8 @@ import 'package:roundcheckbox/roundcheckbox.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../compent/snBox.dart';
+
 class gaywayQueryPage extends StatefulWidget {
   gaywayQueryPage({super.key});
 
@@ -25,6 +27,7 @@ class _gaywayQueryPageState extends State<gaywayQueryPage> {
   var info;
 
   DeviceGatewayController con = Get.find();
+  bool isus = false;
   @override
   void initState() {
     super.initState();
@@ -38,8 +41,21 @@ class _gaywayQueryPageState extends State<gaywayQueryPage> {
       final prefs = await SharedPreferences.getInstance();
       var deviceSn = await prefs.getString('deviceSn');
       if (deviceSn != null) {
-        var getSearchHistories = await MideaApi.queryWaterMachineStatus(
-            {"deviceSn": "$sn", "deviceId": "$deviceSn"});
+        var getSearchHistories = null;
+        /** 内销 */
+        if (!isus) {
+          getSearchHistories = await MideaApi.queryWaterMachineStatus(
+              {"deviceSn": "$sn", "deviceId": "$deviceSn"});
+        }
+        /** 海外 */
+        if (isus) {
+          getSearchHistories = await MideaApi.queryWaterMachineStatusUs(
+              {"deviceSn": "$sn", "deviceId": "$deviceSn"});
+        }
+        print('queryWaterMachineStatus back : $getSearchHistories');
+        MideaApi.saveQueryRecord(getSearchHistories['data'])
+            .then((value) => print('saveQueryRecord back : $value'));
+
         EasyLoading.dismiss();
         if (getSearchHistories['success']) {
           con.updateFromJson(getSearchHistories['data']);
@@ -92,10 +108,131 @@ class _gaywayQueryPageState extends State<gaywayQueryPage> {
                   children: [
                     Padding(
                       padding: EdgeInsets.fromLTRB(32.w, 0, 32.w, 16.h),
-                      child: snBox(onSubmitted: (sn) {
-                        print("onSubmitted sn ------   $sn");
-                        toSearch(sn);
-                      }),
+                      child: snBox(
+                          showSubmit: true,
+                          childWidget: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                height: 40,
+                                child: Center(
+                                  child: RichText(
+                                    text: const TextSpan(
+                                      children: [
+                                        TextSpan(
+                                          text: '*',
+                                          style: TextStyle(
+                                            color: Colors.red,
+                                            fontSize: 16,
+                                          ),
+                                        ),
+                                        TextSpan(
+                                          text: '选择服务器',
+                                          style: TextStyle(
+                                            color: Color(0xFF666666),
+                                            fontSize: 16,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(
+                                width: 40,
+                              ),
+                              Row(
+                                children: [
+                                  RoundCheckBox(
+                                    isChecked: !isus,
+                                    onTap: (selected) {
+                                      setState(() {
+                                        isus = false;
+                                      });
+                                    },
+                                    size: 18,
+                                    checkedWidget: const Icon(
+                                      Icons.check,
+                                      color: Colors.white,
+                                      size: 16,
+                                    ),
+                                    checkedColor:
+                                        Theme.of(context).colorScheme.secondary,
+                                    border: Border.all(
+                                        // width: 1,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .secondary),
+                                  ),
+                                  const SizedBox(
+                                    width: 4,
+                                  ),
+                                  InkWell(
+                                    onTap: () {
+                                      setState(() {
+                                        isus = false;
+                                      });
+                                    },
+                                    child: const Text('内销',
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 14,
+                                        )),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(
+                                width: 40,
+                              ),
+                              Row(
+                                children: [
+                                  RoundCheckBox(
+                                    isChecked: isus,
+                                    onTap: (selected) {
+                                      setState(() {
+                                        isus = true;
+                                      });
+                                    },
+                                    size: 18,
+                                    checkedWidget: const Icon(
+                                      Icons.check,
+                                      color: Colors.white,
+                                      size: 16,
+                                    ),
+                                    checkedColor:
+                                        Theme.of(context).colorScheme.secondary,
+                                    border: Border.all(
+                                        // width: 1,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .secondary),
+                                  ),
+                                  const SizedBox(
+                                    width: 4,
+                                  ),
+                                  InkWell(
+                                    onTap: () {
+                                      setState(() {
+                                        isus = true;
+                                      });
+                                    },
+                                    child: const Text('外销',
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 14,
+                                        )),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          onSubmitted: (sn) {
+                            print("onSubmitted sn ------   $sn");
+                            toSearch(sn);
+                          }),
                     ),
                     Container(
                       height: 8,
@@ -116,337 +253,6 @@ class _gaywayQueryPageState extends State<gaywayQueryPage> {
                 ),
               ),
             )));
-  }
-}
-
-class snBox extends StatefulWidget {
-  final ValueChanged<String?>? onSubmitted; // 定义回调函数
-  const snBox({
-    super.key,
-    this.onSubmitted,
-  });
-
-  @override
-  State<snBox> createState() => _snBoxState();
-}
-
-class _snBoxState extends State<snBox> {
-  // 整机条码输入控制器
-  TextEditingController _barcodeController = TextEditingController();
-  // 拼接机组单选按钮状态，默认未选中
-  bool _isSplicingUnit = false;
-  // 拼接台数
-  int _splicingCount = 0;
-  String snInput = "";
-
-  final MethodChannel methodChannel = const MethodChannel('scan.data');
-
-  @override
-  void initState() {
-    super.initState();
-    snInput = "";
-    methodChannel.setMethodCallHandler((call) async {
-      if (call.method == 'data') {
-        if (call.arguments == "null") {
-          return;
-        }
-        print('setMethodCallHandler ---- ' + call.arguments);
-        snInput = call.arguments;
-        bool? isSplicingUnit = _isSplicingUnit;
-        int splicingCount = _splicingCount;
-
-        print(
-            '整机条码(${call.arguments.length})：${call.arguments}，拼接机组：$isSplicingUnit，拼接台数：$splicingCount');
-        if (call.arguments != "") {
-          _barcodeController.text =
-              processBarcode(call.arguments, isSplicingUnit, splicingCount);
-
-          print(
-              '整机条码：${processBarcode(call.arguments, isSplicingUnit, splicingCount)}');
-        }
-        // _barcodeController.text = call.arguments;
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    methodChannel.setMethodCallHandler(null);
-    super.dispose();
-  }
-
-  String processBarcode(
-      String barcode, bool isSplicingUnit, int splicingCount) {
-    // 补齐为32位
-
-    // 处理拼接机组（修改倒数第4位）
-    if (isSplicingUnit && barcode.length >= 4) {
-      print(' 处理拼接机组（修改倒数第4位）');
-      int index = barcode.length - 4;
-      String countChar =
-          splicingCount.toString().padLeft(1, '0').substring(0, 1);
-      barcode = barcode.substring(0, index) +
-          countChar +
-          barcode.substring(index + 1);
-    }
-
-    // 补齐为32位
-    if (barcode.length < 32) {
-      barcode = barcode.padRight(32, '0');
-    }
-
-    return barcode;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-        child: Column(
-      children: [
-        Column(
-          children: [
-            // 单独处理 * 为红色，其余文字为 #666666
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                SizedBox(
-                  height: 40,
-                  child: Center(
-                    child: RichText(
-                      text: const TextSpan(
-                        children: [
-                          TextSpan(
-                            text: '*',
-                            style: TextStyle(
-                              color: Colors.red,
-                              fontSize: 16,
-                            ),
-                          ),
-                          TextSpan(
-                            text: '扫描整机条码',
-                            style: TextStyle(
-                              color: Color(0xFF666666),
-                              fontSize: 16,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                Row(
-                  children: [
-                    RoundCheckBox(
-                      isChecked: _isSplicingUnit,
-                      onTap: (selected) {
-                        setState(() {
-                          _isSplicingUnit = !_isSplicingUnit;
-                        });
-                      },
-                      size: 18,
-                      checkedWidget: const Icon(
-                        Icons.check,
-                        color: Colors.white,
-                        size: 16,
-                      ),
-                      checkedColor: Theme.of(context).colorScheme.secondary,
-                      border: Border.all(
-                          // width: 1,
-                          color: Theme.of(context).colorScheme.secondary),
-                    ),
-                    const SizedBox(
-                      width: 4,
-                    ),
-                    InkWell(
-                      onTap: () {
-                        setState(() {
-                          _isSplicingUnit = !_isSplicingUnit;
-
-                          String barcode = snInput;
-                          bool? isSplicingUnit = _isSplicingUnit;
-                          int splicingCount = _splicingCount;
-
-                          print(
-                              '整机条码：$barcode，拼接机组：$isSplicingUnit，拼接台数：$splicingCount');
-                          if (barcode != "") {
-                            _barcodeController.text = processBarcode(
-                                barcode, isSplicingUnit, splicingCount);
-                          }
-                        });
-                      },
-                      child: const Text('拼接机组',
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.w500,
-                            fontSize: 14,
-                          )),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    const Text('拼接台数',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.w500,
-                          fontSize: 14,
-                        )),
-                    InkWell(
-                      onTap: () {
-                        setState(() {
-                          if (_splicingCount > 0) {
-                            _splicingCount--;
-                          }
-                          String barcode = snInput;
-                          bool? isSplicingUnit = _isSplicingUnit;
-                          int splicingCount = _splicingCount;
-
-                          print(
-                              '整机条码：$barcode，拼接机组：$isSplicingUnit，拼接台数：$splicingCount');
-                          if (barcode != "") {
-                            _barcodeController.text = processBarcode(
-                                barcode, isSplicingUnit, splicingCount);
-                          }
-                        });
-                      },
-                      child: Container(
-                        width: 32,
-                        padding: const EdgeInsets.all(8),
-                        child: const Center(
-                          child: Icon(
-                            Icons.remove,
-                            size: 14,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      width: 24,
-                      height: 24,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF7F7F7), // 对应 #F7F7F7
-                        borderRadius: BorderRadius.circular(4.8), // 圆角半径4.8px
-                      ),
-                      padding: const EdgeInsets.all(4),
-                      child: Center(
-                        child: Text(
-                          '$_splicingCount',
-                          style: const TextStyle(
-                              fontSize: 14, fontWeight: FontWeight.w700),
-                        ),
-                      ),
-                    ),
-                    InkWell(
-                      onTap: () {
-                        setState(() {
-                          if (_splicingCount < 9) _splicingCount++;
-
-                          String barcode = snInput;
-                          bool? isSplicingUnit = _isSplicingUnit;
-                          int splicingCount = _splicingCount;
-
-                          print(
-                              '整机条码：$barcode，拼接机组：$isSplicingUnit，拼接台数：$splicingCount');
-                          if (barcode != "") {
-                            _barcodeController.text = processBarcode(
-                                barcode, isSplicingUnit, splicingCount);
-                          }
-                        });
-                      },
-                      child: Container(
-                        width: 32,
-                        padding: const EdgeInsets.all(8),
-                        child: const Center(
-                          child: Icon(
-                            Icons.add,
-                            size: 14,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Container(
-              decoration: const BoxDecoration(
-                  color: Colors.white,
-                  border: Border(
-                    bottom: BorderSide(
-                      color: Color.fromRGBO(223, 223, 223, 1),
-                      width: 0.5,
-                    ),
-                  )),
-              child: Stack(
-                children: [
-                  TextField(
-                    controller: _barcodeController,
-                    decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.fromLTRB(0, 0, 0, 5),
-                        suffixStyle: TextStyle(
-                            color: Colors.black, height: 1, fontSize: 16),
-                        labelStyle: TextStyle(
-                            color: Colors.black, height: 1, fontSize: 16),
-                        counterStyle: TextStyle(
-                            color: Colors.black, height: 1, fontSize: 16),
-                        hintStyle: TextStyle(
-                            height: 1,
-                            color: Color.fromRGBO(204, 204, 204, 1),
-                            fontSize: 16),
-                        hintText: "请扫码识别"),
-                  ),
-                  Positioned(
-                      right: 0,
-                      child: InkWell(
-                        onTap: () async {
-                          var sn = await Get.to(scanPage());
-                          if (sn != null) {
-                            EasyLoading.showSuccess('扫描成功');
-                            String barcode = sn;
-                            bool? isSplicingUnit = _isSplicingUnit;
-                            int splicingCount = _splicingCount;
-                            if (sn != "" && sn != null) {
-                              _barcodeController.text = processBarcode(
-                                  barcode, isSplicingUnit, splicingCount);
-                            } else {
-                              _barcodeController.text = '';
-                            }
-
-                            snInput = barcode;
-                          } else {
-                            EasyLoading.showError('扫描失败');
-                          }
-                        },
-                        child: Image.asset(
-                          'public/images/icon/scan@3x.png',
-                          width: 36,
-                          color: const Color.fromRGBO(13, 13, 13, 0.5),
-                        ),
-                      ))
-                ],
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        Center(
-          child: SizedBox(
-            width: 160.w,
-            height: 72.h,
-            child: submitButton(
-              onClick: () {
-                widget.onSubmitted!(_barcodeController.text);
-              },
-              label: '查询',
-              isActive: true,
-            ),
-          ),
-        ),
-      ],
-    ));
   }
 }
 
@@ -543,8 +349,8 @@ class CustomTableDemo extends StatelessWidget {
   // 模拟表格数据，实际可从接口/模型取
 
   final List<Map<String, String>> tableData = const [
+    {'label': '机型', 'key': 'deviceType', 'value': ''},
     {'label': '机组类型', 'key': 'supplyType', 'value': ''},
-    {'label': '机组类型', 'key': 'deviceType', 'value': ''},
     {'label': '机头数量', 'key': 'headNum', 'value': ''},
     {'label': '是否带热回收', 'key': 'isHeatRecovery', 'value': ''},
     {'label': '是否带液位', 'key': 'isLiquid', 'value': ''},
@@ -649,7 +455,7 @@ class _HistorySearchPageState extends State<HistorySearchPage> {
           });
         }
 
-        print(_searchResults);
+        print('getWaterMachineCheckRecordList:  $getSearchHistories');
         setState(() {
           _searchResults;
         });
@@ -757,6 +563,7 @@ class _HistorySearchSelfIDPage extends State<HistorySearchSelfIDPage> {
       _searchResults = [];
       var getSearchHistories = await MideaApi.getWaterMachineCheckRecordList(
           {"deviceId": "$deviceSn"});
+      print('getSearchHistories:  $getSearchHistories');
       EasyLoading.dismiss();
       for (var element in getSearchHistories['data']) {
         _searchResults.add({

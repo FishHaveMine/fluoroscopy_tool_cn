@@ -19,6 +19,7 @@ import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:fluoroscopy_tool/compent/EmailInputDialog.dart';
+import 'package:fluoroscopy_tool/compent/file_picker.dart';
 import 'package:fluoroscopy_tool/store/globalData.dart';
 import 'package:fluoroscopy_tool/store/globalFunction.dart';
 import 'package:fluoroscopy_tool/view/cloud/index.dart';
@@ -112,82 +113,6 @@ class _welcomePageState extends State<welcomePage> {
     }
   }
 
-  downlown(email) async {
-    EasyLoading.show(status: 'loading...');
-    try {
-      final String filePath =
-          '/data/data/com.example.fluoroscopy_tool/files/Database_/dev/ttyS0/2025-08-11 10-57-43.db';
-      final File dbFile = File(filePath);
-
-      // 检查文件是否存在
-      if (!await dbFile.exists()) {
-        print('文件不存在: $filePath');
-        return false;
-      }
-
-      var uploadExcelFileback = await MideaApi.uploadExcelFile(dbFile.path);
-
-      print("getHistoryDataExcel uploadExcelFile： ${uploadExcelFileback}");
-      if (uploadExcelFileback["errorCode"] == 200) {
-        var fileurl = uploadExcelFileback["data"];
-        var sendDBAndSend = {"dbUrl": fileurl};
-        print("getHistoryDataExcel getDBAndSend send： $sendDBAndSend");
-        var getDBAndSendback = await MideaApi.getDBAndSend(sendDBAndSend);
-        print("getHistoryDataExcel getDBAndSendback $getDBAndSendback");
-
-        var send = {"email": email, "excelUrl": getDBAndSendback["data"]};
-        print("getHistoryDataExcel sendEmail send： $send");
-        var sendEmaileback = await MideaApi.sendEmail(send);
-        print("getHistoryDataExcel sendEmaileback $sendEmaileback");
-        //继续下一步  --- 发送到邮箱
-        EasyLoading.showSuccess(
-            tr("menu.export") + tr("unlockhistory.unlocksuccess"));
-      } else {
-        EasyLoading.showSuccess(
-            tr("menu.export") + tr("unlockhistory.unlockerror"));
-      }
-    } catch (e) {}
-    return;
-    try {
-      var historyback =
-          await _selfplatform.invokeMethod('getHistoryDataExcel', {});
-      var historydata = jsonDecode(historyback);
-      print("getHistoryDataExcel historydata： $historydata");
-      EasyLoading.dismiss();
-      if (historydata['errorCode'] != 200) {
-        EasyLoading.showSuccess(
-            tr("menu.export") + tr("unlockhistory.unlockerror"));
-        //返回的是 file.absolutePath 弹框输入邮箱并发送
-        return;
-      } else {
-        var uploadExcelFileback =
-            await MideaApi.uploadExcelFile(historydata["data"]);
-
-        print("getHistoryDataExcel uploadExcelFile： ${uploadExcelFileback}");
-        if (uploadExcelFileback["errorCode"] == 200) {
-          var fileurl = uploadExcelFileback["data"];
-          var send = {"email": email, "excelUrl": fileurl};
-          print("getHistoryDataExcel send： $send");
-          var sendEmaileback = await MideaApi.sendEmail(send);
-          print("getHistoryDataExcel sendEmaileback $sendEmaileback");
-          //继续下一步  --- 发送到邮箱
-          EasyLoading.showSuccess(
-              tr("menu.export") + tr("unlockhistory.unlocksuccess"));
-        } else {
-          EasyLoading.showSuccess(
-              tr("menu.export") + tr("unlockhistory.unlockerror"));
-        }
-
-        // await Future.delayed(const Duration(seconds: 2), () {
-        //   print('One second has passed.'); // Prints after 1 second.
-        // });
-      }
-    } catch (e) {
-      print("getHistoryDataExcel error $e");
-      EasyLoading.dismiss();
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -210,44 +135,22 @@ class _welcomePageState extends State<welcomePage> {
                           },
                         )
                       : Container(
-                          // width: 80,
-                          // height: 150,
+                          width: 80,
+                          height: 150,
                           // child: Column(
                           //   mainAxisAlignment: MainAxisAlignment.end,
                           //   crossAxisAlignment: CrossAxisAlignment.end,
                           //   children: [
                           //     IconTextButton(
                           //       icon: Icons.import_export_sharp,
-                          //       text: 'USB测试',
+                          //       text: '数据导出',
                           //       onPressed: () {
-                          //         // _test();
-                          //         EmailInputDialog.show(
-                          //           context,
-                          //           onConfirm: (email) {
-                          //             downlown(email);
-                          //           },
-                          //         );
+                          //         getDBFile(context);
                           //       },
                           //     ),
-                          //     // SizedBox(
-                          //     //   height: 15,
-                          //     // ),
-                          //     // IconTextButton(
-                          //     //   icon: Icons.import_export_sharp,
-                          //     //   text: 'USB测试2',
-                          //     //   onPressed: () {
-                          //     //     _test2();
-                          //     //     // EmailInputDialog.show(
-                          //     //     //   context,
-                          //     //     //   onConfirm: (email) {
-                          //     //     //     downlown(email);
-                          //     //     //   },
-                          //     //     // );
-                          //     //   },
-                          //     // )
                           //   ],
                           // ),
-                          ),
+                        ),
                   bottomNavigationBar: BottomNavigationBar(
                     selectedItemColor: Theme.of(context).colorScheme.primary,
                     currentIndex: _currentIndex,

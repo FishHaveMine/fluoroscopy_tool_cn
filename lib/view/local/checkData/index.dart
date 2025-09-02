@@ -561,39 +561,7 @@ class _tablePageState extends State<tablePage> {
   downlown(email) async {
     EasyLoading.show(status: 'loading...');
     try {
-      var historyback =
-          await _selfplatform.invokeMethod('getHistoryDataExcel', {});
-      var historydata = jsonDecode(historyback);
-      print("getHistoryDataExcel historydata： $historydata");
       EasyLoading.dismiss();
-      if (historydata['errorCode'] != 200) {
-        EasyLoading.showSuccess(
-            tr("menu.export") + tr("unlockhistory.unlockerror"));
-        //返回的是 file.absolutePath 弹框输入邮箱并发送
-        return;
-      } else {
-        var uploadExcelFileback =
-            await MideaApi.uploadExcelFile(historydata["data"]);
-
-        print("getHistoryDataExcel uploadExcelFile： ${uploadExcelFileback}");
-        if (uploadExcelFileback["errorCode"] == 200) {
-          var fileurl = uploadExcelFileback["data"];
-          var send = {"email": email, "excelUrl": fileurl};
-          print("getHistoryDataExcel send： $send");
-          var sendEmaileback = await MideaApi.sendEmail(send);
-          print("getHistoryDataExcel sendEmaileback $sendEmaileback");
-          //继续下一步  --- 发送到邮箱
-          EasyLoading.showSuccess(
-              tr("menu.export") + tr("unlockhistory.unlocksuccess"));
-        } else {
-          EasyLoading.showSuccess(
-              tr("menu.export") + tr("unlockhistory.unlockerror"));
-        }
-
-        // await Future.delayed(const Duration(seconds: 2), () {
-        //   print('One second has passed.'); // Prints after 1 second.
-        // });
-      }
     } catch (e) {
       print("getHistoryDataExcel error $e");
       EasyLoading.dismiss();
@@ -725,90 +693,90 @@ class _tablePageState extends State<tablePage> {
                 // ),
                 const Padding(padding: EdgeInsets.fromLTRB(0, 0, 20, 0)),
 
-                CustomPopupMenu(
-                  horizontalMargin: 10.0,
-                  verticalMargin: 0.0,
-                  arrowColor: Colors.white,
-                  menuBuilder: () => ClipRRect(
-                    borderRadius: BorderRadius.circular(5),
-                    child: Container(
-                      color: Colors.white,
-                      child: IntrinsicWidth(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: menuItems
-                              .map(
-                                (item) => GestureDetector(
-                                  behavior: HitTestBehavior.translucent,
-                                  onTap: () async {
-                                    _controller.hideMenu();
-                                    if (item == menuItems[1]) {
-                                      if (_deviceInfoController
-                                              .loacalDevice.value.model !=
-                                          'V8') {
-                                        EasyLoading.showError("当前仅支持V8协议");
-                                        return;
-                                      }
-                                      bool ischeckNet = await checkNet(false);
-                                      if (ischeckNet) {
-                                        EmailInputDialog.show(
-                                          context,
-                                          onConfirm: (email) {
-                                            downlown(email);
-                                          },
-                                        );
-                                      } else {
-                                        EasyLoading.showError(
-                                            tr("netword.error"));
-                                      }
-                                    } else {
-                                      captureAndSaveTable();
-                                    }
-                                  },
-                                  child: Container(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(8, 8, 8, 0),
-                                    child: Column(
-                                      children: [
-                                        Text(
-                                          item,
-                                          style: const TextStyle(fontSize: 14),
-                                        ).tr(),
-                                        Container(
-                                          margin: const EdgeInsets.fromLTRB(
-                                              0, 8, 0, 0),
-                                          height: 1,
-                                          color: item == menuItems[1]
-                                              ? Colors.transparent
-                                              : const Color.fromRGBO(
-                                                  223, 223, 223, 1),
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              )
-                              .toList(),
-                        ),
-                      ),
-                    ),
-                  ),
-                  pressType: PressType.singleClick,
-                  controller: _controller,
-                  child: Row(
-                    children: [
-                      Image.asset(
-                        'public/images/checkData/import_export.png',
-                        width: 36.w,
-                      ),
-                      const Padding(padding: EdgeInsets.fromLTRB(5, 0, 0, 0)),
-                      Text(
-                        'table.export',
-                        style: versionValue(context),
-                      ).tr()
-                    ],
-                  ),
-                ),
+                // CustomPopupMenu(
+                //   horizontalMargin: 10.0,
+                //   verticalMargin: 0.0,
+                //   arrowColor: Colors.white,
+                //   menuBuilder: () => ClipRRect(
+                //     borderRadius: BorderRadius.circular(5),
+                //     child: Container(
+                //       color: Colors.white,
+                //       child: IntrinsicWidth(
+                //         child: Column(
+                //           crossAxisAlignment: CrossAxisAlignment.stretch,
+                //           children: menuItems
+                //               .map(
+                //                 (item) => GestureDetector(
+                //                   behavior: HitTestBehavior.translucent,
+                //                   onTap: () async {
+                //                     _controller.hideMenu();
+                //                     if (item == menuItems[1]) {
+                //                       if (_deviceInfoController
+                //                               .loacalDevice.value.model !=
+                //                           'V8') {
+                //                         EasyLoading.showError("当前仅支持V8协议");
+                //                         return;
+                //                       }
+                //                       bool ischeckNet = await checkNet(false);
+                //                       if (ischeckNet) {
+                //                         EmailInputDialog.show(
+                //                           context,
+                //                           onConfirm: (email) {
+                //                             downlown(email);
+                //                           },
+                //                         );
+                //                       } else {
+                //                         EasyLoading.showError(
+                //                             tr("netword.error"));
+                //                       }
+                //                     } else {
+                //                       captureAndSaveTable();
+                //                     }
+                //                   },
+                //                   child: Container(
+                //                     padding:
+                //                         const EdgeInsets.fromLTRB(8, 8, 8, 0),
+                //                     child: Column(
+                //                       children: [
+                //                         Text(
+                //                           item,
+                //                           style: const TextStyle(fontSize: 14),
+                //                         ).tr(),
+                //                         Container(
+                //                           margin: const EdgeInsets.fromLTRB(
+                //                               0, 8, 0, 0),
+                //                           height: 1,
+                //                           color: item == menuItems[1]
+                //                               ? Colors.transparent
+                //                               : const Color.fromRGBO(
+                //                                   223, 223, 223, 1),
+                //                         )
+                //                       ],
+                //                     ),
+                //                   ),
+                //                 ),
+                //               )
+                //               .toList(),
+                //         ),
+                //       ),
+                //     ),
+                //   ),
+                //   pressType: PressType.singleClick,
+                //   controller: _controller,
+                //   child: Row(
+                //     children: [
+                //       Image.asset(
+                //         'public/images/checkData/import_export.png',
+                //         width: 36.w,
+                //       ),
+                //       const Padding(padding: EdgeInsets.fromLTRB(5, 0, 0, 0)),
+                //       Text(
+                //         'table.export',
+                //         style: versionValue(context),
+                //       ).tr()
+                //     ],
+                //   ),
+                // ),
               ],
             )
           ],

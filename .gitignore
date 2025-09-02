@@ -4,3 +4,10 @@
 .dart_tool/
 .flutter-plugins
 .DS_Store
+android/.DS_Store
+apk/
+android/.DS_Store
+.DS_Store
+设计稿/
+log.text
+.gitignore

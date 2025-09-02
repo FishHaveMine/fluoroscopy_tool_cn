@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:get/get.dart';
 
+import 'ModbusRTU/index.dart';
 import 'deviceGatewayController.dart';
 import 'gaywayQuery.dart';
 
@@ -72,6 +73,26 @@ class _qualityInspectionPageState extends State<qualityInspectionPage> {
                       Get.to(gaywayQueryPage());
                     },
                     title: const Text('网关注册连接状态查询').tr(),
+                    trailing: Image.asset(
+                      'public/images/icon/rightP.png',
+                      height: 30.w,
+                      color: Colors.black,
+                    ),
+                  )),
+              Container(
+                  decoration: BoxDecoration(
+                      color: const Color.fromRGBO(255, 255, 255, 1),
+                      border: Border.all(
+                        color: const Color.fromRGBO(255, 255, 255, 1),
+                        width: 1,
+                      ),
+                      borderRadius: BorderRadius.circular(10)),
+                  margin: EdgeInsets.fromLTRB(0, 0, 0, 24.h),
+                  child: ListTile(
+                    onTap: () async {
+                      Get.to(modbusRTUPage());
+                    },
+                    title: const Text('ModbusRTU通讯调试工具'),
                     trailing: Image.asset(
                       'public/images/icon/rightP.png',
                       height: 30.w,

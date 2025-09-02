@@ -239,7 +239,6 @@ class _loginPageState extends State<loginPage>
         await prefs.setString(
             'permissions', jsonEncode(islogin['permissions']));
 
-        EasyLoading.showSuccess(tr('loginSuccess'));
         int timestamp = DateTime.now().millisecondsSinceEpoch;
         await prefs.setInt('logintime', timestamp);
 
@@ -251,17 +250,22 @@ class _loginPageState extends State<loginPage>
         await prefs.setString('token',
             iscss.value ? islogin['data']['ssoSession'] : islogin['data']);
         print("token : ${islogin['data']}");
-        var getUserMessage = await platform.invokeMethod('getUserMessage');
-        print("token getUserMessage: ${getUserMessage}");
-        var back = jsonDecode(getUserMessage);
-        if (back["errorCode"] != 1001) {
-          prefs.setString("useinfo", jsonEncode(back["data"]));
-        }
+        try {
+          var getUserMessage = await platform.invokeMethod('getUserMessage');
+          print("token getUserMessage: ${getUserMessage}");
+          var back = jsonDecode(getUserMessage);
+          if (back["errorCode"] != 1001) {
+            prefs.setString("useinfo", jsonEncode(back["data"]));
+          }
+        } catch (e) {}
+
+        EasyLoading.showSuccess(tr('loginSuccess'));
         return true;
       }
     } on PlatformException catch (e) {
       print("Failed to SCANNER_TRIG: '${e.message}'.");
       EasyLoading.dismiss();
+      EasyLoading.showError("Failed to SCANNER_TRIG: '${e.message}'.");
       return false;
     }
   }
@@ -440,6 +444,7 @@ class _loginPageState extends State<loginPage>
                             return;
                           }
                           bool issuccess = await tologin(context);
+                          print('tologin issuccess: $issuccess');
                           if (issuccess) {
                             // ignore: use_build_context_synchronously
                             context.read<GlobalData>().userIsLogin(true);
