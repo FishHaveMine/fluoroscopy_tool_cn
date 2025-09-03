@@ -500,7 +500,7 @@
   "deviceunlock.newtip5_error": "2.仅支持本地连接V8系统的情况下进行使用\n(当前未满足)",
   "deviceunlock.tip5": "2.仅支持本地连接的情况下进行使用",
   "deviceunlock.tip5_error": "2.仅支持本地连接的情况下进行使用\n(当前设备未连接)",
-  "deviceunlock.enter": "进入内机锁定",
+  "deviceunlock.enter": "进入本地解锁",
   "deviceunlock.entererror": "SN不一致",
   "deviceunlock.snempty": "请输入SN",
   "deviceunlock.connecd": "去连接设备",

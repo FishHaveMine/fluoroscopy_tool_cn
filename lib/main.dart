@@ -175,14 +175,6 @@ class MyAppState extends State<MyAppRe> with WidgetsBindingObserver {
   String _appVersion = 'Unknown';
   String _buildNumber = 'Unknown';
   Future<void> _fetchAppVersion() async {
-    //读取app的构建版本并缓存
-    // final packageInfo = await PackageInfo.fromPlatform();
-    // setState(() {
-    //   _appVersion = packageInfo.version; // 应用版本号
-    //   _buildNumber = packageInfo.buildNumber; //可获取构建号
-    // });
-    // externalVersion = _appVersion;
-    // internalVersion = _buildNumber;
     print(
         "_appVersion: $_appVersion  _buildNumber:$_buildNumber apiHost:$apiHost");
 

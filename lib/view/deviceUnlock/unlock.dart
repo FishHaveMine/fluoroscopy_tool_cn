@@ -50,27 +50,32 @@ class _unlockState extends State<unlock> {
       doingType = 1;
       _remainingSeconds = 30;
     });
+
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_remainingSeconds > 0) {
+        _remainingSeconds--;
+      } else {
+        if (_timer != null && _timer.isActive) _timer.cancel();
+      }
+      setState(() {
+        _remainingSeconds;
+      });
+    });
     /**
      * 定时器处理超时
      */
 
-    var unLock = await platform.invokeMethod('unLock',
-        <String, dynamic>{"sn": _deviceInfoController.loacalDevice.value.sn});
+    platform.invokeMethod('unLock', <String, dynamic>{
+      "sn": _deviceInfoController.loacalDevice.value.sn
+    }).then((value) => {_handback(value)});
+  }
+
+  _handback(unLock) {
     unLockdata = jsonDecode(unLock);
     print("unLock: ${unLockdata}");
     if (unLockdata["success"]) {
+      refresh(unLockdata);
       toolUnlock();
-      _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-        if (_remainingSeconds > 0) {
-          _remainingSeconds--;
-        } else {
-          refresh();
-          if (_timer != null && _timer.isActive) _timer.cancel();
-        }
-        setState(() {
-          _remainingSeconds;
-        });
-      });
     } else {
       setState(() {
         doingType = 2;
@@ -106,7 +111,7 @@ class _unlockState extends State<unlock> {
     }
   }
 
-  refresh() async {
+  refresh(unLockdata) async {
     try {
       if (unLockdata["success"]) {
         if (unLockdata["data"]["result"] == 1) {
