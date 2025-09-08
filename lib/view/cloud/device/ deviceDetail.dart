@@ -90,8 +90,8 @@ class _checkDataPageState extends State<deviceDetail> {
         _deviceInfoController.selectDevice.value["netModelEnum"] != null &&
             _deviceInfoController.selectDevice.value["netModelEnum"] ==
                 "MODEL_OLD_CHANGE";
-    print(
-        "netModelEnum  ${isMODEL_OLD_CHANGE}:${_deviceInfoController.selectDevice.value["netModelEnum"]}");
+    // print(
+    //     "netModelEnum  ${isMODEL_OLD_CHANGE}:${_deviceInfoController.selectDevice.value["netModelEnum"]}");
     // isMODEL_OLD_CHANGE = true;
     setState(() {
       isMODEL_OLD_CHANGE;
@@ -116,14 +116,14 @@ class _checkDataPageState extends State<deviceDetail> {
             var sysDevCheckData = await platform.invokeMethod(
                 'getDeviceHandler.sysDevCheckData', {"sysid": nid});
             var sys = jsonDecode(sysDevCheckData);
-            print('getSystemDataHandler.sysDevCheckData: $sys');
+            // print('getSystemDataHandler.sysDevCheckData: $sys');
             if (sys["success"]) {
               var sysmap = {};
               if (sys["data"]["sysData"] != null) {
-                for (var element in sys["data"]["sysData"]["properties"]) {
-                  print(
-                      'getSystemDataHandler.sysData.properties - [${element["title"]["cn"]}]: ${element}');
-                }
+                // for (var element in sys["data"]["sysData"]["properties"]) {
+                //   print(
+                //       'getSystemDataHandler.sysData.properties - [${element["title"]["cn"]}]: ${element}');
+                // }
 
                 sysmap = fixValue(sys["data"]["sysData"], "system.", nodeTr);
                 fixValue(sys["data"]["sysData"], "outdoor.", nodeTr);
@@ -131,39 +131,39 @@ class _checkDataPageState extends State<deviceDetail> {
               _deviceInfoController.setSysDevCheckData(sysmap);
 
               var outdoorList = [];
-              print(
-                  'getSystemDataHandler.outdoorList.length: ${sys["data"]["outdoorList"].length}');
+              // print(
+              //     'getSystemDataHandler.outdoorList.length: ${sys["data"]["outdoorList"].length}');
               if (sys["data"]["outdoorList"] != null) {
                 for (var element in sys["data"]["outdoorList"]) {
-                  print('getSystemDataHandler.outdoorList: $element');
+                  // print('getSystemDataHandler.outdoorList: $element');
                   outdoorList.add({}
                     ..addAll(element)
                     ..addAll(fixValue(element, "outdoor.", nodeTr)));
                 }
               }
-              print(
-                  'getSystemDataHandler.outdoorList.length:  --------- ${outdoorList.length}');
-              for (var item in outdoorList) {
-                print("item: $item");
-              }
+              // print(
+              //     'getSystemDataHandler.outdoorList.length:  --------- ${outdoorList.length}');
+              // for (var item in outdoorList) {
+              //   print("item: $item");
+              // }
               _deviceInfoController.setOutdoorList(outdoorList);
 
-              print(
-                  'getSystemDataHandler.outdoorList.length:  --------- ${outdoorList.where((number) => number["idx"] != "").toList().length}');
+              // print(
+              //     'getSystemDataHandler.outdoorList.length:  --------- ${outdoorList.where((number) => number["idx"] != "").toList().length}');
               var indoorList = [];
 
-              print(
-                  'getSystemDataHandler.indoorList.length: ${sys["data"]["indoorList"].length}');
-              if (sys["data"]["indoorList"] != null) {
-                for (var element in sys["data"]["indoorList"]) {
-                  print('getSystemDataHandler.indoorList: $element');
-                  indoorList.add({}
-                    ..addAll(element)
-                    ..addAll(fixValue(element, "indoor.", nodeTr)));
-                }
-              }
-              print(
-                  'getSystemDataHandler.indoorList.length: --------- ${indoorList.length}');
+              // print(
+              //     'getSystemDataHandler.indoorList.length: ${sys["data"]["indoorList"].length}');
+              // if (sys["data"]["indoorList"] != null) {
+              //   for (var element in sys["data"]["indoorList"]) {
+              //     print('getSystemDataHandler.indoorList: $element');
+              //     indoorList.add({}
+              //       ..addAll(element)
+              //       ..addAll(fixValue(element, "indoor.", nodeTr)));
+              //   }
+              // }
+              // print(
+              //     'getSystemDataHandler.indoorList.length: --------- ${indoorList.length}');
               _deviceInfoController.setIndoorList(indoorList);
             }
             _deviceInfoController.setNoderTr(nodeTr);
@@ -190,7 +190,7 @@ class _checkDataPageState extends State<deviceDetail> {
         var getDetailBySnSnback = await platform
             .invokeMethod('getSystemDataHandler.getDetailBySn', {"sysid": sn});
         var info = jsonDecode(getDetailBySnSnback);
-        print('getSystemDataHandler.getDetailBySn: $info');
+        // print('getSystemDataHandler.getDetailBySn: $info');
         if (info["success"]) {
           _deviceInfoController.setSelectDeviceinfo(info["data"]);
         }
@@ -201,8 +201,8 @@ class _checkDataPageState extends State<deviceDetail> {
                 'getAppFluorineMachineEnergyHandler.snJumpModule',
                 {"sysid": sn});
             var snJumpModule = jsonDecode(snJumpModuleback);
-            print(
-                "getAppFluorineMachineEnergyHandler.snJumpModule: $snJumpModule");
+            // print(
+            //     "getAppFluorineMachineEnergyHandler.snJumpModule: $snJumpModule");
 
             if (snJumpModule["success"]) {
               _deviceInfoController.setsnJumpModule(snJumpModule["data"]);
@@ -684,11 +684,11 @@ class _countODUandIDUPageState extends State<countODUandIDUPage> {
       "recoverFrequency": cloundRefreshTime.toString()
     };
     try {
-      print('getProfessionalToolsHandler.updateSimFrequency:   $send');
+      // print('getProfessionalToolsHandler.updateSimFrequency:   $send');
       var controlDebugging = await platform.invokeMethod(
           'getProfessionalToolsHandler.updateSimFrequency', send);
       var _data = jsonDecode(controlDebugging);
-      print('getProfessionalToolsHandler.updateSimFrequency:   $_data');
+      // print('getProfessionalToolsHandler.updateSimFrequency:   $_data');
       if (_data['success']) {
         EasyLoading.showSuccess('设置成功');
       } else {
