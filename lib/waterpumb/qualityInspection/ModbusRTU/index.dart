@@ -1,3 +1,4 @@
+import 'package:fluoroscopy_tool/waterpumb/qualityInspection/ModbusRTU/public/wifiList.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -62,7 +63,7 @@ class _modbusRTUPageState extends State<modbusRTUPage> {
             children: [
               InkWell(
                   onTap: () {
-                    EasyLoading.showError("功能暂未开放");
+                    Get.to(WifiScanner());
                   },
                   child: infosWidget(
                       'public/images/icon/modbusRTUPage1.png', '常规串口检测')),

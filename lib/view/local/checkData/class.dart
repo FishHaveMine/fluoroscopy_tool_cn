@@ -227,54 +227,99 @@ List localshowType = [
     "key": "System",
     "name": "table.System",
     "children": [
-      "System.masterSn",
-      "System.salveSnList",
-      "System.systemIndoorNum",
-      "System.protocol",
-      // "System.systemCapacity",
-      "System.mode",
-      "System.settingIndoorNum",
-      "System.checkIndoorNum",
-      "System.workingIndoorNum",
-      "System.isAllV8Indoor",
-      "System.linkSetting",
-      "System.indoorAvgTem",
-      "System.systemEvaTem",
-      "System.systemConTem",
-      "System.tcMax",
-      "System.teMin",
-      "System.trafficUsage",
-      "System.outdoor0Power",
-      "System.silentMode",
-      "System.powerLimit",
-      "System.mpc",
-      "System.priorModeSetting",
+      /** 历史属性 */
+      // "System.masterSn", //主机SN
+      // "System.salveSnList", // 从机SN
+      // "System.systemIndoorNum", // 系统内机台数
+      // "System.protocol", // 系统协议类型
+      // // "System.systemCapacity",
+      // "System.mode", // 运行模式
+      // "System.settingIndoorNum", // 设置内机台数
+      // "System.checkIndoorNum", // 检测内机台数
+      // "System.workingIndoorNum", // 内机运行台数
+      // "System.isAllV8Indoor", // 是否全V8内机
+      // "System.linkSetting", //  连接设置
+      // "System.indoorAvgTem", //室内机管温平均T2/T2
+      // "System.systemEvaTem", // 系统目标蒸发温度TeS
+      // "System.systemConTem", // 系统目标冷凝温度TCS
+      // "System.tcMax", // TcMax
+      // "System.teMin", // TeMin
+      // "System.trafficUsage", // 流量使用
+      // "System.outdoor0Power", // 主外机功率
+      // "System.silentMode", // 静音模式
+      // "System.powerLimit", // 限电状态
+      // "System.mpc", // MPC
+      // "System.priorModeSetting", // 模式优先设置
+
+      "System.masterSn", //主机SN
+      "System.salveSnList", // 从机SN
+      "System.systemAddress", //冷媒系统地址
+      "System.ODU", // 外机数
+      "System.settingIndoorNum", // 设置内机台数
+      "System.checkIndoorNum", // 检测内机台数
+      "System.workingIndoorNum", // 运行内机台数
+      "System.systemStartupRate", //系统开机率
+      "System.protocol", // 系统协议类型
+      "System.linkSetting", //  连接设置
+      "System.allV8Indoor", //  是否全V8内机
+      "System.systemcapacity", //  系统总能力
+      "System.indoorHorse", //内机总能力
+      "System.mode", // 运行模式
+      "System.systemStartupIndoorAvgT2", //开机室内机T2平均
+      "System.systemStartupIndoorAvgT2B", //开机室内机T2B平均
+      "System.systemEvaTem", // 系统目标蒸发温度TeS
+      "System.systemConTem", // 系统目标冷凝温度TCS
+      "System.tcMax", // TcMax
+      "System.teMin", // TeMin
+      "System.runmodeextype", // 启动类型
+      "System.priorModeSetting", // 模式优先设置
+      "System.mpc", // MPC
+      "System.silentMode", // 静音模式
+      "System.silenceModeNight", // 夜间静音模式
+      "System.timeSetting", // 夜间静音档位设置
+      "System.powerLimit", // 限电状态
+      "System.maxFrequencyLimit", //限功率状态
+      //主机4G流量用量
     ]
   },
   {
     "key": "OutdoorUnit",
     "name": "table.OutdoorUnit",
     "children": [
-      // "OutdoorUnit.address",
-      "OutdoorUnit.outdoorHorse",
-      "OutdoorUnit.frequencyLimitingState",
-      "OutdoorUnit.windSpeed1",
-      "OutdoorUnit.windSpeed2",
-      "OutdoorUnit.externalACVoltage",
-      "OutdoorUnit.primaryCurrent",
-      "OutdoorUnit.outdoorBlockageRate",
-      "OutdoorUnit.errorCode",
-      "OutdoorUnit.sysIdx",
-      "OutdoorUnit.isV6",
-      "OutdoorUnit.powerQuality",
-      "OutdoorUnit.version"
+      "OutdoorUnit.outdoorHorse", // 外机能力
+      "OutdoorUnit.frequencyLimitingState", // 限频状态
+      "OutdoorUnit.faultDiagnosisResult1", //故障诊断结果
+      "OutdoorUnit.windSpeed1", // 风速1
+      "OutdoorUnit.windSpeed2", // 风速1
+      "OutdoorUnit.windWheel1ImbalanceProbability", //风轮1不平衡概率
+      "OutdoorUnit.windWheel2ImbalanceProbability", //风轮2不平衡概率
+      "OutdoorUnit.externalACVoltage", // 交流电压
+      "OutdoorUnit.primaryCurrent", // 一次电流
+      "OutdoorUnit.outdoorBlockageRate", // 外机脏堵率
+      "OutdoorUnit.errorCode", // 当前故障
+      "OutdoorUnit.sysIdx", // 网络地址
+      "OutdoorUnit.powerQuality", // 电源质量
+      "OutdoorUnit.version", // 程序版本
+      "OutdoorUnit.heatStatusEnum", // 换热器状态
+      "OutdoorUnit.mdvLinkVoltageVersion", // MDV-Link电压版本
+      "OutdoorUnit.mdvLinkSoftwareVersion", // MDV-Link软件版本
+      "OutdoorUnit.chipModel", // 芯片型号
+      "OutdoorUnit.selfMadeMeterAcEnergy", // 交流电量
+      "OutdoorUnit.selfMadeMeterPhaseAVoltage", // A相电压
+      "OutdoorUnit.selfMadeMeterPhaseBVoltage", // B相电压
+      "OutdoorUnit.selfMadeMeterPhaseCVoltage", // C相电压
+      "OutdoorUnit.selfMadeMeterPhaseACurrent", // A相电流
+      "OutdoorUnit.selfMadeMeterPhaseBCurrent", // B相电流
+      "OutdoorUnit.selfMadeMeterPhaseCCurrent", // C相电流
+      "OutdoorUnit.selfMadeMeterDcEnergy", // 直流电量
+      "OutdoorUnit.selfMadeMeterDcVoltage", // 直流电压
+      "OutdoorUnit.selfMadeMeterDcCurrent", // 直流电流
     ]
   },
   {
     "key": "Compressor",
     "name": "table.Compressor",
     "children": [
-      // "Compressor.address",
       "Compressor.highPressure",
       "Compressor.lowPressure",
       "Compressor.highPressureSaturationTemp",
@@ -286,45 +331,57 @@ List localshowType = [
       "Compressor.compressorElectric1",
       "Compressor.compressorElectric2",
       "Compressor.compressorRunTime1",
-      "Compressor.compressorRunTime2"
+      "Compressor.compressorRunTime2",
+      "Compressor.busVoltagePeakToPeak" //母线电压峰峰值
     ]
   },
   {
     "key": "Sensor",
     "name": "table.Sensor",
     "children": [
-      // "Sensor.address",
-      "Sensor.t4Temp",
-      "Sensor.t3Temp",
-      "Sensor.t5Temp",
-      "Sensor.t6ATemp",
-      "Sensor.t6BTemp",
-      "Sensor.t8Temp",
-      "Sensor.tlTemp",
-      "Sensor.tg",
-      "Sensor.radiatorTemp1",
-      "Sensor.radiatorTemp2",
-      "Sensor.t7C1Temp",
-      "Sensor.t7C2Temp",
-      "Sensor.t71Temp",
-      "Sensor.t72Temp",
-      "Sensor.superHeatTemp"
+      "Sensor.t3Temp", // 外机换热器管温T3
+      "Sensor.t4Temp", // 环境温度T4
+      "Sensor.t5Temp", // 外机液管温度T5
+      "Sensor.t6ATemp", // 板换入口温度T6A
+      "Sensor.t6BTemp", // 板换出口温度T6B
+      "Sensor.t7C1Temp", // 压缩机1排气温度T7C1
+      "Sensor.t7C2Temp", // 压缩机2排气温度T7C2
+      "Sensor.t71Temp", // 压缩机1回气温度T71
+      "Sensor.t72Temp", // 压缩机2回气温度T72
+      "Sensor.t8Temp", // 外机换热器冷入温度T8
+      "Sensor.t9", //电控散热温度T9
+      "Sensor.tlTemp", // 外机换热器冷出温度TL
+      "Sensor.tg", // Tg
+      "Sensor.radiatorTemp1", // 外机电控散热器温度NTC1
+      "Sensor.radiatorTemp2", // 外机电控散热器温度NTC2
+      "Sensor.superHeatTemp", // 外机排气过热度
+      "Sensor.compressor1ModuleNonInductiveResistorTemperature", // 压机1模块无感电阻温度
+      "Sensor.compressor2ModuleNonInductiveResistorTemperature", //压机2模块无感电阻温度
+      "Sensor.compressor1ModuleBoardTemperature", //压机1模块板温度
+      "Sensor.compressor2ModuleBoardTemperature", //压机2模块板温度
+      "Sensor.compressor1ModuleRelativeHumidity", //压机1模块相对湿度RH1
+      "Sensor.compressor2ModuleRelativeHumidity", //压机2模块相对湿度RH2
+      "Sensor.boxHighestDewPointTemperature", //电控盒箱最高露点温度
     ]
   },
   {
     "key": "ValveBody",
     "name": "table.ValveBody",
     "children": [
-      // "ValveBody.address",
       "ValveBody.exva",
       "ValveBody.exvb",
       "ValveBody.exvc",
       "ValveBody.eevd",
+      "ValveBody.EXVE", // EXVE开度
+      "ValveBody.EXVQ", // EXVQ开度
+      "ValveBody.sv4", // SV4/SV4A
+      "ValveBody.sv4B", // SV4B
       "ValveBody.sv5",
       "ValveBody.sv6",
       "ValveBody.sv7",
       "ValveBody.sv8A",
-      "ValveBody.sv8B"
+      "ValveBody.sv8B",
+      "ValveBody.sv10", //SV10
     ]
   },
   {

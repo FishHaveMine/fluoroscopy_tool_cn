@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:ffi';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:fluoroscopy_tool/compent/bottomSelectSheet.dart';
@@ -745,66 +746,58 @@ class _settingpageState extends State<settingpage> {
                         child: ListView.builder(
                             scrollDirection: Axis.horizontal,
                             itemCount: widget.activeTap == 0 ? 5 : 4,
-                            itemBuilder: ((context, index) => widget
-                                            .activeTap ==
-                                        0 &&
-                                    index == 3
-                                ? Container()
-                                : InkWell(
-                                    onTap: () {
-                                      setState(() {
-                                        selectindex = index;
-                                      });
+                            itemBuilder: ((context, index) => InkWell(
+                                  onTap: () {
+                                    setState(() {
+                                      selectindex = index;
+                                    });
 
-                                      _clearsetting();
-                                      initNeedset(refresh: true);
-                                    },
-                                    child: SizedBox(
-                                      width: 720.w / (4),
-                                      child: Stack(
-                                        children: [
-                                          Center(
-                                            child: Text(
-                                              "parametersSetting.tye${widget.activeTap + 1}.parameters${index + 1}",
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                  fontSize: isCN ? 14 : 12,
-                                                  fontWeight:
-                                                      selectindex == index
-                                                          ? FontWeight.w800
-                                                          : FontWeight.w400,
-                                                  color: selectindex == index
-                                                      ? Colors.black
-                                                      : const Color.fromRGBO(
-                                                          13, 13, 13, 0.5)),
-                                            ).tr(),
-                                          ),
-                                          if (selectindex == index)
-                                            Positioned(
-                                                bottom: 0,
-                                                left: (720.w /
-                                                            (widget.activeTap ==
-                                                                    0
-                                                                ? 4.5
-                                                                : 4)) /
-                                                        2 -
-                                                    20.w,
-                                                child: Container(
-                                                  width: 40.w,
-                                                  height: 4,
-                                                  decoration:
-                                                      const BoxDecoration(
-                                                    color: Color.fromRGBO(
-                                                        25, 98, 255, 1),
-                                                    borderRadius:
-                                                        BorderRadius.all(
-                                                            Radius.circular(4)),
-                                                  ),
-                                                ))
-                                        ],
-                                      ),
+                                    _clearsetting();
+                                    initNeedset(refresh: true);
+                                  },
+                                  child: SizedBox(
+                                    width: 720.w / (4),
+                                    child: Stack(
+                                      children: [
+                                        Center(
+                                          child: Text(
+                                            "parametersSetting.tye${widget.activeTap + 1}.parameters${index + 1}",
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                                fontSize: isCN ? 14 : 12,
+                                                fontWeight: selectindex == index
+                                                    ? FontWeight.w800
+                                                    : FontWeight.w400,
+                                                color: selectindex == index
+                                                    ? Colors.black
+                                                    : const Color.fromRGBO(
+                                                        13, 13, 13, 0.5)),
+                                          ).tr(),
+                                        ),
+                                        if (selectindex == index)
+                                          Positioned(
+                                              bottom: 0,
+                                              left: (720.w /
+                                                          (widget.activeTap == 0
+                                                              ? 4.5
+                                                              : 4)) /
+                                                      2 -
+                                                  20.w,
+                                              child: Container(
+                                                width: 40.w,
+                                                height: 4,
+                                                decoration: const BoxDecoration(
+                                                  color: Color.fromRGBO(
+                                                      25, 98, 255, 1),
+                                                  borderRadius:
+                                                      BorderRadius.all(
+                                                          Radius.circular(4)),
+                                                ),
+                                              ))
+                                      ],
                                     ),
-                                  ))),
+                                  ),
+                                ))),
                       ),
                       Expanded(
                           child: SizedBox(
@@ -813,12 +806,21 @@ class _settingpageState extends State<settingpage> {
                                   itemCount: showing.keys.length,
                                   itemBuilder: ((context, index) {
                                     String key = showing.keys.toList()[index];
+                                    bool isDisabled =
+                                        needset[key]["disable"] != null &&
+                                            needset[key]["disable"](
+                                                _deviceInfoController
+                                                    .loacalDevice
+                                                    .value
+                                                    .oduTypeEnum);
                                     if (needset[key]["visabel"] == null ||
                                         (needset[key]["visabel"] != null &&
                                             needset[key]["visabel"](
                                                 needset, needsend))) {
                                       return Container(
-                                        color: Colors.white,
+                                        color: isDisabled
+                                            ? Color.fromRGBO(245, 245, 245, 1)
+                                            : Colors.white,
                                         padding: EdgeInsets.fromLTRB(
                                             32.w, 0, 32.w, 0),
                                         child: Row(
@@ -832,16 +834,38 @@ class _settingpageState extends State<settingpage> {
                                                               .width /
                                                           2, // 最大宽度设为屏幕一半
                                                 ),
-                                                child: Text((widget.activeTap ==
-                                                                0
-                                                            ? "SystemEntity."
-                                                            : "IndoorEntity.") +
-                                                        key)
-                                                    .tr()),
+                                                child: Text(
+                                                  (widget.activeTap == 0
+                                                          ? "SystemEntity."
+                                                          : "IndoorEntity.") +
+                                                      key,
+                                                  style: TextStyle(
+                                                      color: isDisabled
+                                                          ? const Color
+                                                                  .fromRGBO(
+                                                              140, 140, 140, 1)
+                                                          : Colors.black),
+                                                ).tr()),
                                             Expanded(
                                                 key: ValueKey("needset_$_key"),
-                                                child:
-                                                    needset[key]!['type'] ==
+                                                child: isDisabled
+                                                    ? InkWell(
+                                                        onTap: () {},
+                                                        child: Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .symmetric(
+                                                                  vertical: 10),
+                                                          child: Text(
+                                                            filterOp(key),
+                                                            //  "${needsend[key] ?? needset[key]!['val'].toString()}",
+                                                            textAlign:
+                                                                TextAlign.end,
+                                                            style: normalText(),
+                                                          ),
+                                                        ),
+                                                      )
+                                                    : needset[key]!['type'] ==
                                                             "input"
                                                         ? TextFieldFocusExample(
                                                             val:

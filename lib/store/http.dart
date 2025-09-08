@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:fluoroscopy_tool/store/globalFunction.dart';
 import 'package:fluoroscopy_tool/store/globalData.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart'; // 示例：使用本地存储
 
 class MideaApi {
@@ -11,7 +12,7 @@ class MideaApi {
   static final Dio _dioWebus = Dio(
     BaseOptions(
         baseUrl: env == 'dev'
-            ? 'https://us-test.mideaibp.com/'
+            ? 'https://us-test.mideaibp.com/api/apps-device-cloud/v1/'
             : 'https://us.ibuildinghvac.com/api/apps-device-cloud/v1/',
         connectTimeout: Duration(seconds: 5),
         receiveTimeout: Duration(seconds: 5),
@@ -328,6 +329,11 @@ class MideaApi {
   // 水机 - 查询水机设备状态
   static Future<Map<String, dynamic>> queryWaterMachineStatus(
       Map<String, dynamic> data) async {
+    print('queryWaterMachineStatusUs:' +
+        _dio.options.baseUrl +
+        '     data:' +
+        jsonEncode(data));
+
     final response = await _dio
         .post('/professionalTools/queryWaterMachineStatus', data: data);
     return response.data;
@@ -336,9 +342,14 @@ class MideaApi {
   // 水机 - 查询水机设备状态
   static Future<Map<String, dynamic>> queryWaterMachineStatusUs(
       Map<String, dynamic> data) async {
-    print('queryWaterMachineStatusUs:' + _dioWebus.options.baseUrl);
+    print('queryWaterMachineStatusUs:' +
+        _dioWebus.options.baseUrl +
+        '     data:' +
+        jsonEncode(data));
+
     final response = await _dioWebus
         .post('/professionalTools/queryWaterMachineStatus', data: data);
+
     return response.data;
   }
 

@@ -950,6 +950,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.0.2"
+  wifi_iot:
+    dependency: "direct main"
+    description:
+      name: wifi_iot
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.3.19+2"
   win32:
     dependency: transitive
     description:

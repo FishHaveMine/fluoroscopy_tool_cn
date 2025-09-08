@@ -1,7 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
-import 'dart:math';
 
 import 'package:custom_pop_up_menu/custom_pop_up_menu.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -14,8 +12,6 @@ import 'package:fluoroscopy_tool/style/index.dart';
 import 'package:fluoroscopy_tool/view/cloud/device/SprinklerSetting.dart';
 import 'package:fluoroscopy_tool/view/cloud/publicFunction.dart';
 import 'package:fluoroscopy_tool/view/errorAnalysis/cloundErrorList.dart';
-import 'package:fluoroscopy_tool/view/errorAnalysis/errorDetail.dart';
-import 'package:fluoroscopy_tool/view/errorAnalysis/errorHistory.dart';
 import 'package:fluoroscopy_tool/view/parametersSetting/clound.dart';
 import 'package:fluoroscopy_tool/view/trialRun/result.dart';
 import 'package:fluoroscopy_tool/view/userinfo.dart';
@@ -27,8 +23,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_table/table_sticky_headers.dart';
 
 import 'package:get/get.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:share_extend/share_extend.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:widgets_to_image/widgets_to_image.dart';
 
@@ -126,8 +120,11 @@ class _checkDataPageState extends State<deviceDetail> {
             if (sys["success"]) {
               var sysmap = {};
               if (sys["data"]["sysData"] != null) {
-                print(
-                    'getSystemDataHandler.sysData: ${sys["data"]["sysData"]}');
+                for (var element in sys["data"]["sysData"]["properties"]) {
+                  print(
+                      'getSystemDataHandler.sysData.properties - [${element["title"]["cn"]}]: ${element}');
+                }
+
                 sysmap = fixValue(sys["data"]["sysData"], "system.", nodeTr);
                 fixValue(sys["data"]["sysData"], "outdoor.", nodeTr);
               }
@@ -777,17 +774,11 @@ class _countODUandIDUPageState extends State<countODUandIDUPage> {
 
   bool isGetSimFrequencyEmpty = false;
   _getSimFrequency() async {
-    print(_deviceInfoController.selectDevice);
-    // 1 / 5 / 10
-
     String nid = _deviceInfoController.selectDevice.value["gatewayNid"];
     try {
       var controlDebugging = await platform.invokeMethod(
           'getProfessionalToolsHandler.getSimFrequency', {"gatewayNid": nid});
       var _data = jsonDecode(controlDebugging);
-      print('getProfessionalToolsHandler.getSimFrequency:  ${{
-        "gatewayNid": nid
-      }}  $_data');
       if (_data['data'] != null) {
         int setting = int.tryParse(_data['data'].toString()) ?? 5;
         if (![1, 5, 10, 20].contains(setting)) {

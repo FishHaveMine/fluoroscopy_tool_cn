@@ -8,23 +8,16 @@
  * @FilePath: /fluoroscopy_tool/lib/view/local/checkData/index.dart
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
-import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:empty_widget/empty_widget.dart';
 import 'package:external_path/external_path.dart';
-import 'package:fluoroscopy_tool/compent/EmailInputDialog.dart';
 import 'package:fluoroscopy_tool/compent/baseContainer.dart';
-import 'package:fluoroscopy_tool/compent/submitbutton.dart';
-import 'package:fluoroscopy_tool/store/globalData.dart';
-import 'package:fluoroscopy_tool/store/globalFunction.dart';
 import 'package:fluoroscopy_tool/view/local/checkData/IndoorUnitCentralControl/IndoorUnitCentralControl.dart';
 import 'package:fluoroscopy_tool/view/local/checkData/class.dart';
 import 'package:fluoroscopy_tool/view/local/publicFunction.dart';
 import 'package:fluoroscopy_tool/view/local/style.dart';
-import 'package:fluoroscopy_tool/store/http.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -519,7 +512,14 @@ class _tablePageState extends State<tablePage> {
 
       List tablebase = [];
       if (activeType == 'System') {
-        tablebase = [_deviceInfoController.systemEntity];
+        // 获取 deviceInfo 的当前值（非空处理）
+        final device = _deviceInfoController.loacalDevice.value.toMap();
+        // 获取 systemEntity 的当前值（非空处理）
+        final system = _deviceInfoController.systemEntity.value;
+        var sys = {...system, ...device};
+        tablebase = [
+          {...system, ...device}
+        ];
       }
       if (['OutdoorUnit', 'Compressor', 'Sensor', 'ValveBody']
           .contains(activeType)) {
@@ -532,6 +532,7 @@ class _tablePageState extends State<tablePage> {
         List base = [];
         for (var element in headerList) {
           String elementKey = element.split('.')[1];
+          print("System.${elementKey}:${tablebase[i][elementKey]}");
           base.add(
               '${tablebase[i][elementKey] ?? '--'} ${typeUnit[element] ?? ''}');
         }
@@ -1085,6 +1086,13 @@ class _tablePageState extends State<tablePage> {
                                       var yindex = titleColumn[j]
                                           .toString()
                                           .split('.')[1];
+                                      final device = _deviceInfoController
+                                          .loacalDevice.value
+                                          .toMap();
+                                      // 获取 systemEntity 的当前值（非空处理）
+                                      final system = _deviceInfoController
+                                          .systemEntity.value;
+                                      var sys = {...system, ...device};
                                       return Center(
                                           key: ValueKey(
                                               'checkDataPage$j $i _ ${_deviceInfoController.updateTime.value}'),
@@ -1099,8 +1107,7 @@ class _tablePageState extends State<tablePage> {
                                                   '${activeType == "IndoorUnitParameters" ? _deviceInfoController.indoorEntityList.isEmpty || _deviceInfoController.indoorEntityList[xindex] == null ? "--" : _deviceInfoController.indoorEntityList[xindex][yindex] : _deviceInfoController.outdoorEntityList.isEmpty || _deviceInfoController.outdoorEntityList[xindex] == null ? "--" : _deviceInfoController.outdoorEntityList[xindex][yindex]}',
                                                   yindex)
                                               : handelTabelRow(
-                                                  '${_deviceInfoController.systemEntity[yindex]}',
-                                                  yindex));
+                                                  '${sys[yindex]}', yindex));
                                     }),
                                   ),
                                   legendCell: Container(

@@ -46,13 +46,15 @@ class _gaywayQueryPageState extends State<gaywayQueryPage> {
         if (!isus) {
           getSearchHistories = await MideaApi.queryWaterMachineStatus(
               {"deviceSn": "$sn", "deviceId": "$deviceSn"});
+          print('queryWaterMachineStatus back : $getSearchHistories');
         }
         /** 海外 */
         if (isus) {
           getSearchHistories = await MideaApi.queryWaterMachineStatusUs(
-              {"deviceSn": "$sn", "deviceId": "$deviceSn"});
+              {"deviceSn": "$sn", "deviceId": "${deviceSn}"});
+          print('queryWaterMachineStatusUs back : $getSearchHistories');
         }
-        print('queryWaterMachineStatus back : $getSearchHistories');
+
         MideaApi.saveQueryRecord(getSearchHistories['data'])
             .then((value) => print('saveQueryRecord back : $value'));
 

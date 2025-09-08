@@ -15,6 +15,16 @@ var typeSettingBase = {
         "type": "input",
         "val": "",
       },
+      "silenceModeNight": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["silenceModeNight"]
+      },
+      "timeSetting": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["timeSetting"]
+      },
     },
     1: {
       "outdoorPriorAutoT4Setting": {
@@ -43,22 +53,21 @@ var typeSettingBase = {
         "val": "",
         "op": selectMap["powerLimit"]
       },
-      "antiSnowSetting": {
-        "type": "select",
-        "val": "",
-        "op": selectMap["antiSnowSetting"]
-      },
-      "backupSensor": {
-        "type": "select",
-        "val": "",
-        "op": selectMap["backupSensor"]
-      },
-      "backupRunDays": {
-        "type": "select",
-        "val": "",
-        "op": selectMap["backupRunDays"]
-      },
       "tecChoice": {"type": "select", "val": "", "op": selectMap["tecChoice"]},
+      // "mpcSelect1": {
+      //   "type": "select",
+      //   "val": "",
+      //   "op": selectMap["mpcSelect1"]
+      // },
+      "fanEnergySaving": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["fanEnergySaving"],
+        "disable": (data) {
+          return data == null || (data == null && data != "OduType_9");
+        }
+      },
+
       "mpc": {"type": "select", "val": "", "op": selectMap["mpc"]},
       "mpcSelect3": {
         "type": "select",
@@ -100,17 +109,100 @@ var typeSettingBase = {
         "val": "",
         "op": selectMap["dryContactInputSetting2"]
       },
-      "dryContactInputSetting3": {
+      // "dryContactInputSetting3": {
+      //   "type": "select",
+      //   "val": "",
+      //   "op": selectMap["dryContactInputSetting3"]
+      // },
+
+      "outputDryContact1": {
         "type": "select",
         "val": "",
-        "op": selectMap["dryContactInputSetting3"]
+        "op": selectMap["outputDryContact1"],
+        "disable": (data) {
+          return data == null || (data == null && data != "OduType_9");
+        }
+      },
+      "outputDryContact2": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["outputDryContact2"],
+        "disable": (data) {
+          return data == null || (data == null && data != "OduType_9");
+        }
+      },
+      "outputDryContact3": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["outputDryContact3"]
       },
     },
     3: {
-      "emergenceStop": {
+      // "emergenceStop": {
+      //   "type": "select",
+      //   "val": "",
+      //   "op": selectMap["emergenceStop"]
+      // },
+
+      "antiSnowSetting": {
         "type": "select",
         "val": "",
-        "op": selectMap["emergenceStop"]
+        "op": selectMap["antiSnowSetting"]
+      },
+      "backupSensor": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["backupSensor"]
+      },
+      "backupRunDays": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["backupRunDays"]
+      },
+
+      "chassisIceFunction": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["chassisIceFunction"]
+      },
+      "humidityControl": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["humiditycontrol"]
+      },
+      "factoryMeter": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["factorymeter"]
+      },
+      "xyeBaudRate": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["xyebaudrate"]
+      },
+
+      "chargingElectricMeterEnum": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["chargingElectricMeterEnum"]
+      },
+
+      "firmwareVersion": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["firmwareVersion"]
+      },
+
+      "upgradeMethodEnum": {
+        "type": "select",
+        "val": "",
+        "op": selectMap["upgradeMethodEnum"]
+      },
+
+      "modbusAddress": {
+        // 自动模式制冷制热温差设定
+        "type": "input",
+        "val": "",
       },
     },
     4: {
@@ -500,6 +592,33 @@ var selectMap = {
       'value1': "MpcPriorModeSetting_14",
       "value": 14
     }
+  ],
+  "silenceModeNight": List.generate(
+    14,
+    (index) => {
+      'label': "夜间静音模式$index",
+      'name': "夜间静音模式$index",
+      'value1': "SETTING_ENUM_$index",
+      "value": index
+    },
+  ),
+  "timeSetting": [
+    {"label": "无夜间静音", "name": "无夜间静音", "value1": "NONE", "value": 0},
+    {"label": "1-6h/10h", "name": "1-6h/10h", "value1": "ONE_HOUR", "value": 1},
+    {"label": "2-6h/12h", "name": "2-6h/12h", "value1": "TWO_HOUR", "value": 2},
+    {
+      "label": "3-8h/10h",
+      "name": "3-8h/10h",
+      "value1": "THREE_HOUR",
+      "value": 3
+    },
+    {"label": "4-8/12h", "name": "4-8/12h", "value1": "FOUR_HOUR", "value": 4},
+    {
+      "label": "15维持不变",
+      "name": "15维持不变",
+      "value1": "FIFTEEN_HOUR",
+      "value": 15
+    },
   ],
   "indoorStaticPressureSetting": List.generate(
     20,
@@ -2291,6 +2410,97 @@ var selectMap = {
     //   "value": 3
     // }
   ],
+  "mpcselect1": [
+    {"label": "舒适性", "name": "舒适性", "value1": "NORMAL", "value": 0},
+    {"label": "加权", "name": "加权", "value1": "WEIGHT", "value": 1},
+    {"label": "VIP优先", "name": "VIP优先", "value1": "VIP", "value": 2},
+  ],
+  "fanEnergySaving": [
+    {"label": "无效", "name": "无效", "value1": "NORMAL", "value": 0},
+    {"label": "有效", "name": "有效", "value1": "WEIGHT", "value": 1},
+  ],
+  "outputDryContact1": [
+    {"label": "运行信号", "name": "运行信号", "value1": "RUN_SIGNAL", "value": 0},
+    {"label": "警报信号", "name": "警报信号", "value1": "ALERT_SIGNAL", "value": 1},
+    {
+      "label": "压缩机运行信号",
+      "name": "压缩机运行信号",
+      "value1": "COMPRESSOR_RUN_SIGNAL",
+      "value": 2
+    },
+    {
+      "label": "除霜信号",
+      "name": "除霜信号",
+      "value1": "DEHYDRATION_SIGNAL",
+      "value": 3
+    },
+    {
+      "label": "冷媒泄露信号",
+      "name": "冷媒泄露信号",
+      "value1": "LEAKAGE_SIGNAL",
+      "value": 4
+    }
+  ],
+  "outputDryContact2": [
+    {"label": "喷淋", "name": "喷淋", "value1": "DryContact_0", "value": 0},
+    {
+      "label": "液管截断阀控制",
+      "name": "液管截断阀控制",
+      "value1": "DryContact_1",
+      "value": 1
+    }
+  ],
+  "outputDryContact3": [
+    {
+      "label": "运转信号",
+      "name": "运转信号",
+      "value1": "SETTING_ENUM_0",
+      "value": 1,
+      "code": 128
+    },
+    {
+      "label": "警报信号",
+      "name": "警报信号",
+      "value1": "SETTING_ENUM_1",
+      "value": 2,
+      "code": 128
+    },
+    {
+      "label": "压缩机运转信号",
+      "name": "压缩机运转信号",
+      "value1": "SETTING_ENUM_2",
+      "value": 3,
+      "code": 128
+    },
+    {
+      "label": "除霜信号",
+      "name": "除霜信号",
+      "value1": "SETTING_ENUM_3",
+      "value": 4,
+      "code": 128
+    },
+    {
+      "label": "冷媒泄露信号",
+      "name": "冷媒泄露信号",
+      "value1": "SETTING_ENUM_4",
+      "value": 5,
+      "code": 128
+    },
+    {
+      "label": "气管截断阀控制",
+      "name": "气管截断阀控制",
+      "value1": "SETTING_ENUM_5",
+      "value": 6,
+      "code": 9
+    },
+    {
+      "label": "底盘电加热",
+      "name": "底盘电加热",
+      "value1": "SETTING_ENUM_6",
+      "value": 7,
+      "code": 9
+    }
+  ],
   "coolingTempCompensation": [
     {
       "label": tr("setting_coolingtempcompensation0"),
@@ -2323,7 +2533,67 @@ var selectMap = {
       "value": 4
     }
   ],
-  "heatingTempCompensation": heatingTempCompensationData()
+  "heatingTempCompensation": heatingTempCompensationData(),
+  "chassisIceFunction": [
+    {"label": "无效", "name": "无效", "value1": "INVALID", "value": 0},
+    {"label": "有效，间断开启", "name": "有效，间断开启", "value1": "ENABLED", "value": 1},
+    {"label": "有效，常开", "name": "有效，常开", "value1": "ALWAYS_ENABLED", "value": 2},
+    {"label": "维持不变", "name": "维持不变", "value1": "KEEP_THE_SAME", "value": 3}
+  ],
+  "humiditycontrol": [
+    {
+      "label": "恒风量",
+      "name": "恒风量",
+      "value1": "HUMIDITY_CONTROL_CONSTANT_FLOW",
+      "value": 0
+    },
+    {
+      "label": "恒转速",
+      "name": "恒转速",
+      "value1": "HUMIDITY_CONTROL_CONSTANT_SPEED",
+      "value": 1
+    },
+  ],
+  "factorymeter": [
+    {"label": "不使能", "name": "不使能", "value1": "DISABLED", "value": 0},
+    {"label": "使能", "name": "使能", "value1": "ENABLED", "value": 1},
+  ],
+  "xyebaudrate": [
+    {"label": "4800", "name": "4800", "value1": "BAUD_RATE_4800", "value": 0},
+    {"label": "9600", "name": "9600", "value1": "BAUD_RATE_9600", "value": 1},
+    {
+      "label": "19200",
+      "name": "19200",
+      "value1": "BAUD_RATE_19200",
+      "value": 2
+    },
+    {
+      "label": "38400",
+      "name": "38400",
+      "value1": "BAUD_RATE_38400",
+      "value": 3
+    },
+  ],
+  "chargingElectricMeterEnum": [
+    {"label": "出厂电表", "name": "出厂电表", "value1": "FACTORY_METER", "value": 0},
+    {"label": "外接电表", "name": "外接电表", "value1": "EXTERNAL_METER", "value": 1},
+    {"label": "维持不变", "name": "维持不变", "value1": "KEEP_THE_SAME", "value": 3},
+  ],
+  "firmwareVersion": [
+    {"label": "无感升级", "name": "无感升级", "value1": "NO_SENSE_UPGRADE", "value": 0},
+    {"label": "有感升级", "name": "有感升级", "value1": "SENSE_UPGRADE", "value": 1},
+    {"label": "维持不变", "name": "维持不变", "value1": "KEEP_THE_SAME", "value": 3},
+  ],
+  "upgradeMethodEnum": [
+    {"label": "升级系统", "name": "升级系统", "value1": "UPGRADE_SYSTEM", "value": 0},
+    {"label": "升级自身", "name": "升级自身", "value1": "UPGRADE_SELF", "value": 1},
+    {"label": "维持不变", "name": "维持不变", "value1": "KEEP_THE_SAME", "value": 3},
+  ],
+  "maxFrequencyLimit": [
+    {"label": "无限制", "name": "无限制", "value1": "NO_LIMIT", "value": 0},
+    {"label": "95%", "name": "95%", "value1": "LIMIT_95", "value": 1},
+    {"label": "90%", "name": "90%", "value1": "LIMIT_90", "value": 3},
+  ]
 };
 
 List<Map<String, dynamic>> heatingTempCompensationData() {
@@ -2354,4 +2624,24 @@ List<Map<String, dynamic>> generateData() {
   }
 
   return data;
+}
+
+selectMapfilterOp(key, val) {
+  try {
+    if (val == null || val == "") {
+      return "--";
+    }
+    String _val = val.toString();
+
+    var filter = selectMap[key]!
+        .where((e) =>
+            e["value"].toString() == _val || e["value1"].toString() == _val)
+        .toList();
+    if (filter != null) {
+      return filter[0]["label"];
+    }
+    return "--";
+  } catch (e) {
+    return "--";
+  }
 }

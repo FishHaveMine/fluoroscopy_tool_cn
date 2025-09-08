@@ -11,6 +11,7 @@ class deviceInfo {
   String runningModel; //运行模式: 制冷、制热
   bool isconnected; //是否连接
   String errorCode; //故障代码
+  String oduTypeEnum; //机器类型
   deviceInfo({
     required this.sn,
     required this.machine,
@@ -23,6 +24,7 @@ class deviceInfo {
     required this.runningModel,
     required this.isconnected,
     required this.errorCode,
+    required this.oduTypeEnum,
   });
 
   // 将对象转换为 JSON 格式的方法
@@ -37,6 +39,25 @@ class deviceInfo {
       'totalMatches': totalMatches,
       'matchingNumber': matchingNumber,
       'runningModel': runningModel,
+      'isconnected': isconnected,
+      'errorCode': errorCode,
+      'oduTypeEnum': oduTypeEnum,
+    };
+  }
+
+  // 添加转 Map 方法
+  Map<String, dynamic> toMap() {
+    return {
+      'sn': sn,
+      'machine': machine,
+      'version': version,
+      'model': model,
+      'ODU': ODU,
+      'IDU': IDU,
+      'totalMatches': totalMatches,
+      'matchingNumber': matchingNumber,
+      'runningModel': runningModel,
+      'oduTypeEnum': oduTypeEnum,
       'isconnected': isconnected,
       'errorCode': errorCode,
     };
@@ -56,6 +77,7 @@ class deviceInfo {
       runningModel: other.runningModel,
       isconnected: other.isconnected,
       errorCode: other.errorCode,
+      oduTypeEnum: other.oduTypeEnum,
     );
   }
 
@@ -73,6 +95,7 @@ class deviceInfo {
         runningModel: json['runningModel'] ?? '--',
         isconnected: json['isconnected'] ?? false,
         errorCode: json['errorCode'] ?? '--',
+        oduTypeEnum: json['oduTypeEnum'] ?? '--',
       );
     } catch (e) {
       return deviceInfo(
@@ -87,6 +110,7 @@ class deviceInfo {
         runningModel: '--',
         isconnected: false,
         errorCode: '--',
+        oduTypeEnum: '--',
       );
     }
   }

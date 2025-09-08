@@ -123,11 +123,7 @@ class functionParamHandler(private val channel: MethodChannel) : MethodChannel.M
             }
         }
 
-        data["dryContactInputSetting3"]?.let {
-            if (it is Int) {
-                dto.setDryContactInputSetting3(DryContactInputSetting3Enum.fromValue(it))
-            }
-        }
+       
 
         data["emergenceStop"]?.let {
             if (it is Int) {
@@ -177,6 +173,143 @@ class functionParamHandler(private val channel: MethodChannel) : MethodChannel.M
             )
         }
 
+
+
+        /**
+         * 夜间静音模式
+         */
+        data["silenceModeNight"]?.let {
+            if (it is Int) {
+                dto.setSilenceModeNight(SilenceModeNightEnum.fromValue(it))
+            }
+        }
+
+        /**
+         * 夜间静音档位设置
+         */
+        data["timeSetting"]?.let {
+            if (it is Int) {
+                dto.setTimeSetting(TimeSettingEnum.fromValue(it))
+            }
+        }
+
+
+        /**
+         * 频率限制
+         */
+        data["maxFrequencyLimit"]?.let {
+            if (it is Int) {
+                dto.setMaxFrequencyLimit(MaxFrequencyLimitEnum.fromValue(it))
+            }
+        }
+
+        /**
+         *   风机节电算法选择
+         */
+        data["fanEnergySaving"]?.let {
+            if (it is Int) {
+                dto.setFanEnergySaving(FanEnergySavingEnum.fromValue(it))
+            }
+        }
+        /**
+         * 输出干触点1
+         */
+        data["outputDryContact1"]?.let {
+            if (it is Int) {
+                dto.setOutputDryContact1(OutputDryContact1Enum.fromValue(it))
+            }
+        }
+        /**
+         * 输出干触点2
+         */
+        data["outputDryContact2"]?.let {
+            if (it is Int) {
+                dto.setOutputDryContact2(OutputDryContact2Enum.fromValue(it))
+            }
+        }
+        /**
+         * 输出干触点3
+         */
+        data["outputDryContact3"]?.let {
+            if (it is Int) {
+                val enumIndex = it - 1
+                if (enumIndex in DryContactInputSetting3Enum.values().indices) {
+                    val selectedEnum = DryContactInputSetting3Enum.values()[enumIndex]
+                    dto.setOutputDryContact3(selectedEnum)
+                } else {
+                    // 处理超出范围的值，可根据需求设置默认值或日志
+                    // 例如：dto.setOutputDryContact3(DryContactInputSetting3Enum.SETTING_ENUM_0)
+                }
+            }
+        }
+        /**
+         * 底盘融冰功能
+         */
+        data["chassisIceFunction"]?.let {
+            if (it is Int) {
+                dto.setChassisIceFunction(ChassisIceFunctionEnum.fromValue(it))
+            }
+        }
+        /**
+         * 恒风量选择
+         */
+        data["humidityControl"]?.let {
+            if (it is Int) {
+                dto.setHumidityControl(HumidityControlEnum.fromValue(it))
+            }
+        }
+
+        /**
+         * 出厂电表
+         */
+        data["factoryMeter"]?.let {
+            if (it is Int) {
+                dto.setFactoryMeter(FactoryMeterEnum.fromValue(it))
+            }
+        }
+
+        /**
+         * xye波特率
+         */
+        data["xyeBaudRate"]?.let {
+            if (it is Int) {
+                dto.setXyeBaudRate(XYEBaudRateEnum.fromValue(it))
+            }
+        }
+
+        /**
+         * 计费电表选择
+         */
+        data["chargingElectricMeterEnum"]?.let {
+            if (it is Int) {
+                dto.setChargingElectricMeterEnum(ChargingElectricMeterEnum.fromValue(it))
+            }
+        }
+        /**
+         * 外机主控升级范围
+         */
+        data["firmwareVersion"]?.let {
+            if (it is Int) {
+                dto.setFirmwareVersion(FirmwareVersionEnum.fromValue(it))
+            }
+        }
+        /**
+         * USB升级方式
+         */
+        data["upgradeMethodEnum"]?.let {
+            if (it is Int) {
+                dto.setUpgradeMethodEnum(UpgradeMethodEnum.fromValue(it))
+            }
+        }
+        /**
+         * modbus地址设置
+         */
+
+        data["modbusAddress"]?.let {
+            if (it is Int) {
+                dto.setModbusAddress(it)
+            }
+        }
 
         return dto
     }

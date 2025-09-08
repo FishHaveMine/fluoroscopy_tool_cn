@@ -32,6 +32,7 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../compent/tap_handler_page.dart';
+import '../parametersSetting/objectSetting.dart';
 import 'style.dart';
 
 // v8协议的系统-运行模式有这几种
@@ -131,6 +132,7 @@ class deviceInfoController extends GetxController {
           totalMatches: 0,
           matchingNumber: 0,
           runningModel: '--',
+          oduTypeEnum: '--',
           isconnected: false,
           errorCode: '--')
       .obs;
@@ -139,6 +141,16 @@ class deviceInfoController extends GetxController {
   RxList<dynamic> indoorEntityList = [].obs;
   void set_systemEntity(val) {
     systemEntity.value = val;
+    // try {
+    //   print("systemEntity ------------------------》 ");
+    //   if (val != null) {
+    //     for (var element in val.keys) {
+    //       print("systemEntity.${element} : ${val[element]}");
+    //     }
+    //   }
+
+    //   print(" ------------------------》 systemEntity");
+    // } catch (e) {}
     update();
   }
 
@@ -165,6 +177,11 @@ class deviceInfoController extends GetxController {
 
   int checkint(val) {
     return val == null ? 0 : val;
+  }
+
+  void setOduTypeEnum(sn) {
+    loacalDevice.value.oduTypeEnum = checkstring(sn);
+    update();
   }
 
   void setSN(sn) {
@@ -286,6 +303,7 @@ class deviceInfoController extends GetxController {
           matchingNumber: 0,
           runningModel: '--',
           isconnected: false,
+          oduTypeEnum: '--',
           errorCode: '--')
       .obs;
 
@@ -463,6 +481,7 @@ class deviceInfoController extends GetxController {
     methodChannel.setMethodCallHandler((call) async {
       if (call.method == 'monitorData') {
         var arguments = jsonDecode(call.arguments);
+
         try {
           print(
               "arguments['linkStatus']:   ${arguments['linkStatus']}  ${isconnectedBefore}");
@@ -605,6 +624,7 @@ class deviceInfoController extends GetxController {
           } catch (e) {}
           try {
             setSN(arguments['sn']);
+            setOduTypeEnum(arguments['oduTypeEnum']);
             setmachine(arguments['machineType']);
 
             setErrorCode(arguments['errorCode']);
@@ -772,6 +792,14 @@ Widget handelTabelRow(val, key) {
       style: tableValue(),
     );
   }
+
+  if (selectMap[key] != null) {
+    return Text(
+      selectMapfilterOp(key, val),
+      textAlign: TextAlign.center,
+      style: tableValue(),
+    );
+  }
   if (key.toString().toUpperCase().contains("SN")) {
     return Text(
       val.toString().toUpperCase(),
@@ -876,7 +904,7 @@ imageTurn() {
   }
   if (_deviceInfoController.loacalDevice.value.isconnected &&
       _deviceInfoController.loacalDevice.value.model == 'V8') {
-    return 'public/images/local/v8.png';
+    return 'public/images/local/outdoor.png';
   }
   if (!_deviceInfoController.loacalDevice.value.isconnected ||
       (_deviceInfoController.loacalDevice.value.isconnected &&

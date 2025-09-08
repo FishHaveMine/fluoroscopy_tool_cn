@@ -127,125 +127,127 @@ class _NewBoardParameterImportAuthorizationState
         centerTitle: true,
         actions: const [],
       ),
-      body: Column(
-        children: [
-          Container(
-            width: 720.w,
-            height: contentHeight - 57,
-            padding: EdgeInsets.fromLTRB(32.w, 24.w, 32.w, 24.w),
-            child: ListView.builder(
-              itemCount: NewBoardParameterList.length + 1,
-              itemBuilder: (context, index) => index ==
-                      NewBoardParameterList.length
-                  ? Center(
-                      child: Text(
-                        'afterSalesReplacement.NewBoardParameterTip',
-                        style: ErrorTip(),
-                        textAlign: TextAlign.center,
-                      ).tr(),
-                    )
-                  : GestureDetector(
-                      onTap: () {
-                        if (NewBoardParameterListstatus.contains(
-                            NewBoardParameterList[index])) {
-                          activeType = activeType == index ? -1 : index;
-                          setState(() {
-                            activeType;
-                          });
-                        }
-                      },
-                      child: Opacity(
-                        opacity: NewBoardParameterListstatus.contains(
-                                NewBoardParameterList[index])
-                            ? 1
-                            : 0.3,
-                        child: Container(
-                          margin: const EdgeInsets.fromLTRB(0, 0, 0, 15),
-                          padding: const EdgeInsets.all(14),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(16),
-                              color: Colors.white),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Expanded(
-                                child: Row(
-                                  children: [
-                                    Image.asset(
-                                      'public/images/afterSalesReplacement/${NewBoardParameterList[index].toString().replaceAll("afterSalesReplacement.", "")}${NewBoardParameterList[index].toString().contains("4") ? '.png' : '.jpg'}',
-                                      width: 182.w,
-                                    ),
-                                    const SizedBox(
-                                      width: 15,
-                                    ),
-                                    Expanded(
-                                        child: Text(
-                                      tr(NewBoardParameterList[index]),
-                                      overflow: TextOverflow.ellipsis,
-                                      style: tipStyle(),
-                                    )),
-                                    const SizedBox(
-                                      width: 15,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              InkWell(
-                                onTap: () {},
-                                child: RoundCheckBox(
-                                  isChecked: activeType == index,
-                                  onTap: NewBoardParameterListstatus.contains(
-                                          NewBoardParameterList[index])
-                                      ? (selected) {
-                                          if (selected == true) {
-                                            setState(() {
-                                              activeType = index;
-                                            });
-                                          } else {
-                                            setState(() {
-                                              activeType = -1;
-                                            });
-                                          }
-                                        }
-                                      : null,
-                                  size: 20,
-                                  checkedWidget: const Icon(
-                                    Icons.check,
-                                    color: Colors.white,
-                                    size: 16,
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Container(
+              width: 720.w,
+              height: contentHeight - 57,
+              padding: EdgeInsets.fromLTRB(32.w, 24.w, 32.w, 24.w),
+              child: ListView.builder(
+                itemCount: NewBoardParameterList.length + 1,
+                itemBuilder: (context, index) => index ==
+                        NewBoardParameterList.length
+                    ? Center(
+                        child: Text(
+                          'afterSalesReplacement.NewBoardParameterTip',
+                          style: ErrorTip(),
+                          textAlign: TextAlign.center,
+                        ).tr(),
+                      )
+                    : GestureDetector(
+                        onTap: () {
+                          if (NewBoardParameterListstatus.contains(
+                              NewBoardParameterList[index])) {
+                            activeType = activeType == index ? -1 : index;
+                            setState(() {
+                              activeType;
+                            });
+                          }
+                        },
+                        child: Opacity(
+                          opacity: NewBoardParameterListstatus.contains(
+                                  NewBoardParameterList[index])
+                              ? 1
+                              : 0.3,
+                          child: Container(
+                            margin: const EdgeInsets.fromLTRB(0, 0, 0, 15),
+                            padding: const EdgeInsets.all(14),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(16),
+                                color: Colors.white),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Expanded(
+                                  child: Row(
+                                    children: [
+                                      Image.asset(
+                                        'public/images/afterSalesReplacement/${NewBoardParameterList[index].toString().replaceAll("afterSalesReplacement.", "")}${NewBoardParameterList[index].toString().contains("4") ? '.png' : '.jpg'}',
+                                        width: 182.w,
+                                      ),
+                                      const SizedBox(
+                                        width: 15,
+                                      ),
+                                      Expanded(
+                                          child: Text(
+                                        tr(NewBoardParameterList[index]),
+                                        overflow: TextOverflow.ellipsis,
+                                        style: tipStyle(),
+                                      )),
+                                      const SizedBox(
+                                        width: 15,
+                                      ),
+                                    ],
                                   ),
-                                  checkedColor:
-                                      Theme.of(context).colorScheme.secondary,
-                                  border: Border.all(
-                                      // width: 1,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .secondary),
                                 ),
-                              ),
-                            ],
+                                InkWell(
+                                  onTap: () {},
+                                  child: RoundCheckBox(
+                                    isChecked: activeType == index,
+                                    onTap: NewBoardParameterListstatus.contains(
+                                            NewBoardParameterList[index])
+                                        ? (selected) {
+                                            if (selected == true) {
+                                              setState(() {
+                                                activeType = index;
+                                              });
+                                            } else {
+                                              setState(() {
+                                                activeType = -1;
+                                              });
+                                            }
+                                          }
+                                        : null,
+                                    size: 20,
+                                    checkedWidget: const Icon(
+                                      Icons.check,
+                                      color: Colors.white,
+                                      size: 16,
+                                    ),
+                                    checkedColor:
+                                        Theme.of(context).colorScheme.secondary,
+                                    border: Border.all(
+                                        // width: 1,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .secondary),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                      )),
+                        )),
+              ),
             ),
-          ),
-          SizedBox(
-            width: 600.w,
-            height: 98.h,
-            child: submitButton(
-              isActive: activeType != -1,
-              label: tr('determine'),
-              onClick: () async {
-                if (activeType != -1) {
-                  _selfController.setNewBoardParameterType(
-                      NewBoardParameterList[activeType]);
-                  Get.to(() => ParameterWriting());
-                }
-              },
-            ),
-          )
-        ],
+            SizedBox(
+              width: 600.w,
+              height: 98.h,
+              child: submitButton(
+                isActive: activeType != -1,
+                label: tr('determine'),
+                onClick: () async {
+                  if (activeType != -1) {
+                    _selfController.setNewBoardParameterType(
+                        NewBoardParameterList[activeType]);
+                    Get.to(() => ParameterWriting());
+                  }
+                },
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
