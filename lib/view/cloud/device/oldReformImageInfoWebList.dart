@@ -1,21 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:fluoroscopy_tool/compent/baseContainer.dart';
-import 'package:fluoroscopy_tool/compent/submitbutton.dart';
-import 'package:fluoroscopy_tool/store/globalFunction.dart';
 import 'package:fluoroscopy_tool/style/index.dart';
 import 'package:fluoroscopy_tool/view/cloud/device/style.dart';
 import 'package:fluoroscopy_tool/view/errorAnalysis/errorDetail.dart';
-import 'package:fluoroscopy_tool/view/systemCapabilityAnalysis/step2/systemDetail.dart';
-import 'package:fluoroscopy_tool/view/waterPumpInspection/search.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
-import 'package:get/get.dart';
 
 class oldReformImageInfoWebListPage extends StatefulWidget {
   var data;
