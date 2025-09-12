@@ -163,7 +163,7 @@ class _deviceStatusState extends State<deviceStatus> {
                             Text(
                               _deviceInfoController.loacalDevice.value.machine,
                               style: ErrorTip(),
-                            )
+                            ).tr()
                           ]),
                     ),
                     Container(
@@ -256,8 +256,7 @@ class _deviceStatusState extends State<deviceStatus> {
                 child: InkWell(
                   onTap: () {
                     if (data[j][2] != "") {
-                      Get.to(() =>
-                          errorDetailPage(item: {"errorCode": data[j][2]}));
+                      Get.to(() => errorDetailPage(item: data[j]));
                     }
                   },
                   child: Center(

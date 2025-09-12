@@ -90,6 +90,9 @@ class _IndoorUnitCentralControlState extends State<IndoorUnitCentralControl>
   void dispose() {
     _tabController.removeListener(_handelTabSelection);
     _tabController.dispose();
+
+    SystemChrome.setSystemUIOverlayStyle(
+        const SystemUiOverlayStyle(statusBarColor: Colors.transparent));
     super.dispose();
   }
 
@@ -290,24 +293,26 @@ class _conpageLayoutState extends State<conpageLayout> {
                               child: SizedBox(
                                   width: 560.w,
                                   height: 130,
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(24),
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          tr('device.checkDataController.content',
-                                              namedArgs: {
-                                                'name': tr(item.join(',')),
-                                                'device':
-                                                    '${_checkDataController.tableSelect.length}',
-                                              }),
-                                          style: dialogContent(context),
-                                        ),
-                                      ],
+                                  child: SingleChildScrollView(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(24),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            tr('device.checkDataController.content',
+                                                namedArgs: {
+                                                  'name': tr(item.join(',')),
+                                                  'device':
+                                                      '${_checkDataController.tableSelect.length}',
+                                                }),
+                                            style: dialogContent(context),
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   )),
                             ));
@@ -357,14 +362,20 @@ class _conpageLayoutState extends State<conpageLayout> {
                               });
                             } catch (e) {}
                           }
-
+                          print("unLockLineControl asyncMethods:$asyncMethods");
                           for (var command in asyncMethods) {
                             try {
+                              print("unLockLineControl: ${{
+                                'command': command['command'],
+                                'addressList': id,
+                              }}");
                               var unlockwireback = await platform
                                   .invokeMethod('unLockLineControl', {
                                 'command': command['command'],
                                 'addressList': id,
                               });
+
+                              print("unLockLineControl: $unlockwireback");
                               if (unlockwireback == false) {
                                 errorCommand.add(command['name']);
                               }
@@ -673,14 +684,24 @@ class _LandingPageState extends State<LandingPage> {
                     image: null,
                     packageImage: null,
                     title: tr('device.empty'),
-                    titleTextStyle: const TextStyle(
-                      fontSize: 22,
-                      color: Color(0xff9da9c7),
+                    titleTextStyle: TextStyle(
+                      fontSize: EasyLocalization.of(context)
+                                  ?.currentLocale!
+                                  .languageCode ==
+                              'zh'
+                          ? 22
+                          : 16,
+                      color: const Color(0xff9da9c7),
                       fontWeight: FontWeight.w500,
                     ),
-                    subtitleTextStyle: const TextStyle(
-                      fontSize: 14,
-                      color: Color(0xffabb8d6),
+                    subtitleTextStyle: TextStyle(
+                      fontSize: EasyLocalization.of(context)
+                                  ?.currentLocale!
+                                  .languageCode ==
+                              'zh'
+                          ? 14
+                          : 12,
+                      color: const Color(0xffabb8d6),
                     ),
                   ),
                 ),

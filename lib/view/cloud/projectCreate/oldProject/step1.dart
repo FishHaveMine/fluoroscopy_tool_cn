@@ -94,7 +94,7 @@ class _oldProjectCreateStep1State extends State<oldProjectCreateStep1> {
     "associatedUserName": "",
     "phoneNumber": "",
 
-    // "contactList": [], //管理员
+    "contactList": [], //管理员
   };
 
   filterOp(key) {
@@ -147,20 +147,20 @@ class _oldProjectCreateStep1State extends State<oldProjectCreateStep1> {
 
   _devicetypeop() {
     var data = {
-      "美的": "MD",
-      "大金": "DK",
-      "格力": "GR",
-      "海尔": "HA",
-      "海信": "HS",
-      "日立": "HT",
-      "混搭": "MX",
-      "其他": "QT"
+      "md_devicetypeop": "MD",
+      "dk_devicetypeop": "DK",
+      "gr_devicetypeop": "GR",
+      "ha_devicetypeop": "HA",
+      "hs_devicetypeop": "HS",
+      "ht_devicetypeop": "HT",
+      "mx_devicetypeop": "MX",
+      "qt_devicetypeop": "QT"
     };
     List op = [];
     for (var element in data.keys) {
       op.add({
-        "label": element,
-        "name": element,
+        "label": tr(element),
+        "name": tr(element),
         'value1': data[element],
         "value": data[element]
       });
@@ -216,19 +216,22 @@ class _oldProjectCreateStep1State extends State<oldProjectCreateStep1> {
       user = backdata["data"].map((e) => _echangeData(e)).toList();
       editinfo = {
         "project.name": InputField(required: true, val: "", type: "input"),
-        "project.projectType":
-            InputField(required: false, val: "氟机节能改造", type: "text"),
+        "project.projectType": InputField(
+            required: false, val: tr("project.projecthintText"), type: "text"),
         "project.brand":
             InputField(required: true, val: "", type: "select", op: BRAND),
-        // "project.countryCode":
-        //     InputField(required: false, val: "CN", type: "text"),
+        "project.countryCode":
+            InputField(required: false, val: "CN", type: "text"),
         "project.projectScene": InputField(
             required: true, val: "", type: "select", op: PROJECT_SCENE),
         "project.area": InputField(required: true, val: "", type: "location"),
         "project.remark": InputField(
-            required: false, val: "", type: "textarea", hintText: "请输入详细地址"),
-        // "project.contactList":
-        //     InputField(required: true, val: "", type: "select", op: user),
+            required: false,
+            val: "",
+            type: "textarea",
+            hintText: tr("project.remarkinttext")),
+        "project.contactList":
+            InputField(required: true, val: "", type: "select", op: user),
         "project.boss": InputField(
             required: true,
             val: sendForm["associatedUserName"] != ""
@@ -285,13 +288,6 @@ class _oldProjectCreateStep1State extends State<oldProjectCreateStep1> {
           BRAND = _op;
         });
       } else {
-        _op.sort((a, b) {
-          if (a['label'] == '其他') {
-            return 1; // '美的' 排在前面
-          }
-          return 0; // 其他按原顺序
-        });
-        print(_op);
         setState(() {
           PROJECT_SCENE = _op;
         });
@@ -361,7 +357,7 @@ class _oldProjectCreateStep1State extends State<oldProjectCreateStep1> {
       for (var element in editinfo.keys) {
         if (editinfo[element]!.val == "" && editinfo[element]!.required) {
           EasyLoading.dismiss();
-          EasyLoading.showError("请输入必填项");
+          EasyLoading.showError(tr("project.required"));
           return;
         }
         send[element] = editinfo[element]!.val;
@@ -391,7 +387,7 @@ class _oldProjectCreateStep1State extends State<oldProjectCreateStep1> {
 
       var _id = findIdByCode(_countryAreaTreeData, "$_areaId");
       sendForm["areaId"] = int.parse("$_id");
-      sendForm["contactList"] = [];
+      sendForm["contactList"] = send["project.contactList"].toString();
       var platformback = await platform.invokeMethod(
           'getAppFluorineMachineEnergyHandler.saveOrUpdateProject',
           {"sendForm": sendForm});
@@ -480,7 +476,7 @@ class _oldProjectCreateStep1State extends State<oldProjectCreateStep1> {
       sendForm["longitude"] = _latLng.split(",")[0];
       _checkpass();
     } catch (e) {
-      EasyLoading.showError("获取地区经纬度失败: $e");
+      // EasyLoading.showError("获取地区经纬度失败: $e");
     }
   }
 
@@ -835,15 +831,15 @@ class infolabe extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        if (isrequired)
-          const Text(
-            "*",
-            style: TextStyle(color: Colors.red, fontSize: 18),
-          ),
         Text(
           name,
           style: normalTextBlack(fSize: 16, fw: FontWeight.w500, lineheight: 1),
         ),
+        if (isrequired)
+          const Text(
+            "*",
+            style: TextStyle(color: Colors.red),
+          )
       ],
     );
   }

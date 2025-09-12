@@ -33,7 +33,7 @@ class _sceneCheckPageState extends State<sceneCheckPage> {
   ];
   List<String> addressSetType = [
     '内机已有地址',
-    '内机未设地址，检测内机台数',
+    '内机未设地址，需要自动分配地址',
   ];
   var limitByKey;
   final _formKey = GlobalKey<FormState>();

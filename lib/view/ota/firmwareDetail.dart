@@ -3,9 +3,9 @@ import 'dart:convert';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:fluoroscopy_tool/compent/submitbutton.dart';
 import 'package:fluoroscopy_tool/store/globalFunction.dart';
+import 'package:fluoroscopy_tool/store/http.dart';
 import 'package:fluoroscopy_tool/style/index.dart';
 import 'package:fluoroscopy_tool/view/local/publicFunction.dart';
-import 'package:fluoroscopy_tool/store/http.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -41,26 +41,21 @@ class _copybasepageState extends State<firmwareDetail> {
       //     await _selfplatform.invokeMethod('firmwareDetails', <String, dynamic>{
       //   "byId": widget.byId.toString(),
       // });
+      // var firmwareDetailsdata = jsonDecode(firmwareDetails);
       var firmwareDetailsdata =
           await MideaApi.getChipsGet({"byId": widget.byId.toString()});
 
-      print("listFirmwares  getChipsGet ------ ${firmwareDetailsdata}");
       _firmwareDetails = firmwareDetailsdata["data"];
 
-      // var listFirmwares = await _selfplatform
-      //     .invokeMethod('firmwarePackages', <String, dynamic>{
-      //   "byId": widget.byId,
-      // });
-      var data = await MideaApi.getChipsPackageList({
-        "query": {
-          "pageSize": 20,
-          "componentIdIn": [widget.byId.toString()],
-          "tagOnFirstLine": "latest",
-          "pageIndex": 1
-        }
+      var listFirmwares = await _selfplatform
+          .invokeMethod('firmwarePackages', <String, dynamic>{
+        "byId": widget.byId,
       });
-
-      print("listFirmwares  getChipsPackageList ------ ${data}");
+      var data = jsonDecode(listFirmwares);
+      if (data["errorCode"].toString() == "1001") {
+        tologout();
+        return;
+      }
       if (data["success"] && data["data"] != null) {
         firmware.addAll(
             data["data"].where((item) => item["issueLevel"] == "GA").toList());
@@ -112,9 +107,11 @@ class _copybasepageState extends State<firmwareDetail> {
       //     .invokeMethod('firmwareDownloadUrl', <String, dynamic>{
       //   "byId": firmware[select]["id"].toString(),
       // });
+      // var data1 = jsonDecode(firmwareDownloadUrl);
 
       var data1 = await MideaApi.getChipsDownloadUrl(
           {"byId": firmware[select]["id"].toString()});
+
       if (data1["data"].isNotEmpty) {
         _selfController.setOtafirmware(data1["data"]);
         Get.back(result: {

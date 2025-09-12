@@ -237,7 +237,7 @@ class _bottomSheetState extends State<bottomSheet> {
                           tr('cancel'),
                           style: const TextStyle(
                               fontWeight: FontWeight.w400,
-                              fontSize: 14.0,
+                              fontSize: 16.0,
                               color: Color.fromRGBO(15, 17, 28, 0.5)),
                         ))),
                 Expanded(
@@ -262,7 +262,7 @@ class _bottomSheetState extends State<bottomSheet> {
                           tr('determine'),
                           style: const TextStyle(
                               fontWeight: FontWeight.w400,
-                              fontSize: 14.0,
+                              fontSize: 16.0,
                               color: Color.fromRGBO(43, 52, 72, 1)),
                         )))
               ],

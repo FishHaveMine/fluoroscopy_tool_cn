@@ -620,9 +620,9 @@ class _electronicExpansionValveState extends State<electronicExpansionValve> {
                             for (var i = 0; i < MaxSteplist.length; i++) {
                               op.add({
                                 'label':
-                                    '${tr(MaxSteplist[i])}${i > 0 ? '(暂未开放)' : ''}',
+                                    '${tr(MaxSteplist[i])}${i > 0 ? tr("needdone") : ''}',
                                 'name':
-                                    '${tr(MaxSteplist[i])}${i > 0 ? '(暂未开放)' : ''}',
+                                    '${tr(MaxSteplist[i])}${i > 0 ? tr("needdone") : ''}',
                                 'value': MaxSteplist[i],
                                 'disabled': i > 0 ? true : null
                               });

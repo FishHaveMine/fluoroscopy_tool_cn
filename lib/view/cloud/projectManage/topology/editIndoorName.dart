@@ -85,7 +85,7 @@ class _editIndoorNameState extends State<editIndoorName> {
               icon: const Icon(Icons.chevron_left,
                   color: Colors.black, size: 36)),
           title: const Text(
-            '编辑设备名称',
+            'editingdevice',
             style: TextStyle(color: Colors.black),
           ).tr(),
           centerTitle: true,
@@ -105,8 +105,8 @@ class _editIndoorNameState extends State<editIndoorName> {
                       decoration: cardStyle(context),
                       child: TextField(
                         focusNode: _focusNode,
-                        decoration: const InputDecoration(
-                          hintText: '请输入设备名称',
+                        decoration: InputDecoration(
+                          hintText: tr('indoorunitparameters.devicename'),
                           border: InputBorder.none, // 去掉默认的下划线边框
                         ),
                         onChanged: (val) {

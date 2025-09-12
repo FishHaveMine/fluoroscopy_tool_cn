@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
+import 'dart:math';
 
 import 'package:custom_pop_up_menu/custom_pop_up_menu.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -7,11 +9,11 @@ import 'package:empty_widget/empty_widget.dart';
 import 'package:fluoroscopy_tool/compent/baseContainer.dart';
 import 'package:fluoroscopy_tool/compent/bottomSelectSheet.dart';
 import 'package:fluoroscopy_tool/store/globalFunction.dart';
-import 'package:fluoroscopy_tool/store/http.dart';
 import 'package:fluoroscopy_tool/style/index.dart';
 import 'package:fluoroscopy_tool/view/cloud/device/SprinklerSetting.dart';
 import 'package:fluoroscopy_tool/view/cloud/publicFunction.dart';
 import 'package:fluoroscopy_tool/view/errorAnalysis/cloundErrorList.dart';
+import 'package:fluoroscopy_tool/view/errorAnalysis/errorHistory.dart';
 import 'package:fluoroscopy_tool/view/parametersSetting/clound.dart';
 import 'package:fluoroscopy_tool/view/trialRun/result.dart';
 import 'package:fluoroscopy_tool/view/userinfo.dart';
@@ -23,12 +25,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_table/table_sticky_headers.dart';
 
 import 'package:get/get.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_extend/share_extend.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:widgets_to_image/widgets_to_image.dart';
 
 import '../../local/checkData/class.dart';
 import '../../local/publicFunction.dart';
-import 'oldReformImageInfoWebList.dart';
 import 'style.dart';
 
 class deviceDetail extends StatefulWidget {
@@ -43,7 +46,8 @@ class _checkDataPageState extends State<deviceDetail> {
   bool isMODEL_OLD_CHANGE = false;
   static const platform =
       MethodChannel('samples.flutter.dev/getProjectHandler');
-  final cloudProjectController _deviceInfoController = Get.find();
+  final cloudProjectController _deviceInfoController =
+      Get.put(cloudProjectController());
 
   final userinfoController _promissioncontroller = Get.find();
   late Timer _timer;
@@ -62,7 +66,7 @@ class _checkDataPageState extends State<deviceDetail> {
     } catch (e) {}
     final prefs = await SharedPreferences.getInstance();
 
-    _timer = Timer.periodic(Duration(seconds: 60), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 60), (timer) {
       doing();
       if (isMODEL_OLD_CHANGE && !isload) {
         _oldChangeStatekey.currentState?.refreshTable();
@@ -74,7 +78,10 @@ class _checkDataPageState extends State<deviceDetail> {
   }
 
   var nodeTr = {};
-  initDatil() async {
+  String language = "cn";
+  initDatil({languageCode = "cn"}) async {
+    language = languageCode;
+    print("language: $language");
     try {
       if (_timer != null && _timer.isActive) _timer.cancel();
     } catch (e) {}
@@ -90,8 +97,8 @@ class _checkDataPageState extends State<deviceDetail> {
         _deviceInfoController.selectDevice.value["netModelEnum"] != null &&
             _deviceInfoController.selectDevice.value["netModelEnum"] ==
                 "MODEL_OLD_CHANGE";
-    // print(
-    //     "netModelEnum  ${isMODEL_OLD_CHANGE}:${_deviceInfoController.selectDevice.value["netModelEnum"]}");
+    print(
+        "netModelEnum  ${isMODEL_OLD_CHANGE}:${_deviceInfoController.selectDevice.value["netModelEnum"]}");
     // isMODEL_OLD_CHANGE = true;
     setState(() {
       isMODEL_OLD_CHANGE;
@@ -113,98 +120,54 @@ class _checkDataPageState extends State<deviceDetail> {
 
         refresh(() async {
           try {
-            String projectCode =
-                _deviceInfoController.selectDevice.value['projectCode'] ?? "";
-            // var sysDevCheckData = await platform.invokeMethod(
-            //     'getDeviceHandler.sysDevCheckData', {"sysid": nid});
-
-            var sys = await MideaApi.sysDevCheckDataV2(nid, projectCode);
-
-            // var sys = jsonDecode(sysDevCheckData);
-            // print('getSystemDataHandler.sysDevCheckData: $sys');
-            for (var element in sys["data"].keys) {
-              print(
-                  'sysData.data - [${element}]: [${sys["data"]["$element"]}]');
-            }
+            var sysDevCheckData = await platform.invokeMethod(
+                'getDeviceHandler.sysDevCheckData', {"sysid": nid});
+            var sys = jsonDecode(sysDevCheckData);
+            print('getSystemDataHandler.sysDevCheckData: $sys');
             if (sys["success"]) {
               var sysmap = {};
               if (sys["data"]["sysData"] != null) {
-                // for (var element in sys["data"]["sysData"]["properties"]) {
-                //   print(
-                //       'getSystemDataHandler.sysData.properties - [${element["title"]["cn"]}]: [${element["value"]}]');
-                // }
-
+                print(
+                    'getSystemDataHandler.sysData: ${sys["data"]["sysData"]}');
                 sysmap = fixValue(sys["data"]["sysData"], "system.", nodeTr);
-                for (var element in sysmap.keys) {
-                  print('sysmap.$element: ${sysmap[element]}');
-                }
+                fixValue(sys["data"]["sysData"], "outdoor.", nodeTr);
               }
               _deviceInfoController.setSysDevCheckData(sysmap);
 
               var outdoorList = [];
+              print(
+                  'getSystemDataHandler.outdoorList.length: ${sys["data"]["outdoorList"].length}');
               if (sys["data"]["outdoorList"] != null) {
-                fixValue(sys["data"]["outdoorList"][0], "outdoor.", nodeTr);
                 for (var element in sys["data"]["outdoorList"]) {
+                  print('getSystemDataHandler.outdoorList: $element');
                   outdoorList.add({}
                     ..addAll(element)
                     ..addAll(fixValue(element, "outdoor.", nodeTr)));
                 }
-                _deviceInfoController.setOutdoorList(outdoorList);
-              } else {
-                _deviceInfoController.setOutdoorList([]);
               }
-
-              var compressorList = [];
-              if (sys["data"]["compressorList"] != null) {
-                fixValue(sys["data"]["compressorList"][0], "compressorlist.",
-                    nodeTr);
-                for (var element in sys["data"]["compressorList"]) {
-                  compressorList.add({}
-                    ..addAll(element)
-                    ..addAll(fixValue(element, "compressorlist.", nodeTr)));
-                }
-                _deviceInfoController.setCompressorlist(compressorList);
-              } else {
-                _deviceInfoController.setCompressorlist([]);
+              print(
+                  'getSystemDataHandler.outdoorList.length:  --------- ${outdoorList.length}');
+              for (var item in outdoorList) {
+                print("item: $item");
               }
+              _deviceInfoController.setOutdoorList(outdoorList);
 
-              var sensorList = [];
-              if (sys["data"]["sensorList"] != null) {
-                fixValue(sys["data"]["sensorList"][0], "sensorlist.", nodeTr);
-                for (var element in sys["data"]["sensorList"]) {
-                  sensorList.add({}
-                    ..addAll(element)
-                    ..addAll(fixValue(element, "sensorlist.", nodeTr)));
-                }
-                _deviceInfoController.setSensorList(sensorList);
-              } else {
-                _deviceInfoController.setSensorList([]);
-              }
-
-              var valveList = [];
-              if (sys["data"]["valveList"] != null) {
-                fixValue(sys["data"]["valveList"][0], "valvelist.", nodeTr);
-                for (var element in sys["data"]["valveList"]) {
-                  valveList.add({}
-                    ..addAll(element)
-                    ..addAll(fixValue(element, "valvelist.", nodeTr)));
-                }
-                _deviceInfoController.setValveList(valveList);
-              } else {
-                _deviceInfoController.setValveList([]);
-              }
-
-              // print(
-              //     'getSystemDataHandler.outdoorList.length:  --------- ${outdoorList.where((number) => number["idx"] != "").toList().length}');
+              print(
+                  'getSystemDataHandler.outdoorList.length:  --------- ${outdoorList.where((number) => number["idx"] != "").toList().length}');
               var indoorList = [];
 
+              print(
+                  'getSystemDataHandler.indoorList.length: ${sys["data"]["indoorList"].length}');
               if (sys["data"]["indoorList"] != null) {
                 for (var element in sys["data"]["indoorList"]) {
+                  print('getSystemDataHandler.indoorList: $element');
                   indoorList.add({}
                     ..addAll(element)
                     ..addAll(fixValue(element, "indoor.", nodeTr)));
                 }
               }
+              print(
+                  'getSystemDataHandler.indoorList.length: --------- ${indoorList.length}');
               _deviceInfoController.setIndoorList(indoorList);
             }
             _deviceInfoController.setNoderTr(nodeTr);
@@ -231,7 +194,7 @@ class _checkDataPageState extends State<deviceDetail> {
         var getDetailBySnSnback = await platform
             .invokeMethod('getSystemDataHandler.getDetailBySn', {"sysid": sn});
         var info = jsonDecode(getDetailBySnSnback);
-        // print('getSystemDataHandler.getDetailBySn: $info');
+        print('getSystemDataHandler.getDetailBySn: $info');
         if (info["success"]) {
           _deviceInfoController.setSelectDeviceinfo(info["data"]);
         }
@@ -242,9 +205,8 @@ class _checkDataPageState extends State<deviceDetail> {
                 'getAppFluorineMachineEnergyHandler.snJumpModule',
                 {"sysid": sn});
             var snJumpModule = jsonDecode(snJumpModuleback);
-            // print(
-            //     "getAppFluorineMachineEnergyHandler.snJumpModule: $snJumpModule");
-
+            print(
+                "getAppFluorineMachineEnergyHandler.snJumpModule: $snJumpModule");
             if (snJumpModule["success"]) {
               _deviceInfoController.setsnJumpModule(snJumpModule["data"]);
             }
@@ -302,6 +264,7 @@ class _checkDataPageState extends State<deviceDetail> {
     var sysmap = {};
     if (data != null) {
       for (var element in data) {
+        print(element);
         sysmap[element["nameEn"].toString().toLowerCase().replaceAll(" ", "")] =
             element["val"].toString();
         nodeTr[(key + element["nameEn"])
@@ -317,15 +280,17 @@ class _checkDataPageState extends State<deviceDetail> {
     var sysmap = {};
     if (sys["properties"] != null) {
       for (var element in sys["properties"]) {
-        // print("${element["name"]}  :   ${element["value"]}");
+        // print("${element["name"]}  :   ${element['unit']}");
+        var unit =
+            element['unit'].toString() != "{}" ? " " + element['unit'] : "";
         if (element["name"] != null &&
             element["name"].runtimeType.toString() == "String") {
           // ignore: prefer_interpolation_to_compose_strings
           nodeTr[key + element["name"].toString().toLowerCase()] =
-              element["title"]['cn'];
+              element["title"][language];
 
           // nodeTr[element["name"].toString().toLowerCase()] =
-          //     element["title"]['cn'];
+          //     element["title"][language];
 
           if (element["propertyEnums"].runtimeType.toString() ==
                   "List<dynamic>" &&
@@ -334,17 +299,19 @@ class _checkDataPageState extends State<deviceDetail> {
             var found = propertyEnums.firstWhere(
                 (item) => item['val'] == element["value"],
                 orElse: () => null);
-            sysmap[element["name"].toString().toLowerCase()] =
-                found != null ? found["desc"]["cn"] : element["value"];
+            sysmap[element["name"].toString().toLowerCase()] = found != null
+                ? found["desc"][language]
+                : element["value"] + unit;
           } else {
-            sysmap[element["name"].toString().toLowerCase()] = element["value"];
+            sysmap[element["name"].toString().toLowerCase()] =
+                element["value"] + unit;
           }
         } else {
           nodeTr[key + element["title"]['en'].toString().toLowerCase()] =
-              element["title"]['cn'];
-          // nodeTr[key + element["title"]['en']] = element["title"]['cn'];
+              element["title"][language];
+          // nodeTr[key + element["title"]['en']] = element["title"][language];
           // nodeTr[element["title"]['en'].toString().toLowerCase()] =
-          //     element["title"]['cn'];
+          //     element["title"][language];
         }
       }
     } else {
@@ -368,7 +335,9 @@ class _checkDataPageState extends State<deviceDetail> {
         _promissioncontroller.checkCloundPromission("DeviceView_Unarchived",
             showtoast: false)) {
       WidgetsBinding.instance.addPostFrameCallback((_) async {
-        initDatil();
+        String? languageCode =
+            EasyLocalization.of(context)?.currentLocale?.languageCode;
+        initDatil(languageCode: languageCode);
       });
     } else {
       Future.delayed(const Duration(seconds: 3), () {
@@ -391,9 +360,11 @@ class _checkDataPageState extends State<deviceDetail> {
   Widget build(BuildContext context) {
     // Get height of app bar
     double appBarHeight = AppBar().preferredSize.height;
-
     // Calculate remaining height for page content
     double contentHeight = MediaQuery.of(context).size.height - appBarHeight;
+
+    String languageCode =
+        EasyLocalization.of(context)?.currentLocale!.languageCode ?? "cn";
     return WillPopScope(
         onWillPop: () async {
           return true;
@@ -449,7 +420,7 @@ class _checkDataPageState extends State<deviceDetail> {
                         const Padding(padding: EdgeInsets.fromLTRB(5, 0, 0, 0)),
                         Text(
                           'table.export',
-                          style: versionValue(context),
+                          style: versionValue(context, fs: 12.0),
                         ).tr()
                       ],
                     ))
@@ -473,7 +444,7 @@ class _checkDataPageState extends State<deviceDetail> {
                       countODUandIDUPage(onSetCloundRefreshTime: () {
                         print(
                             "__________________ onSetCloundRefreshTime ________________________");
-                        initDatil();
+                        initDatil(languageCode: languageCode);
                       }),
                       if (!isMODEL_OLD_CHANGE && !isload)
                         tablePage(key: _tablePageStatekey),
@@ -493,7 +464,8 @@ class deviceVersion extends StatefulWidget {
 }
 
 class _deviceVersionState extends State<deviceVersion> {
-  final cloudProjectController _deviceInfoController = Get.find();
+  final cloudProjectController _deviceInfoController =
+      Get.put(cloudProjectController());
 
   imageTurn() {
     if (_deviceInfoController.sysData.value["systemprotocoltype"] != null &&
@@ -574,7 +546,8 @@ class deviceInfoPage extends StatefulWidget {
 }
 
 class _deviceInfoPageState extends State<deviceInfoPage> {
-  final cloudProjectController _deviceInfoController = Get.find();
+  final cloudProjectController _deviceInfoController =
+      Get.put(cloudProjectController());
   @override
   Widget build(BuildContext context) {
     return GetBuilder<cloudProjectController>(
@@ -605,7 +578,7 @@ class _deviceInfoPageState extends State<deviceInfoPage> {
                               child: Center(
                                 child: Text('totalMatches',
                                         textAlign: TextAlign.center,
-                                        style: versionValue(context))
+                                        style: versionValue(context, fs: 12.0))
                                     .tr(),
                               ),
                             )
@@ -633,7 +606,7 @@ class _deviceInfoPageState extends State<deviceInfoPage> {
                               child: Center(
                                 child: Text('matchingNumber',
                                         textAlign: TextAlign.center,
-                                        style: versionValue(context))
+                                        style: versionValue(context, fs: 12.0))
                                     .tr(),
                               ),
                             )
@@ -657,7 +630,8 @@ class _deviceInfoPageState extends State<deviceInfoPage> {
                                   child: Text(
                                           '${_deviceInfoController.sysData.value['runmode'] ?? '--'}',
                                           textAlign: TextAlign.center,
-                                          style: versionValue(context))
+                                          style:
+                                              versionValue(context, fs: 12.0))
                                       .tr(),
                                 ),
                               )
@@ -680,7 +654,8 @@ class _deviceInfoPageState extends State<deviceInfoPage> {
                                   child: Text(
                                           '${_deviceInfoController.selectDevice.value["errorCode"] == "" ? '--' : _deviceInfoController.selectDevice.value["errorCode"]}',
                                           textAlign: TextAlign.center,
-                                          style: versionValue(context))
+                                          style:
+                                              versionValue(context, fs: 12.0))
                                       .tr(),
                                 ),
                               )
@@ -703,7 +678,8 @@ class countODUandIDUPage extends StatefulWidget {
 }
 
 class _countODUandIDUPageState extends State<countODUandIDUPage> {
-  final cloudProjectController _deviceInfoController = Get.find();
+  final cloudProjectController _deviceInfoController =
+      Get.put(cloudProjectController());
 
   final userinfoController _promissioncontroller = Get.find();
   late Timer _timer;
@@ -725,13 +701,13 @@ class _countODUandIDUPageState extends State<countODUandIDUPage> {
       "recoverFrequency": cloundRefreshTime.toString()
     };
     try {
-      // print('getProfessionalToolsHandler.updateSimFrequency:   $send');
+      print('getProfessionalToolsHandler.updateSimFrequency:   $send');
       var controlDebugging = await platform.invokeMethod(
           'getProfessionalToolsHandler.updateSimFrequency', send);
       var _data = jsonDecode(controlDebugging);
-      // print('getProfessionalToolsHandler.updateSimFrequency:   $_data');
+      print('getProfessionalToolsHandler.updateSimFrequency:   $_data');
       if (_data['success']) {
-        EasyLoading.showSuccess('设置成功');
+        EasyLoading.showSuccess(tr('settingsuccess'));
       } else {
         EasyLoading.showError(_data['errorMsg']);
       }
@@ -813,13 +789,18 @@ class _countODUandIDUPageState extends State<countODUandIDUPage> {
     } catch (e) {}
   }
 
-  bool isGetSimFrequencyEmpty = false;
   _getSimFrequency() async {
+    print(_deviceInfoController.selectDevice);
+    // 1 / 5 / 10
+
     String nid = _deviceInfoController.selectDevice.value["gatewayNid"];
     try {
       var controlDebugging = await platform.invokeMethod(
           'getProfessionalToolsHandler.getSimFrequency', {"gatewayNid": nid});
       var _data = jsonDecode(controlDebugging);
+      print('getProfessionalToolsHandler.getSimFrequency:  ${{
+        "gatewayNid": nid
+      }}  $_data');
       if (_data['data'] != null) {
         int setting = int.tryParse(_data['data'].toString()) ?? 5;
         if (![1, 5, 10, 20].contains(setting)) {
@@ -827,11 +808,6 @@ class _countODUandIDUPageState extends State<countODUandIDUPage> {
         }
         setState(() {
           cloundRefreshTime = setting;
-          isGetSimFrequencyEmpty = false;
-        });
-      } else {
-        setState(() {
-          isGetSimFrequencyEmpty = true;
         });
       }
     } catch (e) {
@@ -911,7 +887,7 @@ class _countODUandIDUPageState extends State<countODUandIDUPage> {
                   children: [
                     Text(
                       '${tr('local.ODU')} ${_deviceInfoController.selectDevice.value["outdoorNum"]}  ${tr('local.IDU')} ${_deviceInfoController.selectDevice.value["indoorNum"]}',
-                      style: versionValue(context),
+                      style: versionValue(context, fs: 12.0),
                     ),
                     if (_deviceInfoController.isMODEL_OLD_CHANGE.value)
                       Text(
@@ -922,11 +898,13 @@ class _countODUandIDUPageState extends State<countODUandIDUPage> {
                               ? "modifyType${_deviceInfoController.snJumpModule.value["oldReformSystemInfoVO"]["modifyType"].toString()}"
                               : "SPRAY_AND_OLD")
                         }),
-                        style: versionValue(context),
+                        style: versionValue(context, fs: 12.0),
                       ),
                     if (!_deviceInfoController.isMODEL_OLD_CHANGE.value)
                       TextButton(
                           onPressed: () {
+                            EasyLoading.showError(tr("withoutpromission"));
+                            return;
                             if (_promissioncontroller.checkCloundPromission(
                                     "FunctionParamsView",
                                     showtoast: false) ||
@@ -993,7 +971,8 @@ class _countODUandIDUPageState extends State<countODUandIDUPage> {
                             activeTrackColor:
                                 const Color(0xFF33D053), // 选中状态背景颜色
                           ),
-                        if (!_deviceInfoController.isMODEL_OLD_CHANGE.value)
+                        if (!_deviceInfoController.isMODEL_OLD_CHANGE.value &&
+                            false)
                           TextButton(
                               onPressed: () async {
                                 if (_promissioncontroller.checkCloundPromission(
@@ -1035,7 +1014,11 @@ class _countODUandIDUPageState extends State<countODUandIDUPage> {
                               )),
                         if (!_deviceInfoController.isMODEL_OLD_CHANGE.value)
                           Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
                             children: [
+                              Container(
+                                width: 55,
+                              ),
                               TextButton(
                                   onPressed: () {
                                     if (_promissioncontroller
@@ -1060,12 +1043,15 @@ class _countODUandIDUPageState extends State<countODUandIDUPage> {
                                     }
                                   },
                                   child: Container(
+                                    width: 120,
                                     padding: const EdgeInsets.all(8),
                                     decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(16),
                                         border: Border.all(
                                             width: 1, color: Colors.white)),
                                     child: Text("trialRun.getreport.title",
+                                            maxLines: 2,
+                                            textAlign: TextAlign.center,
                                             style: normalTextWhilte(
                                                 lineheight: 1.2))
                                         .tr(),
@@ -1087,12 +1073,15 @@ class _countODUandIDUPageState extends State<countODUandIDUPage> {
                                     }
                                   },
                                   child: Container(
+                                    width: 150,
                                     padding: const EdgeInsets.all(8),
                                     decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(16),
                                         border: Border.all(
                                             width: 1, color: Colors.white)),
                                     child: Text("smartFaultAnalysis",
+                                            maxLines: 1,
+                                            textAlign: TextAlign.center,
                                             style: normalTextWhilte(
                                                 lineheight: 1.2))
                                         .tr(),
@@ -1122,7 +1111,8 @@ class _tablePageState extends State<tablePage> {
 
   final deviceInfoController _deviceInfoController = Get.find();
 
-  final cloudProjectController _cloudProjectController = Get.find();
+  final cloudProjectController _cloudProjectController =
+      Get.put(cloudProjectController());
   Uint8List? bytes;
 
   final MethodChannel methodChannel =
@@ -1184,8 +1174,8 @@ class _tablePageState extends State<tablePage> {
         "outdoor.idx",
         "outdoor.outdoorPlateHorses",
         "outdoor.limitFrequencyStatus",
-        "outdoor.fanLevel1",
-        "outdoor.fanLevel2",
+        "outdoor.fan1Frequency",
+        "outdoor.fan2Frequency",
         "outdoor.alternatingVoltage",
         "outdoor.electricity",
         "outdoor.filthBlockageLevel",
@@ -1208,8 +1198,8 @@ class _tablePageState extends State<tablePage> {
         "outdoor.compressor2Frequency",
         "outdoor.directVoltage1",
         "outdoor.directVoltage2",
-        "outdoor.compressorElectric1",
-        "outdoor.compressorElectric2",
+        "outdoor.compressor1Electricity",
+        "outdoor.compressor2Electricity",
         "outdoor.compressorRunTime1",
         "outdoor.compressorRunTime2"
       ]
@@ -1222,15 +1212,15 @@ class _tablePageState extends State<tablePage> {
         "outdoor.t4Temp",
         "outdoor.t3Temp",
         "outdoor.t5Temp",
-        "outdoor.t6ATemp",
-        "outdoor.t6BTemp",
+        "outdoor.inletT6ATemp",
+        "outdoor.outletT6BTemp",
         "outdoor.t8Temp",
         "outdoor.tlTemp",
-        "outdoor.tg",
-        "outdoor.radiatorTemp1",
+        "outdoor.tgTemp",
+        "outdoor.radiatorTemp",
         "outdoor.radiatorTemp2",
-        "outdoor.t7C1Temp",
-        "outdoor.t7C2Temp",
+        "outdoor.dischargeTemp1",
+        "outdoor.dischargeTemp2",
         "outdoor.t71Temp",
         "outdoor.t72Temp",
         "outdoor.superHeatTemp"
@@ -1283,7 +1273,6 @@ class _tablePageState extends State<tablePage> {
   refreshTable() {
     try {
       List headerList = [];
-      print(_cloudProjectController.nodeTr);
       if (activeType != "IndoorUnitParameters") {
         headerList = showTypeColund
             .where((element) => element['key'] == activeType)
@@ -1310,41 +1299,6 @@ class _tablePageState extends State<tablePage> {
           return indexA.compareTo(indexB); // 按照指定顺序比较
         });
       }
-      if (activeType == "System") {
-        headerList = _cloudProjectController.nodeTr.keys
-            .toList()
-            .where((element) => element.toString().contains("system."))
-            .toList();
-      }
-
-      if (activeType == "OutdoorUnit") {
-        headerList = _cloudProjectController.nodeTr.keys
-            .toList()
-            .where((element) => element.toString().contains("outdoor."))
-            .toList();
-      }
-
-      if (activeType == "Compressor") {
-        headerList = _cloudProjectController.nodeTr.keys
-            .toList()
-            .where((element) => element.toString().contains("compressorlist."))
-            .toList();
-      }
-
-      if (activeType == "Sensor") {
-        headerList = _cloudProjectController.nodeTr.keys
-            .toList()
-            .where((element) => element.toString().contains("sensorlist."))
-            .toList();
-      }
-
-      if (activeType == "ValveBody") {
-        headerList = _cloudProjectController.nodeTr.keys
-            .toList()
-            .where((element) => element.toString().contains("valvelist."))
-            .toList();
-      }
-
       List<Widget> itemList = [tableHeaderIndex()];
       data = [];
       titleRow = [];
@@ -1357,22 +1311,10 @@ class _tablePageState extends State<tablePage> {
       if (activeType == 'System') {
         tablebase = [_cloudProjectController.sysData];
       }
-      if (activeType == 'OutdoorUnit') {
-        tablebase = [..._cloudProjectController.outdoorList];
+      if (['OutdoorUnit', 'Compressor', 'Sensor', 'ValveBody']
+          .contains(activeType)) {
+        tablebase = _cloudProjectController.outdoorList;
       }
-
-      if (activeType == 'Compressor') {
-        tablebase = [..._cloudProjectController.compressorlist];
-      }
-
-      if (activeType == 'Sensor') {
-        tablebase = [..._cloudProjectController.sensorList];
-      }
-
-      if (activeType == 'ValveBody') {
-        tablebase = [..._cloudProjectController.valveList];
-      }
-
       if (['IndoorUnitParameters'].contains(activeType)) {
         tablebase = _cloudProjectController.indoorList;
       }
@@ -1383,14 +1325,10 @@ class _tablePageState extends State<tablePage> {
         try {
           for (var element in headerList) {
             String elementKey = element.split('.')[1].toString().toLowerCase();
-            var val = tablebase[i][elementKey] == null ||
+            base.add(tablebase[i][elementKey] == null ||
                     tablebase[i][elementKey].toString() == ""
                 ? "--"
-                : '${tablebase[i][elementKey] ?? '--'} ${typeUnit[element] ?? ''}';
-            if (elementKey.toString().toUpperCase().contains("SN")) {
-              val = val.toString().toUpperCase();
-            }
-            base.add(val);
+                : '${tablebase[i][elementKey] ?? '--'} ${typeUnit[element] ?? ''}');
           }
         } catch (e) {}
         if (activeType == 'System') {
@@ -1470,8 +1408,8 @@ class _tablePageState extends State<tablePage> {
                             tr(showType[index]['name']),
                             textAlign: TextAlign.center,
                             style: activeType == showType[index]['key']
-                                ? versionValueActive(context)
-                                : versionValue(context),
+                                ? versionValueActive(context, fs: 12.0)
+                                : versionValue(context, fs: 12.0),
                           )),
                         ),
                         onTap: () {
@@ -1602,6 +1540,7 @@ class _tablePageState extends State<tablePage> {
                                   data[i][j].toString() == ""
                                       ? "--"
                                       : data[i][j],
+                                  textAlign: TextAlign.center,
                                   style: normalText(fSize: 12, lineheight: 1),
                                 ));
                               }),
@@ -1635,14 +1574,24 @@ class _tablePageState extends State<tablePage> {
                                 image: null,
                                 packageImage: null,
                                 title: tr('device.empty'),
-                                titleTextStyle: const TextStyle(
-                                  fontSize: 22,
-                                  color: Color(0xff9da9c7),
+                                titleTextStyle: TextStyle(
+                                  fontSize: EasyLocalization.of(context)
+                                              ?.currentLocale!
+                                              .languageCode ==
+                                          'zh'
+                                      ? 22
+                                      : 16,
+                                  color: const Color(0xff9da9c7),
                                   fontWeight: FontWeight.w500,
                                 ),
-                                subtitleTextStyle: const TextStyle(
-                                  fontSize: 14,
-                                  color: Color(0xffabb8d6),
+                                subtitleTextStyle: TextStyle(
+                                  fontSize: EasyLocalization.of(context)
+                                              ?.currentLocale!
+                                              .languageCode ==
+                                          'zh'
+                                      ? 14
+                                      : 12,
+                                  color: const Color(0xffabb8d6),
                                 ),
                               ),
                             ),
@@ -1674,7 +1623,8 @@ class oldChange extends StatefulWidget {
 }
 
 class _oldChangeState extends State<oldChange> {
-  final cloudProjectController _cloudProjectController = Get.find();
+  final cloudProjectController _cloudProjectController =
+      Get.put(cloudProjectController());
 
   String activeType = "System";
 
@@ -1740,11 +1690,9 @@ class _oldChangeState extends State<oldChange> {
       titleColumn = headerList
           .where((element) =>
               _cloudProjectController.nodeTr[element]
-                      .toString()
-                      .toLowerCase() !=
-                  null &&
-              _cloudProjectController.nodeTr.keys
-                  .contains(element.toString().toLowerCase()))
+                  .toString()
+                  .toLowerCase() !=
+              null)
           .toList();
 
       List tablebase = [];
@@ -1762,13 +1710,8 @@ class _oldChangeState extends State<oldChange> {
         List base = [];
         for (var element in headerList) {
           String elementKey = element.split('.')[1].toString().toLowerCase();
-
-          var val =
-              '${tablebase[i][elementKey] ?? '--'} ${typeUnit[element] == null ? '' : typeUnit[element]}';
-          if (elementKey.toString().toUpperCase().contains("SN")) {
-            val = val.toString().toUpperCase();
-          }
-          base.add(val);
+          base.add(
+              '${tablebase[i][elementKey] ?? '--'} ${typeUnit[element] == null ? '' : typeUnit[element]}');
         }
         if (activeType == 'System') {
           titleRow.add('$i#');
@@ -1893,231 +1836,189 @@ class _oldChangeState extends State<oldChange> {
                   if (activeType == "System")
                     _cloudProjectController.snJumpModule.value.isNotEmpty
                         ? const SystemShow()
-                        : SizedBox(
-                            width: 200.w,
-                            height: 210,
-                            child: EmptyWidget(
-                              image: null,
-                              packageImage: null,
-                              title: tr('device.empty'),
-                              titleTextStyle: const TextStyle(
-                                fontSize: 22,
-                                color: Color(0xff9da9c7),
-                                fontWeight: FontWeight.w500,
-                              ),
-                              subtitleTextStyle: const TextStyle(
-                                fontSize: 14,
-                                color: Color(0xffabb8d6),
-                              ),
-                            ),
-                          ),
+                        : Container(),
                   if (activeType != "System")
-                    titleColumn.isNotEmpty
-                        ? Container(
-                            decoration: const BoxDecoration(
-                                color: Colors.white,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(8.0))),
-                            child: ClipRRect(
-                                borderRadius: BorderRadius.circular(8),
-                                child: titleColumn.isNotEmpty
-                                    ? Container(
-                                        color: Colors.white,
-                                        height: (titleColumn.length + 1) * 50,
-                                        width: 720.w - 32.w * 2,
-                                        child: StickyHeadersTable(
-                                          cellDimensions: CellDimensions
-                                              .variableColumnWidthAndRowHeight(
-                                                  columnWidths: List.generate(
-                                                      titleRow.length,
-                                                      (index) =>
-                                                          (720.w - 32.w * 2) /
-                                                          (titleRow.length == 1
-                                                              ? 2
-                                                              : 3)),
-                                                  rowHeights: rowHeightsList(
-                                                      titleColumn.length),
-                                                  stickyLegendWidth:
-                                                      (720.w - 32.w * 2) /
-                                                          (titleRow.length == 1
-                                                              ? 2
-                                                              : 3),
-                                                  stickyLegendHeight: 72.h),
-                                          columnsLength: titleRow.length,
-                                          rowsLength: titleColumn.length,
-                                          columnsTitleBuilder: (i) => Container(
-                                            width: double.infinity,
-                                            height: double.infinity,
-                                            decoration: BoxDecoration(
-                                              border: Border.all(
-                                                color: const Color.fromRGBO(
-                                                    223, 223, 223, 1), // 边框颜色
-                                                width: 0.5, // 边框宽度
-                                              ),
-                                              borderRadius:
-                                                  BorderRadius.circular(
-                                                      0.0), // 圆角半径
-                                            ),
-                                            child: Center(
-                                                child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
-                                              children: [
-                                                Text(
-                                                  titleRow[i],
-                                                  maxLines: 1,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  textAlign: TextAlign.center,
-                                                  style: tableLabel(context),
-                                                )
-                                              ],
-                                            )),
-                                          ),
-                                          rowsTitleBuilder: (i) => Container(
-                                            width: double.infinity,
-                                            height: double.infinity,
-                                            decoration: BoxDecoration(
-                                              border: Border.all(
-                                                color: const Color.fromRGBO(
-                                                    223, 223, 223, 1), // 边框颜色
-                                                width: 0.5, // 边框宽度
-                                              ),
-                                              borderRadius:
-                                                  BorderRadius.circular(
-                                                      0.0), // 圆角半径
-                                            ),
-                                            child: Center(
-                                                child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
-                                              children: [
-                                                Padding(
-                                                    padding: const EdgeInsets
-                                                        .fromLTRB(0, 0, 0, 0),
-                                                    child: SizedBox(
-                                                      width: ((720.w -
-                                                                  32.w * 2 -
-                                                                  10) /
-                                                              (titleRow.length ==
-                                                                      1
-                                                                  ? 2
-                                                                  : 3)) -
-                                                          5,
-                                                      child: Text(
-                                                          _cloudProjectController
-                                                                      .nodeTr[
-                                                                  titleColumn[i]
-                                                                      .toString()
-                                                                      .toLowerCase()] ??
-                                                              titleColumn[i]
-                                                                  .toString()
-                                                                  .toLowerCase(),
-                                                          maxLines: 1,
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                          textAlign:
-                                                              TextAlign.center,
-                                                          style: tableLabel(
-                                                              context)),
-                                                    ))
-                                              ],
-                                            )),
-                                          ),
-                                          contentCellBuilder: (i, j) =>
-                                              Container(
-                                            width: double.infinity,
-                                            height: double.infinity,
-                                            decoration: BoxDecoration(
-                                              border: Border.all(
-                                                color: const Color.fromRGBO(
-                                                    223, 223, 223, 1), // 边框颜色
-                                                width: 0.5, // 边框宽度
-                                              ),
-                                              borderRadius:
-                                                  BorderRadius.circular(
-                                                      0.0), // 圆角半径
-                                            ),
-                                            child: GetBuilder<
-                                                    deviceInfoController>(
-                                                builder: (_) {
-                                              return Center(
-                                                  child: SafeText(
-                                                data[i][j],
-                                                style: normalText(),
-                                              ));
-                                            }),
-                                          ),
-                                          legendCell: Container(
-                                              width: double.infinity,
-                                              height: double.infinity,
-                                              decoration: BoxDecoration(
-                                                border: Border.all(
-                                                  color: const Color.fromRGBO(
-                                                      223, 223, 223, 1), // 边框颜色
-                                                  width: 0.5, // 边框宽度
-                                                ),
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                        0.0), // 圆角半径
-                                              ),
-                                              child: tableHeaderIndex(
-                                                width: titleRow.length == 1
-                                                    ? (720.w - 32.w * 2) / 2
-                                                    : 0,
-                                                rightText: 'table.parameter',
-                                                leftText: 'table.address',
-                                              )),
+                    Container(
+                      decoration: const BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.all(Radius.circular(8.0))),
+                      child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: titleColumn.isNotEmpty
+                              ? Container(
+                                  color: Colors.white,
+                                  height: 300,
+                                  width: 720.w - 32.w * 2,
+                                  child: StickyHeadersTable(
+                                    cellDimensions: CellDimensions
+                                        .variableColumnWidthAndRowHeight(
+                                            columnWidths: List.generate(
+                                                titleRow.length,
+                                                (index) =>
+                                                    (720.w - 32.w * 2) / 2),
+                                            rowHeights: rowHeightsList(
+                                                titleColumn.length),
+                                            stickyLegendWidth: (720.w -
+                                                    32.w * 2) /
+                                                (titleRow.length == 1 ? 2 : 3),
+                                            stickyLegendHeight: 72.h),
+                                    columnsLength: titleRow.length,
+                                    rowsLength: titleColumn.length,
+                                    columnsTitleBuilder: (i) => Container(
+                                      width: double.infinity,
+                                      height: double.infinity,
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                          color: const Color.fromRGBO(
+                                              223, 223, 223, 1), // 边框颜色
+                                          width: 0.5, // 边框宽度
                                         ),
-                                      )
-                                    : Center(
-                                        child: SizedBox(
-                                          width: 320.w,
-                                          height: 320.w,
-                                          child: Padding(
-                                            padding: EdgeInsets.fromLTRB(
-                                                0, 30.h, 0, 30.h),
-                                            child: EmptyWidget(
-                                              image: null,
-                                              packageImage: null,
-                                              title: tr('device.empty'),
-                                              titleTextStyle: const TextStyle(
-                                                fontSize: 22,
-                                                color: Color(0xff9da9c7),
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                              subtitleTextStyle:
-                                                  const TextStyle(
-                                                fontSize: 14,
-                                                color: Color(0xffabb8d6),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
+                                        borderRadius:
+                                            BorderRadius.circular(0.0), // 圆角半径
+                                      ),
+                                      child: Center(
+                                          child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            titleRow[i],
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            textAlign: TextAlign.center,
+                                            style: tableLabel(context),
+                                          )
+                                        ],
                                       )),
-                          )
-                        : SizedBox(
-                            width: 200.w,
-                            height: 210,
-                            child: EmptyWidget(
-                              image: null,
-                              packageImage: null,
-                              title: tr('device.empty'),
-                              titleTextStyle: const TextStyle(
-                                fontSize: 22,
-                                color: Color(0xff9da9c7),
-                                fontWeight: FontWeight.w500,
-                              ),
-                              subtitleTextStyle: const TextStyle(
-                                fontSize: 14,
-                                color: Color(0xffabb8d6),
-                              ),
-                            ),
-                          )
+                                    ),
+                                    rowsTitleBuilder: (i) => Container(
+                                      width: double.infinity,
+                                      height: double.infinity,
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                          color: const Color.fromRGBO(
+                                              223, 223, 223, 1), // 边框颜色
+                                          width: 0.5, // 边框宽度
+                                        ),
+                                        borderRadius:
+                                            BorderRadius.circular(0.0), // 圆角半径
+                                      ),
+                                      child: Center(
+                                          child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Padding(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      0, 0, 0, 0),
+                                              child: SizedBox(
+                                                width: ((720.w -
+                                                            32.w * 2 -
+                                                            10) /
+                                                        (titleRow.length == 1
+                                                            ? 2
+                                                            : 3)) -
+                                                    5,
+                                                child: Text(
+                                                    _cloudProjectController
+                                                            .nodeTr[titleColumn[
+                                                                i]
+                                                            .toString()
+                                                            .toLowerCase()] ??
+                                                        titleColumn[i]
+                                                            .toString()
+                                                            .toLowerCase(),
+                                                    maxLines: 1,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    textAlign: TextAlign.center,
+                                                    style: tableLabel(context)),
+                                              ))
+                                        ],
+                                      )),
+                                    ),
+                                    contentCellBuilder: (i, j) => Container(
+                                      width: double.infinity,
+                                      height: double.infinity,
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                          color: const Color.fromRGBO(
+                                              223, 223, 223, 1), // 边框颜色
+                                          width: 0.5, // 边框宽度
+                                        ),
+                                        borderRadius:
+                                            BorderRadius.circular(0.0), // 圆角半径
+                                      ),
+                                      child: GetBuilder<deviceInfoController>(
+                                          builder: (_) {
+                                        return Center(
+                                            child: SafeText(
+                                          data[i][j],
+                                          style: normalText(),
+                                        ));
+                                      }),
+                                    ),
+                                    legendCell: Container(
+                                        width: double.infinity,
+                                        height: double.infinity,
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                            color: const Color.fromRGBO(
+                                                223, 223, 223, 1), // 边框颜色
+                                            width: 0.5, // 边框宽度
+                                          ),
+                                          borderRadius: BorderRadius.circular(
+                                              0.0), // 圆角半径
+                                        ),
+                                        child: tableHeaderIndex(
+                                          width: titleRow.length == 1
+                                              ? (720.w - 32.w * 2) / 2
+                                              : 0,
+                                          rightText: 'table.parameter',
+                                          leftText: 'table.address',
+                                        )),
+                                  ),
+                                )
+                              : Center(
+                                  child: SizedBox(
+                                    width: 320.w,
+                                    height: 320.w,
+                                    child: Padding(
+                                      padding:
+                                          EdgeInsets.fromLTRB(0, 30.h, 0, 30.h),
+                                      child: EmptyWidget(
+                                        image: null,
+                                        packageImage: null,
+                                        title: tr('device.empty'),
+                                        titleTextStyle: TextStyle(
+                                          fontSize: EasyLocalization.of(context)
+                                                      ?.currentLocale!
+                                                      .languageCode ==
+                                                  'zh'
+                                              ? 22
+                                              : 16,
+                                          color: const Color(0xff9da9c7),
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                        subtitleTextStyle: TextStyle(
+                                          fontSize: EasyLocalization.of(context)
+                                                      ?.currentLocale!
+                                                      .languageCode ==
+                                                  'zh'
+                                              ? 14
+                                              : 12,
+                                          color: const Color(0xffabb8d6),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                )),
+                    )
                 ],
               ),
             ));
@@ -2140,31 +2041,7 @@ class _SystemShowState extends State<SystemShow> {
   double fsize = 16;
   final userinfoController _promissioncontroller = Get.find();
   var data = {};
-  var oldReformSystemInfoVO = null;
-  List oldReformSystemInfoVOKeys = [
-    "deviceBrand",
-    "pieces",
-    "modifyType",
-    "usedTimeYear",
-    "refType",
-    "coolCop",
-    "heatCop"
-  ];
-  var isFluorineEnergyImgListBack;
   init() async {
-    String projectCode =
-        _deviceInfoController.selectDevice.value['projectCode'] ?? "";
-    print('projectCode ------  $projectCode');
-    if (projectCode != "") {
-      var getFluorineEnergyImgListBack =
-          await MideaApi.getFluorineEnergyImgList(
-              {"pageSize": 20, "projectCode": "$projectCode", "pageIndex": 1});
-      print(
-          'getFluorineEnergyImgListBack ------  ${getFluorineEnergyImgListBack['data']}');
-      setState(() {
-        isFluorineEnergyImgListBack = getFluorineEnergyImgListBack['data'];
-      });
-    }
     if (_cloudProjectController.snJumpModule.value.isNotEmpty) {
       // for (var element in _cloudProjectController.snJumpModule.value.keys) {
       //   print(
@@ -2200,59 +2077,13 @@ class _SystemShowState extends State<SystemShow> {
           }
         }
 
-        try {
-          /**{deviceBrand: 美的, pieces: 24.0, modifyType: 2, usedTimeYear: 58, refType: R410A, coolCop: 12, heatCop: 11} */
-          if (_cloudProjectController
-                  .snJumpModule.value["oldReformSystemInfoVO"] !=
-              null) {
-            for (var element in _cloudProjectController
-                .snJumpModule.value["oldReformSystemInfoVO"].keys) {
-              // print(element);
-              data[element] = _cloudProjectController
-                  .snJumpModule.value["oldReformSystemInfoVO"][element]
-                  .toString();
-            }
-            setState(() {
-              oldReformSystemInfoVO = _cloudProjectController
-                  .snJumpModule.value["oldReformSystemInfoVO"];
-            });
-          }
-        } catch (e) {}
-
         // for (var element in data.keys) {
-        //   print('$element   --------   ${data[element]}');
+        //   print(element);
         // }
         setState(() {
           data;
         });
       }
-    }
-  }
-
-  _loadimage() async {
-    try {
-      EasyLoading.show(status: 'loading...');
-      String systemId = isFluorineEnergyImgListBack['oldReformImageInfoWebList']
-              ['data'][0]['systemId']
-          .toString();
-      if (systemId != "") {
-        var getFluorineEnergyImgDetailBack =
-            await MideaApi.getFluorineEnergyImgDetail(systemId);
-        EasyLoading.dismiss();
-        print(
-            'getFluorineEnergyImgDetailBack ------  ${getFluorineEnergyImgDetailBack['data']}');
-        if (getFluorineEnergyImgDetailBack['data'][0] != null) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => oldReformImageInfoWebListPage(
-                  data: getFluorineEnergyImgDetailBack['data'][0]),
-            ),
-          );
-        }
-      }
-    } catch (e) {
-      EasyLoading.dismiss();
     }
   }
 
@@ -2262,12 +2093,6 @@ class _SystemShowState extends State<SystemShow> {
       init();
     });
     super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    EasyLoading.dismiss();
   }
 
   _reset() {
@@ -2319,103 +2144,6 @@ class _SystemShowState extends State<SystemShow> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        if (oldReformSystemInfoVO != null)
-          Container(
-            width: 720.w,
-            decoration: cardStyleFull(context),
-            margin: EdgeInsets.fromLTRB(0, 0, 0, 24.h),
-            padding: EdgeInsets.all(26.w),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "旧改系统信息",
-                  style: titleText(lineheight: 1.5),
-                ).tr(),
-                Row(
-                  children: [
-                    Text(
-                      "功能:",
-                      style: normalText(fSize: fsize),
-                    ).tr(),
-                    const Padding(padding: EdgeInsets.all(4)),
-                    SafeText(
-                      data["modifyType"] != null
-                          ? tr('modifyType' + data["modifyType"])
-                          : "--",
-                      style: normalTextBlack(fSize: fsize),
-                    )
-                  ],
-                ),
-                Row(
-                  children: [
-                    Text(
-                      "设备品牌:",
-                      style: normalText(fSize: fsize),
-                    ).tr(),
-                    const Padding(padding: EdgeInsets.all(4)),
-                    SafeText(
-                      data["deviceBrand"] ?? "--",
-                      style: normalTextBlack(fSize: fsize),
-                    )
-                  ],
-                ),
-                Row(
-                  children: [
-                    Text(
-                      "外机匹数(HP):",
-                      style: normalText(fSize: fsize),
-                    ).tr(),
-                    const Padding(padding: EdgeInsets.all(4)),
-                    SafeText(
-                      data["pieces"] ?? "--",
-                      style: normalTextBlack(fSize: fsize),
-                    )
-                  ],
-                ),
-                Row(
-                  children: [
-                    Text(
-                      "外机运行年限:",
-                      style: normalText(fSize: fsize),
-                    ).tr(),
-                    const Padding(padding: EdgeInsets.all(4)),
-                    SafeText(
-                      data["usedTimeYear"] ?? "--",
-                      style: normalTextBlack(fSize: fsize),
-                    )
-                  ],
-                ),
-                Row(
-                  children: [
-                    Text(
-                      "制冷额定功率:",
-                      style: normalText(fSize: fsize),
-                    ).tr(),
-                    const Padding(padding: EdgeInsets.all(4)),
-                    SafeText(
-                      data["coolCop"] ?? "--",
-                      style: normalTextBlack(fSize: fsize),
-                    )
-                  ],
-                ),
-                Row(
-                  children: [
-                    Text(
-                      "制热额定功率:",
-                      style: normalText(fSize: fsize),
-                    ).tr(),
-                    const Padding(padding: EdgeInsets.all(4)),
-                    SafeText(
-                      data["heatCop"] ?? "--",
-                      style: normalTextBlack(fSize: fsize),
-                    )
-                  ],
-                ),
-              ],
-            ),
-          ),
         Container(
           width: 720.w,
           decoration: cardStyleFull(context),
@@ -2679,40 +2407,34 @@ class _SystemShowState extends State<SystemShow> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (data["sprayMeter"] != null)
-                Row(
-                  children: [
-                    Text(
-                      "oldChangecard.sprayMeter",
-                      style: normalText(fSize: fsize),
-                    ).tr(),
-                    const Padding(padding: EdgeInsets.all(4)),
-                    Text(
-                      data["sprayMeter"].toString() != "{}"
-                          ? data["sprayMeter"]
-                          : "--",
-                      style: normalTextBlack(fSize: fsize),
-                    )
-                  ],
-                ),
-              if (isFluorineEnergyImgListBack != null)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "主机旧改照片:",
-                      style: normalText(),
-                    ),
-                    TextButton(
-                        onPressed: () {
-                          _loadimage();
-                        },
-                        child: Text('查看'))
-                  ],
-                ),
+              Row(
+                children: [
+                  Text(
+                    "oldChangecard.sprayMeter",
+                    style: normalText(fSize: fsize),
+                  ).tr(),
+                  const Padding(padding: EdgeInsets.all(4)),
+                  Text(
+                    data["sprayMeter"] ?? "--",
+                    style: normalTextBlack(fSize: fsize),
+                  )
+                ],
+              ),
+              // Row(
+              //   children: [
+              //     Text(
+              //       "主机旧改照片:",
+              //       style: normalText(),
+              //     ),
+              //     Text(
+              //       "108",
+              //       style: normalTextBlack(),
+              //     )
+              //   ],
+              // ),
             ],
           ),
-        ),
+        )
       ],
     );
   }

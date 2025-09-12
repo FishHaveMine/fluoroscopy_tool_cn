@@ -11,6 +11,7 @@ import 'package:fluoroscopy_tool/view/ota/deviceStatus.dart';
 import 'package:fluoroscopy_tool/view/userinfo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../store/globalData.dart' hide connectType;
@@ -19,6 +20,8 @@ import 'publicFunction.dart';
 import 'style.dart';
 
 import 'package:get/get.dart';
+
+/// 包含设备历史告警（errorAnalysisPage）、OTA（otaDeviceStatus）、售后换板（NewBoardParameterImportAuthorization）
 
 class otaCard extends StatefulWidget {
   const otaCard({super.key});
@@ -35,6 +38,24 @@ class _otaCardState extends State<otaCard> {
       MethodChannel('samples.flutter.dev/RefrigerantService');
   final afterSalesReplacementController _selfController =
       Get.put(afterSalesReplacementController());
+
+  bool isnetconnecd = false;
+  _checknet() async {
+    try {
+      final response = await Dio().get('https://${apiHost}/');
+      setState(() {
+        isnetconnecd = response.statusCode == 200;
+      });
+    } catch (e) {}
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _checknet();
+  }
+
   @override
   Widget build(BuildContext context) {
     return GetBuilder<deviceInfoController>(
@@ -49,12 +70,6 @@ class _otaCardState extends State<otaCard> {
                       // return;
                       if (_promissioncontroller
                           .checkLocalPromission("FaultIntelliAnalysis")) {
-                        bool isnetconnecd = false;
-                        try {
-                          final response =
-                              await Dio().get('https://${apiHost}/');
-                          isnetconnecd = response.statusCode == 200;
-                        } catch (e) {}
                         bool issend = await divConfirmOnlyDialog(context,
                             confirmText: _deviceInfoController
                                     .loacalDevice.value.isconnected
@@ -123,7 +138,8 @@ class _otaCardState extends State<otaCard> {
                                 ),
                               ),
                             ));
-                        if (issend != null) {
+                        print("issend: $issend");
+                        if (issend != null && issend) {
                           if (_deviceInfoController
                               .loacalDevice.value.isconnected) {
                             try {
@@ -155,63 +171,65 @@ class _otaCardState extends State<otaCard> {
                       decoration: cardStyle(context),
                       margin: const EdgeInsets.fromLTRB(0, 0, 10, 0),
                       padding: EdgeInsets.all(24.w),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  '故障解析',
-                                  style: funName(context),
-                                  overflow: TextOverflow.ellipsis,
-                                ).tr(),
-                              ),
-                              const Icon(
-                                Icons.chevron_right,
-                                color: Color.fromRGBO(136, 136, 136, 1),
-                              )
-                            ],
-                          ),
-                          const Padding(padding: EdgeInsets.all(5)),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Image.asset(
-                                'public/images/deviceError.png',
-                                height: 128.w,
-                              ),
-                              Expanded(
-                                  child: Center(
-                                child: Column(
-                                  children: [
-                                    Text(
-                                        _deviceInfoController.loacalDevice.value
-                                                        .errorCode ==
-                                                    "0" ||
-                                                !_deviceInfoController
-                                                    .loacalDevice
-                                                    .value
-                                                    .isconnected
-                                            ? "--"
-                                            : _deviceInfoController
-                                                .loacalDevice.value.errorCode,
-                                        style: deviceError(context)),
-                                    const Padding(
-                                        padding:
-                                            EdgeInsets.fromLTRB(0, 0, 0, 8)),
-                                    Text(
-                                      'faultCode',
-                                      style: deviceErrorInfo(context),
-                                    ).tr()
-                                  ],
+                      child: SingleChildScrollView(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    'smartFaultAnalysis',
+                                    style: funName(context),
+                                    overflow: TextOverflow.visible,
+                                  ).tr(),
                                 ),
-                              ))
-                            ],
-                          )
-                        ],
+                                const Icon(
+                                  Icons.chevron_right,
+                                  color: Color.fromRGBO(136, 136, 136, 1),
+                                )
+                              ],
+                            ),
+                            const Padding(padding: EdgeInsets.all(5)),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Image.asset(
+                                  'public/images/deviceError.png',
+                                  height: 128.w,
+                                ),
+                                Expanded(
+                                    child: Center(
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                          _deviceInfoController.loacalDevice
+                                                          .value.errorCode ==
+                                                      "0" ||
+                                                  !_deviceInfoController
+                                                      .loacalDevice
+                                                      .value
+                                                      .isconnected
+                                              ? "--"
+                                              : _deviceInfoController
+                                                  .loacalDevice.value.errorCode,
+                                          style: deviceError(context)),
+                                      const Padding(
+                                          padding:
+                                              EdgeInsets.fromLTRB(0, 0, 0, 8)),
+                                      Text(
+                                        'faultCode',
+                                        style: deviceErrorInfo(context),
+                                      ).tr()
+                                    ],
+                                  ),
+                                ))
+                              ],
+                            )
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -344,6 +362,7 @@ class _otaCardState extends State<otaCard> {
                                   child: Text(
                                 'afterSalesReplacement',
                                 overflow: TextOverflow.ellipsis,
+                                maxLines: 2,
                                 style: funName(context),
                               ).tr())
                             ],
@@ -352,6 +371,13 @@ class _otaCardState extends State<otaCard> {
                       ),
                       InkWell(
                         onTap: () async {
+                          if (_deviceInfoController.isBluetooth.value) {
+                            EasyLoading.showError(tr("bluetooth.dissupport"));
+                            return;
+                          }
+
+                          await _deviceInfoController
+                              .setLocalBluetoothConnect(false);
                           // Get.to(() => otaDeviceStatus());
                           // return;
                           if (_promissioncontroller
@@ -464,27 +490,32 @@ class _otaCardState extends State<otaCard> {
                           }
                           // Get.to(() => otaDeviceStatus());
                         },
-                        child: Container(
-                          height: 112.h,
-                          width: 318.w,
-                          padding: EdgeInsets.fromLTRB(38.w, 0.w, 38.w, 0.w),
-                          decoration: cardStyle(context),
-                          child: Row(
-                            children: [
-                              Image.asset(
-                                'public/images/icon/ProgramUpgrade.png',
-                                width: 64.w,
-                              ),
-                              SizedBox(
-                                width: 33.w,
-                              ),
-                              Expanded(
-                                  child: Text(
-                                'programUpgrade',
-                                overflow: TextOverflow.ellipsis,
-                                style: funName(context),
-                              ).tr())
-                            ],
+                        child: Opacity(
+                          opacity:
+                              _deviceInfoController.isBluetooth.value ? 0.4 : 1,
+                          child: Container(
+                            height: 112.h,
+                            width: 318.w,
+                            padding: EdgeInsets.fromLTRB(38.w, 0.w, 38.w, 0.w),
+                            decoration: cardStyle(context),
+                            child: Row(
+                              children: [
+                                Image.asset(
+                                  'public/images/icon/ProgramUpgrade.png',
+                                  width: 64.w,
+                                ),
+                                SizedBox(
+                                  width: 33.w,
+                                ),
+                                Expanded(
+                                    child: Text(
+                                  'programUpgrade',
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: funName(context),
+                                ).tr())
+                              ],
+                            ),
                           ),
                         ),
                       )

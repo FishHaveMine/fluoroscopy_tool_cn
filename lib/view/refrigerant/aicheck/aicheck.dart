@@ -50,6 +50,8 @@ class _copybasepageState extends State<aicheck> {
 
   @override
   Widget build(BuildContext context) {
+    bool isCN =
+        EasyLocalization.of(context)?.currentLocale!.languageCode == 'zh';
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.white,
@@ -122,8 +124,9 @@ class _copybasepageState extends State<aicheck> {
                           padding: EdgeInsets.fromLTRB(10, 0, 0, 2),
                           child: Text(
                             "refrigerant.autoInputStep4",
-                            style:
-                                normalTextBlack(fSize: 16, fw: FontWeight.w600),
+                            maxLines: 2,
+                            style: normalTextBlack(
+                                fSize: isCN ? 16 : 14, fw: FontWeight.w600),
                           ).tr(),
                         )
                       ],

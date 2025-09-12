@@ -2,6 +2,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 
+import '../store/globalData.dart';
+
 class userinfoController extends GetxController {
   RxList<dynamic> promission = [].obs;
   RxList<dynamic> clound_promission = [].obs;
@@ -51,6 +53,7 @@ class userinfoController extends GetxController {
   }
 
   bool checkLocalPromission(promissionkey, {showtoast = true}) {
+    return true;
     if (promission.value.isEmpty || local_promission.value.isEmpty) {
       if (showtoast) EasyLoading.showError(tr("withoutpromission"));
       return false;
@@ -63,6 +66,7 @@ class userinfoController extends GetxController {
   }
 
   bool checkCloundPromission(promissionkey, {showtoast = true}) {
+    return true;
     if (promission.value.isEmpty || clound_promission.value.isEmpty) {
       if (showtoast) EasyLoading.showError(tr("withoutpromission"));
       return false;

@@ -8,19 +8,14 @@ import 'package:fluoroscopy_tool/store/globalFunction.dart';
 import 'package:fluoroscopy_tool/view/userinfo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../compent/projectinfo.dart';
 import '../../style/index.dart';
 
 import 'package:get/get.dart';
 
 import 'projectCreate/oldProject/step1.dart';
-import 'projectCreate/oldProject/step2.dart';
 import 'projectManage/projectDetail.dart';
 import 'publicFunction.dart';
 
@@ -44,7 +39,8 @@ class _projectListState extends State<projectList> {
       MethodChannel('samples.flutter.dev/getProjectHandler');
   CustomPopupMenuController _controller = CustomPopupMenuController();
   final userinfoController _promissioncontroller = Get.find();
-  final cloudProjectController _selectController = Get.find();
+  final cloudProjectController _selectController =
+      Get.put(cloudProjectController());
   List<String> menuItems = [
     'createProject',
     // '创建常规项目',
@@ -156,7 +152,6 @@ class _projectListState extends State<projectList> {
                 .addAll(data["data"].map((e) => _echangeData(e)).toList());
           }
         }
-        print(nearestProjectdata);
         setState(() {
           nearestProjectdata;
         });
@@ -475,7 +470,7 @@ class _projectListState extends State<projectList> {
                                   searchProject(false);
                                 },
                                 child: Container(
-                                  width: 55,
+                                  width: 75,
                                   height: 36,
                                   margin: const EdgeInsets.all(5),
                                   decoration: BoxDecoration(
@@ -582,23 +577,23 @@ class _projectListState extends State<projectList> {
                                           right: 0,
                                           top: 16,
                                           child: Container(
-                                            padding: const EdgeInsets.all(8),
-                                            decoration: const BoxDecoration(
-                                              color: Color(0xFF33D053),
-                                              borderRadius: BorderRadius.only(
-                                                topLeft: Radius.circular(100),
-                                                bottomLeft:
-                                                    Radius.circular(100),
-                                                topRight: Radius.circular(0),
-                                                bottomRight: Radius.circular(0),
-                                              ),
-                                            ),
-                                            child: const Text(
-                                              "nearproject",
-                                              style: TextStyle(
-                                                  color: Colors.white),
-                                            ).tr(),
-                                          ))
+                                              // padding: const EdgeInsets.all(8),
+                                              // decoration: const BoxDecoration(
+                                              //   color: Color(0xFF33D053),
+                                              //   borderRadius: BorderRadius.only(
+                                              //     topLeft: Radius.circular(100),
+                                              //     bottomLeft:
+                                              //         Radius.circular(100),
+                                              //     topRight: Radius.circular(0),
+                                              //     bottomRight: Radius.circular(0),
+                                              //   ),
+                                              // ),
+                                              // child: const Text(
+                                              //   "nearproject",
+                                              //   style: TextStyle(
+                                              //       color: Colors.white),
+                                              // ).tr(),
+                                              ))
                                   ],
                                 ));
                           }))

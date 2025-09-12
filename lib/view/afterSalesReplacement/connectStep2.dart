@@ -48,6 +48,8 @@ class _connectStep2PageState extends State<connectStep2Page> {
 
   @override
   Widget build(BuildContext context) {
+    bool isCN =
+        EasyLocalization.of(context)?.currentLocale!.languageCode == 'zh';
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -89,7 +91,7 @@ class _connectStep2PageState extends State<connectStep2Page> {
                 ),
                 Center(
                   child: Image.asset(
-                    'public/images/afterSalesReplacement/${!indoorconnectType.contains(_selfController.connectType.value) ? "outdoor.png" : "indoor.png"}',
+                    'public/images/afterSalesReplacement/${!indoorconnectType.contains(_selfController.connectType.value) ? "outdoor${isCN ? "" : "_en"}.png" : "indoor${isCN ? "" : "_en"}.png"}',
                     width: 487.w,
                   ),
                 )

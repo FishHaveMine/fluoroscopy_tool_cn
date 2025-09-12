@@ -8,6 +8,8 @@ import 'package:flutter/src/animation/animation_controller.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+// 高德定位
+
 class locationpage extends StatefulWidget {
   Function getlocation;
   locationpage({super.key, required this.getlocation});
@@ -86,7 +88,7 @@ class _locationpageState extends State<locationpage>
     ///Android: https://lbs.amap.com/api/android-location-sdk/guide/create-project/get-key
     ///iOS: https://lbs.amap.com/api/ios-location-sdk/guide/create-project/get-key
     AMapFlutterLocation.setApiKey(
-        "1e60ebce068ad7297f072b669b136420", "1e60ebce068ad7297f072b669b136420");
+        "ccd041ead9e54b0b6b5ee015596514b1", "ccd041ead9e54b0b6b5ee015596514b1");
 
     ///注册定位结果监听
     _locationListener = _locationPlugin

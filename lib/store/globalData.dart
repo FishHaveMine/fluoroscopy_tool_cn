@@ -34,14 +34,15 @@ import 'package:get/get.dart' hide Response;
 String externalVersion = '';
 String internalVersion = '';
 String apiHost = ""; //btri-dev   mibp.midea.com
+String appCOUNTRY = ""; //CN US
 String file_Url = '';
 bool istoupdata = true;
-final options = BaseOptions(
-  baseUrl: 'https://${apiHost}/api/apps-version-manager/',
-  connectTimeout: const Duration(seconds: 30),
-  receiveTimeout: const Duration(seconds: 60),
-);
-final dio = Dio(options);
+// final options = BaseOptions(
+//   baseUrl: 'https://${apiHost}/api/apps-version-manager/',
+//   connectTimeout: const Duration(seconds: 30),
+//   receiveTimeout: const Duration(seconds: 60),
+// );
+// final dio = Dio(options);
 
 Future<bool> checkNet(show) async {
   try {
@@ -137,17 +138,21 @@ void _launchURL(String url) async {
 }
 
 checkversion(context) async {
-  print("checkversion: $externalVersion  -- $internalVersion");
+  const env = String.fromEnvironment('ENV', defaultValue: 'prod');
+  // 正式环境请求  mibp.midea.com
+  // 测试环境请求  btri-dev.midea.com
+  String _baseUrl =
+      'https://${env == "dev" ? "btri-dev.midea.com" : "mibp.midea.com"}/api/apps-version-manager/';
   if (externalVersion == "" || internalVersion == "") {
     return;
   }
   try {
-    Response response = await dio.post('/v1/app/use/getLatest', data: {
-      "appId": "fluoroscopy_tool",
-      "channelId": "4",
+    Response response =
+        await Dio().post('$_baseUrl/v1/app/use/getLatest', data: {
+      "appId": "fluoroscopy_tool_en",
+      "channelId": "4" // 安卓 4。  ios 2
     });
-
-    print("checkversion: $response");
+    print("checkversion: ${response}");
     if (response.data['success'] && response.data['data'] != null) {
       file_Url = response.data['data']['fileUrl'];
       String external_Version = response.data['data']['externalVersion'];
@@ -157,8 +162,10 @@ checkversion(context) async {
           "${int.parse(internal_Version)} > ${int.parse(internalVersion)} : ${external_Version != externalVersion || int.parse(internal_Version) > int.parse(internalVersion)}");
       if (external_Version != externalVersion ||
           int.parse(internal_Version) > int.parse(internalVersion)) {
-        //修改判断条件 构建版本大于现在版本则更新
         if (upgrade == "1") {
+          /**
+             * 强制更新
+             */
           /**
              * 强制更新
              */
@@ -167,53 +174,7 @@ checkversion(context) async {
                 msg: response.data['data']["msg"] ?? "",
                 url: file_Url,
               ));
-
           return;
-          divConfirmOnlyDialog(context,
-              confirmDescriptionWidget: Container(
-                width: 560.w,
-                height: response.data['data']["msg"] != null &&
-                        response.data['data']["msg"] != ""
-                    ? 220
-                    : 100,
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      Padding(
-                          padding: const EdgeInsets.all(15),
-                          child: RichText(
-                            text: TextSpan(
-                              style: const TextStyle(
-                                  color: Colors.black,
-                                  height: 1.5,
-                                  fontSize: 16.0),
-                              text: tr('updataTipAsk'),
-                            ),
-                          )),
-                      if (response.data['data']["msg"] != null &&
-                          response.data['data']["msg"] != "")
-                        Padding(
-                            padding: const EdgeInsets.all(15),
-                            child: RichText(
-                              text: TextSpan(
-                                style: const TextStyle(
-                                    color: Colors.black,
-                                    height: 1.5,
-                                    fontSize: 16.0),
-                                text: response.data['data']["msg"],
-                              ),
-                            ))
-                    ],
-                  ),
-                ),
-              )).then((value) => {
-                Get.off(() => UpdateInProgressPage(
-                      msg: response.data['data']["msg"] ?? "",
-                      url: file_Url,
-                    ))
-
-                // UpdateManager.downloadAndInstall(file_Url)
-              });
         } else {
           if (istoupdata) {
             divConfirmDialog(context,
@@ -235,9 +196,7 @@ checkversion(context) async {
                                     color: Colors.black,
                                     height: 1.5,
                                     fontSize: 16.0),
-                                text: tr('updataTipAsk', namedArgs: {
-                                  "val": "$external_Version($internal_Version)"
-                                }),
+                                text: tr('updataTipAsk'),
                               ),
                             )),
                         if (response.data['data']["msg"] != null &&
@@ -283,27 +242,28 @@ List connectType = [
 ];
 
 Future<String> fetchAndSaveJsonData(lang) async {
-  String url =
-      "https://btri-dev.midea.com/api/mibp-basic-account/v1/i18n/kv/pair?source=fluoroscopy_tool&lang=$lang"; // 替换为实际URL
-  print(url);
-  final response = await dio.get(url);
+  return '';
+  // String url =
+  //     "https://btri-dev.midea.com/api/mibp-basic-account/v1/i18n/kv/pair?source=fluoroscopy_tool&lang=$lang"; // 替换为实际URL
+  // print(url);
+  // final response = await dio.get(url);
 
-  if (response.statusCode == 200) {
-    // 如果需要可以解析 JSON 数据
-    var data = response.data["data"];
-    // 获取保存文件的路径
-    final directory = await getApplicationDocumentsDirectory();
-    final filePath =
-        '${directory.path}/${lang.toString().replaceAll("_", "-")}.json';
-    final file = File(filePath);
-    // 将数据写入文件
-    await file.writeAsString(json.encode(data));
-    print('数据已保存到: $filePath');
-    return '${directory.path}';
-  } else {
-    print('请求失败，状态码：${response.statusCode}');
-    return '';
-  }
+  // if (response.statusCode == 200) {
+  //   // 如果需要可以解析 JSON 数据
+  //   var data = response.data["data"];
+  //   // 获取保存文件的路径
+  //   final directory = await getApplicationDocumentsDirectory();
+  //   final filePath =
+  //       '${directory.path}/${lang.toString().replaceAll("_", "-")}.json';
+  //   final file = File(filePath);
+  //   // 将数据写入文件
+  //   await file.writeAsString(json.encode(data));
+  //   print('数据已保存到: $filePath');
+  //   return '${directory.path}';
+  // } else {
+  //   print('请求失败，状态码：${response.statusCode}');
+  //   return '';
+  // }
 }
 
 // 异步判断文件是否存在

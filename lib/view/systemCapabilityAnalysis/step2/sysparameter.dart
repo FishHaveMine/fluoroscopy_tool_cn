@@ -343,14 +343,24 @@ class _tableviewState extends State<tableview> {
                 image: null,
                 packageImage: null,
                 title: tr('device.empty'),
-                titleTextStyle: const TextStyle(
-                  fontSize: 22,
-                  color: Color(0xff9da9c7),
+                titleTextStyle: TextStyle(
+                  fontSize: EasyLocalization.of(context)
+                              ?.currentLocale!
+                              .languageCode ==
+                          'zh'
+                      ? 22
+                      : 16,
+                  color: const Color(0xff9da9c7),
                   fontWeight: FontWeight.w500,
                 ),
-                subtitleTextStyle: const TextStyle(
-                  fontSize: 14,
-                  color: Color(0xffabb8d6),
+                subtitleTextStyle: TextStyle(
+                  fontSize: EasyLocalization.of(context)
+                              ?.currentLocale!
+                              .languageCode ==
+                          'zh'
+                      ? 14
+                      : 12,
+                  color: const Color(0xffabb8d6),
                 ),
               ),
             ),

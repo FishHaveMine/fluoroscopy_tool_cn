@@ -26,8 +26,7 @@ import 'moduleReplacement.dart';
 import 'projectDetail.dart';
 
 class deviceManage extends StatefulWidget {
-  var base;
-  deviceManage({super.key, this.base});
+  deviceManage({super.key});
 
   @override
   State<deviceManage> createState() => _copybasepageState();
@@ -38,10 +37,11 @@ class _copybasepageState extends State<deviceManage> {
       MethodChannel('samples.flutter.dev/getProjectHandler');
 
   final userinfoController _promissioncontroller = Get.find();
-  final cloudProjectController _selectController = Get.find();
+  final cloudProjectController _selectController =
+      Get.put(cloudProjectController());
   List<String> menuItems = [
     'projectDetail.deviceManage.action1',
-    'projectDetail.deviceManage.action2',
+    // 'projectDetail.deviceManage.action2',
     'projectDetail.deviceManage.action3',
     'projectDetail.deviceManage.action4',
     'projectDetail.deviceManage.action5',
@@ -64,7 +64,7 @@ class _copybasepageState extends State<deviceManage> {
     "all": "all",
     "0": "MODEL_4G",
     "1": "MODEL_M0",
-    "2": "MODEL_OLD_CHANGE"
+    // "2": "MODEL_OLD_CHANGE"
   };
   Map statusMap = {
     "all": "all",
@@ -97,7 +97,6 @@ class _copybasepageState extends State<deviceManage> {
   _showBottom() async {
     try {
       var project = _selectController.selectProject.value["project"];
-
       var SystemSelectList = await platform
           .invokeMethod('getProfessionalToolsHandler.getSystemSelectList', {
         "projectCode": project["code"].toString(),
@@ -114,6 +113,7 @@ class _copybasepageState extends State<deviceManage> {
           'getProfessionalToolsHandler.getProjectSystemPropertyCount',
           {"sysNidList": _nid});
       var historydata1 = jsonDecode(historyback1);
+      print(historydata1["data"]);
       getProjectSystemPropertyCountdata = historydata1["data"];
 
       var result = await showModalBottomSheet(
@@ -153,7 +153,7 @@ class _copybasepageState extends State<deviceManage> {
         ];
       } else {
         menuItems = [
-          'projectDetail.deviceManage.action2',
+          // 'projectDetail.deviceManage.action2',
           'projectDetail.deviceManage.action3',
           'projectDetail.deviceManage.action4',
           'projectDetail.deviceManage.action5',
@@ -190,9 +190,7 @@ class _copybasepageState extends State<deviceManage> {
     EasyLoading.show(status: 'loading...');
     try {
       var project = _selectController.selectProject.value["project"];
-      print(
-          " ---------------------------  getSearchHistories   ---------------------------");
-      print(project);
+
       var send = {
         "projectCode": project["code"].toString(),
         "sn": search,
@@ -264,7 +262,6 @@ class _copybasepageState extends State<deviceManage> {
   void dispose() {
     // 移除滚动监听器
     _scrollController.dispose();
-    EasyLoading.dismiss();
     super.dispose();
   }
 
@@ -468,7 +465,7 @@ class _copybasepageState extends State<deviceManage> {
                                       searchsn();
                                     },
                                     child: Container(
-                                      width: 55,
+                                      width: 75,
                                       height: 36,
                                       margin: const EdgeInsets.all(5),
                                       decoration: BoxDecoration(
@@ -879,9 +876,9 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
               children: [
                 const SizedBox(),
                 Text(
-                  "全部筛选",
+                  "allfilter",
                   style: titleText(),
-                ),
+                ).tr(),
                 InkWell(
                   onTap: () {
                     Navigator.pop(context); // 关闭底部弹框
@@ -1067,7 +1064,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                                   ),
                                   child: Center(
                                     child: Text(
-                                        "限电台数 ${valmap["outdoorPowerRationing"] ?? "0"}"),
+                                        "${tr('outdoorpowerrationing')} ${valmap["outdoorPowerRationing"] ?? "0"}"),
                                   ),
                                 ))
                           ],
@@ -1112,7 +1109,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                                   ),
                                   child: Center(
                                     child: Text(
-                                        "静音设置 ${valmap["outdoorMuteSetting"] ?? "0"}"),
+                                        "${tr('outdoormutesetting')} ${valmap["outdoorMuteSetting"] ?? "0"}"),
                                   ),
                                 ))
                           ],
@@ -1160,7 +1157,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                                   ),
                                   child: Center(
                                     child: Text(
-                                        "ECO开启 ${valmap["indoorEnergySaveStatus"] ?? "0"}"),
+                                        "${tr('indoorenergysavestatus')} ${valmap["indoorEnergySaveStatus"] ?? "0"}"),
                                   ),
                                 ))
                           ],
@@ -1176,6 +1173,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
               child: Center(
                 child: submitButton(
                   isActive: true,
+                  fs: 18,
                   label: tr('filter'),
                   onClick: () async {
                     Navigator.pop(context, {
@@ -1216,11 +1214,13 @@ class cardinfo extends StatelessWidget {
                 height: 28.w,
               ),
             ),
-            Text(
+            Expanded(
+                child: Text(
               item!['name']!,
+              overflow: TextOverflow.clip,
               style: const TextStyle(
                   fontSize: 12.0, color: Color.fromRGBO(13, 13, 13, 0.5)),
-            )
+            ).tr())
           ],
         ),
         Padding(

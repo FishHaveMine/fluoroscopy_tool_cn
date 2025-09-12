@@ -38,7 +38,7 @@ TextStyle versionTitle(context) {
       textBaseline: TextBaseline.alphabetic);
 }
 
-TextStyle versionValue(context) {
+TextStyle versionValue(context, {fs: null}) {
   bool isCN = EasyLocalization.of(context)?.currentLocale!.languageCode == 'zh';
   return TextStyle(
       // 文字颜色
@@ -50,7 +50,11 @@ TextStyle versionValue(context) {
       decorationStyle: TextDecorationStyle.solid,
       // 装饰线的颜色
       // 文字大小
-      fontSize: isCN ? 12 : 9,
+      fontSize: fs == null
+          ? isCN
+              ? 12
+              : 9
+          : fs,
       // normal 正常，italic 斜体
       fontStyle: FontStyle.normal,
       // 字体的粗细
@@ -66,7 +70,7 @@ TextStyle versionValue(context) {
       textBaseline: TextBaseline.alphabetic);
 }
 
-TextStyle versionValueActive(context) {
+TextStyle versionValueActive(context, {fs: null}) {
   bool isCN = EasyLocalization.of(context)?.currentLocale!.languageCode == 'zh';
   return TextStyle(
       // 文字颜色
@@ -78,7 +82,11 @@ TextStyle versionValueActive(context) {
       decorationStyle: TextDecorationStyle.solid,
       // 装饰线的颜色
       // 文字大小
-      fontSize: isCN ? 12 : 9,
+      fontSize: fs == null
+          ? isCN
+              ? 12
+              : 9
+          : fs,
       // normal 正常，italic 斜体
       fontStyle: FontStyle.normal,
       // 字体的粗细

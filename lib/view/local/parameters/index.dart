@@ -26,6 +26,8 @@ import 'style.dart';
 
 import 'package:get/get.dart';
 
+/// 本地参数设置页面、设置系统的协议、内机数、地址等参数
+
 // ODU(0), 单纯设置设备地址 deviceAddress   设置设备地址方法 setOduDeviceAddress
 // IDU(1), 单纯设置设备地址 deviceAddress 设置设备地址方法 setOduDeviceAddress
 // SYS(2); 可设置全部  设置设备地址方法 setOduDeviceAddress
@@ -74,7 +76,7 @@ class _ParametersPageState extends State<parametersPage> {
               ? 'clearIndoorAddress'
               : 'indoorAutoSearchAddress');
 
-      EasyLoading.showSuccess("设置成功，请等待2到3分钟后刷新");
+      EasyLoading.showSuccess(tr("setparameters.success"));
     } catch (e) {}
     // setmission(30, () async {
     //   var AddressChangeBack = await platform.invokeMethod(
@@ -249,7 +251,7 @@ class _devceInfoCardState extends State<devceInfoCard> {
             borderRadius: BorderRadius.circular(10),
             child: Container(
               padding: EdgeInsets.all(24.w),
-              height: 210.h,
+              height: 240.h,
               color: Colors.white,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -269,10 +271,13 @@ class _devceInfoCardState extends State<devceInfoCard> {
                         Text('parametersPage.devceInfolabel1',
                                 style: devceInfoCardLabel(context))
                             .tr(),
-                        Text(
-                            _deviceInfoController.loacalDevice.value.sn
-                                .toUpperCase(),
-                            style: devceInfoCardValue(context)),
+                        Expanded(
+                          child: Text(
+                              _deviceInfoController.loacalDevice.value.sn
+                                  .toUpperCase(),
+                              maxLines: 2,
+                              style: devceInfoCardValue(context)),
+                        )
                       ],
                     ),
                   ),
@@ -374,10 +379,10 @@ class _deviceInfoSettingState extends State<deviceInfoSetting> {
 
       if (data["data"]) {
         EasyLoading.dismiss();
-        EasyLoading.showSuccess("设置参数成功，请等待2到3分钟后刷新");
+        EasyLoading.showSuccess(tr("setparameters.success"));
       } else {
         EasyLoading.dismiss();
-        EasyLoading.showError("设置参数失败");
+        EasyLoading.showError(tr("setparameters.error"));
       }
       // setmission(setting["deviceAddress"] != null ? 180 : 30, () async {
       //   var AddressChangeBack =
@@ -637,6 +642,8 @@ class settingBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool isCN =
+        EasyLocalization.of(context)?.currentLocale!.languageCode == 'zh';
     return Container(
       width: 720.w,
       height: height ?? 96.h,
@@ -652,7 +659,7 @@ class settingBox extends StatelessWidget {
         onTap: () => onclick(),
         title: Text(
           label,
-          style: labelstyle ?? titleStyle(),
+          style: labelstyle ?? titleStyle(Size: isCN ? 16 : 12),
         ),
         trailing: SizedBox(
           width: 400.w,
@@ -670,7 +677,7 @@ class settingBox extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.end,
                   style: settingTitle(context),
-                ),
+                ).tr(),
               )),
               const Icon(
                 Icons.arrow_forward_ios,

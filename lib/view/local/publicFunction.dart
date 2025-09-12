@@ -6,14 +6,6 @@
  * @FilePath: /fluoroscopy_tool/lib/view/local/publicFunction.dart
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
-/*
- * @Author: FishHaveMine 751174479@qq.com
- * @Date: 2024-06-03 10:33:10
- * @LastEditors: FishHaveMine 751174479@qq.com
- * @LastEditTime: 2024-06-08 14:18:14
- * @FilePath: /fluoroscopy_tool/lib/view/local/class.dart
- * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
- */
 
 import 'dart:async';
 import 'dart:convert';
@@ -32,8 +24,10 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../compent/tap_handler_page.dart';
-import '../parametersSetting/objectSetting.dart';
+import 'checkData/class.dart';
 import 'style.dart';
+
+/// 定义本地连接之后的数据对象、然后定时刷新数据并推送到其他页面
 
 // v8协议的系统-运行模式有这几种
 //     RunMode_0("RunMode_0", 0, "关机"),
@@ -132,7 +126,6 @@ class deviceInfoController extends GetxController {
           totalMatches: 0,
           matchingNumber: 0,
           runningModel: '--',
-          oduTypeEnum: '--',
           isconnected: false,
           errorCode: '--')
       .obs;
@@ -141,16 +134,6 @@ class deviceInfoController extends GetxController {
   RxList<dynamic> indoorEntityList = [].obs;
   void set_systemEntity(val) {
     systemEntity.value = val;
-    // try {
-    //   print("systemEntity ------------------------》 ");
-    //   if (val != null) {
-    //     for (var element in val.keys) {
-    //       print("systemEntity.${element} : ${val[element]}");
-    //     }
-    //   }
-
-    //   print(" ------------------------》 systemEntity");
-    // } catch (e) {}
     update();
   }
 
@@ -177,11 +160,6 @@ class deviceInfoController extends GetxController {
 
   int checkint(val) {
     return val == null ? 0 : val;
-  }
-
-  void setOduTypeEnum(sn) {
-    loacalDevice.value.oduTypeEnum = checkstring(sn);
-    update();
   }
 
   void setSN(sn) {
@@ -303,7 +281,6 @@ class deviceInfoController extends GetxController {
           matchingNumber: 0,
           runningModel: '--',
           isconnected: false,
-          oduTypeEnum: '--',
           errorCode: '--')
       .obs;
 
@@ -321,6 +298,30 @@ class deviceInfoController extends GetxController {
   final MethodChannel methodChannel =
       const MethodChannel('sample.channel.data');
 
+  static const bluetoothplatform =
+      MethodChannel('samples.flutter.dev/MSInterface');
+
+  MethodChannel bluetoothmethodChannel =
+      const MethodChannel('sample.channel.MsInterface');
+
+  RxString bluetoothmac = "".obs;
+  RxString bluetoothtoken = "".obs;
+  RxList msBleScanInfos = [].obs; //蓝牙设备列表
+
+  static const MSInterfaceplatform =
+      MethodChannel('samples.flutter.dev/MSInterface');
+
+  setLocalBluetoothConnect(isBluetoothConnect) async {
+    try {
+      var _toolUnlock = await MSInterfaceplatform.invokeMethod(
+          'isBluetoothConnect',
+          <String, dynamic>{"isBluetoothConnect": isBluetoothConnect});
+      return _toolUnlock;
+    } on PlatformException catch (_, e) {
+      print(" setLocalBluetoothConnect:   $e");
+    }
+  }
+
   static const McuUtilplatform = MethodChannel('samples.flutter.dev/McuUtil');
   static const platform = MethodChannel('samples.flutter.dev/battery');
   static const _selfplatform =
@@ -328,6 +329,28 @@ class deviceInfoController extends GetxController {
 
   RxBool isPolling = false.obs;
   RxBool isPollingBack = false.obs;
+  RxBool isBluetooth = false.obs; //是否使用蓝牙连接
+
+  setbluetoothtoken(val) {
+    bluetoothtoken.value = val;
+    update();
+  }
+
+  setbluetoothmac(val) {
+    bluetoothmac.value = val;
+    update();
+  }
+
+  setmsBleScanInfos(val) {
+    msBleScanInfos.value = val;
+    update();
+  }
+
+  setIsBluetooth(val) {
+    isBluetooth.value = val;
+    update();
+  }
+
   setIsPolling(val) {
     isPolling.value = val;
     update();
@@ -354,7 +377,7 @@ class deviceInfoController extends GetxController {
   startPolling() async {
     startTime = DateTime.now();
     await McuUtilplatform.invokeMethod('powerOff');
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1));
     if (_isProtocolHandlerStoping) {
       return;
     }
@@ -368,19 +391,17 @@ class deviceInfoController extends GetxController {
       } catch (e) {}
     }
     try {
-      if (!_isgetConnectionback) {
-        var getConnection = await platform.invokeMethod('getConnection');
-        var data = jsonDecode(getConnection);
-        _isgetConnectionback = data["data"];
-        print("getConnection: $data");
-        set_isgetConnectionback(data["data"]);
-        if (!data["success"]) {
-          EasyLoading.showError(data["errorMsg"]);
-          await McuUtilplatform.invokeMethod('powerOff');
-          return;
-        } else {
-          EasyLoading.showSuccess(tr("getConnection"));
-        }
+      var getConnection = await platform.invokeMethod('getConnection');
+      var data = jsonDecode(getConnection);
+      _isgetConnectionback = data["data"];
+      print("try to getConnection: $data");
+      set_isgetConnectionback(data["data"]);
+      if (!data["success"]) {
+        EasyLoading.showError(data["errorMsg"]);
+        await McuUtilplatform.invokeMethod('powerOff');
+        return;
+      } else {
+        EasyLoading.showSuccess(tr("getConnection"));
       }
     } catch (e) {
       _isgetConnectionback = false;
@@ -435,12 +456,18 @@ class deviceInfoController extends GetxController {
       _timerisPolling?.cancel();
       McuUtilplatform.invokeMethod('powerOff');
       isconnectedBefore = false;
-      print("------------------   powerOff   --------------");
+      print("------------------  powerOff   --------------");
+    }
+    if (isBluetooth.value) {
+      bluetoothplatform.invokeMethod('disconnectBlueConnection', {});
     }
   }
 
   // ignore: non_constant_identifier_names
   ProtocolHandlerStop() async {
+    if (isBluetooth.value) {
+      return;
+    }
     final currentTime = DateTime.now();
     final difference = currentTime.difference(startTime);
 
@@ -474,17 +501,96 @@ class deviceInfoController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    _setupBluetoothmethodChannel();
     _setupMethodChannel();
+  }
+
+  _setupBluetoothmethodChannel() {
+    print('bluetoothmethodChannel: setupBluetoothmethodChannel');
+    try {
+      bluetoothmethodChannel.setMethodCallHandler(null);
+    } catch (e) {}
+    bluetoothmethodChannel = const MethodChannel('sample.channel.MsInterface');
+
+    bluetoothmethodChannel.setMethodCallHandler((call) async {
+      print('bluetoothmethodChannel: ${loacalDevice.value.isconnected} $call');
+      if (call.method == 'connectSuccess') {
+        // setIsConnected(true);
+      }
+
+      if (call.method == 'connectFail' ||
+          call.method == 'connectError' ||
+          call.method == 'overtiem') {
+        setIsBluetooth(false);
+        if (loacalDevice.value.isconnected) {
+          Get.defaultDialog(
+            title: tr("device.checkdatacontroller.confirmtitle"),
+            titleStyle: normalTextBlack(fSize: 18),
+            middleText: tr("device.connectdialog.isbluetootherror"),
+            onConfirm: () async {
+              final prefs = await SharedPreferences.getInstance();
+              bool _hasLogin = prefs.getString('token') != null;
+              if (_hasLogin) {
+                Get.offAllNamed('/home');
+              } else {
+                Get.offAllNamed('/login');
+              }
+            },
+            confirm: InkWell(
+              onTap: () async {
+                final prefs = await SharedPreferences.getInstance();
+                bool _hasLogin = prefs.getString('token') != null;
+                if (_hasLogin) {
+                  Get.offAllNamed('/home');
+                } else {
+                  Get.offAllNamed('/login');
+                }
+              },
+              child: Container(
+                // ignore: prefer_const_constructors
+                padding: EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  gradient: const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [Color(0xFF1CA2FF), Color(0xFF0080FF)],
+                    stops: [0.0, 1.0],
+                    transform: GradientRotation(115 * (3.1415926 / 180.0)),
+                  ),
+                ),
+                child: Center(
+                  child: const Text(
+                    "determine",
+                    style: TextStyle(color: Colors.white),
+                  ).tr(),
+                ),
+              ),
+            ),
+            cancel: null, // 通过设置 cancel 为 null 来隐藏取消按钮
+          );
+          setbluetoothmac("");
+        }
+        setIsConnected(false);
+        _isProtocolHandlerStoping = false;
+        stopPolling();
+      }
+      if (call.method == 'startScan') {
+        msBleScanInfos.value.add(json.decode(call.arguments));
+        update();
+      }
+    });
   }
 
   void _setupMethodChannel() {
     methodChannel.setMethodCallHandler((call) async {
       if (call.method == 'monitorData') {
         var arguments = jsonDecode(call.arguments);
-
+        print("monitorData: $arguments");
         try {
           print(
               "arguments['linkStatus']:   ${arguments['linkStatus']}  ${isconnectedBefore}");
+
           if (arguments['linkStatus'] != null) {
             if (arguments['linkStatus']) {
               isconnectedBefore = true;
@@ -494,9 +600,9 @@ class deviceInfoController extends GetxController {
 
               if (_isreconnect) {
                 Get.defaultDialog(
-                  title: tr("device.checkDataController.confirmTitle"),
+                  title: tr("device.checkdatacontroller.confirmtitle"),
                   titleStyle: normalTextBlack(fSize: 18),
-                  middleText: tr("device.connectDialog.error"),
+                  middleText: tr("device.connectdialog.error"),
                   onConfirm: () {
                     // Get.offAllNamed('/home'); //
                   },
@@ -528,7 +634,7 @@ class deviceInfoController extends GetxController {
                         ),
                       ),
                       child: Center(
-                        child: Text(
+                        child: const Text(
                           "determine",
                           style: TextStyle(color: Colors.white),
                         ).tr(),
@@ -546,6 +652,9 @@ class deviceInfoController extends GetxController {
             }
             setIsConnected(arguments['linkStatus']);
           } else {
+            if (isBluetooth.value) {
+              return;
+            }
             if (isconnectedBefore) {
               if (_isreconnect) {
                 Get.defaultDialog(
@@ -583,7 +692,7 @@ class deviceInfoController extends GetxController {
                         ),
                       ),
                       child: Center(
-                        child: Text(
+                        child: const Text(
                           "determine",
                           style: TextStyle(color: Colors.white),
                         ).tr(),
@@ -624,7 +733,6 @@ class deviceInfoController extends GetxController {
           } catch (e) {}
           try {
             setSN(arguments['sn']);
-            setOduTypeEnum(arguments['oduTypeEnum']);
             setmachine(arguments['machineType']);
 
             setErrorCode(arguments['errorCode']);
@@ -653,6 +761,7 @@ class deviceInfoController extends GetxController {
   void onClose() {
     // Clean up if necessary
     methodChannel.setMethodCallHandler(null);
+    bluetoothmethodChannel.setMethodCallHandler(null);
     super.onClose();
   }
 }
@@ -792,14 +901,6 @@ Widget handelTabelRow(val, key) {
       style: tableValue(),
     );
   }
-
-  if (selectMap[key] != null) {
-    return Text(
-      selectMapfilterOp(key, val),
-      textAlign: TextAlign.center,
-      style: tableValue(),
-    );
-  }
   if (key.toString().toUpperCase().contains("SN")) {
     return Text(
       val.toString().toUpperCase(),
@@ -823,13 +924,13 @@ Widget handelTabelRow(val, key) {
           : val.replaceAll('FanSpeed_', ''),
       textAlign: TextAlign.center,
       style: tableValue(),
-    );
+    ).tr();
   } else if (val.toString().contains('IduType_')) {
     return Text(
       iduTypeMap[val.toString().replaceAll(' ', '')] ?? val,
       textAlign: TextAlign.center,
       style: tableValue(),
-    );
+    ).tr();
   }
   if (lockItemTableColumns.contains(key)) {
     if (val.toString().contains('LockMode_')) {
@@ -844,14 +945,14 @@ Widget handelTabelRow(val, key) {
   } else {
     double? value = double.tryParse(val);
     return Text(
-      value != null
+      (value != null
           ? value.toStringAsFixed(1)
           : val.toString() == 'null'
               ? '--'
-              : val.toString().toUpperCase(),
+              : tr(val.toString().toLowerCase().trim())),
       textAlign: TextAlign.center,
       style: tableValue(),
-    ).tr();
+    );
   }
 }
 
@@ -904,7 +1005,7 @@ imageTurn() {
   }
   if (_deviceInfoController.loacalDevice.value.isconnected &&
       _deviceInfoController.loacalDevice.value.model == 'V8') {
-    return 'public/images/local/outdoor.png';
+    return 'public/images/local/v8.png';
   }
   if (!_deviceInfoController.loacalDevice.value.isconnected ||
       (_deviceInfoController.loacalDevice.value.isconnected &&

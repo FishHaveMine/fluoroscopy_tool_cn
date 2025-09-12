@@ -297,14 +297,6 @@ class _selectboxState extends State<selectbox> {
                               ? 'public/images/V8/${showingItem['indoorType']}.png'
                               : 'public/images/V8/IduType_99.png',
                       width: 124.w,
-                      errorBuilder: (BuildContext context, Object error,
-                          StackTrace? stackTrace) {
-                        // 图片加载失败时显示默认图片
-                        return Image.asset(
-                          'public/images/V8/IduType_99.png',
-                          width: 124.w,
-                        );
-                      },
                     ),
                   ),
                   Expanded(

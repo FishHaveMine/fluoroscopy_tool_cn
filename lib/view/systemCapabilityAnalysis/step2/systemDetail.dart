@@ -1,9 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:ffi';
 
 import 'package:easy_localization/easy_localization.dart';
-import 'package:fluoroscopy_tool/compent/baseContainer.dart';
 import 'package:fluoroscopy_tool/compent/submitbutton.dart';
 import 'package:fluoroscopy_tool/style/index.dart';
 import 'package:fluoroscopy_tool/view/systemCapabilityAnalysis/diagnosis/historyList.dart';

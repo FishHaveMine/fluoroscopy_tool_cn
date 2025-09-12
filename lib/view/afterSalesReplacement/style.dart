@@ -7,10 +7,10 @@ TextStyle tipStyle() {
       fontWeight: FontWeight.w600);
 }
 
-TextStyle titleStyle() {
-  return const TextStyle(
+TextStyle titleStyle({double Size: 16}) {
+  return TextStyle(
       color: Color.fromRGBO(13, 13, 13, 1),
-      fontSize: 16,
+      fontSize: Size,
       fontWeight: FontWeight.w600);
 }
 

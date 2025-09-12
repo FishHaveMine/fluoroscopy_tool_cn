@@ -8,7 +8,6 @@ class MOaddController extends GetxController {
     "type3": "",
     "type4": "",
     "type5": "",
-    "type6": "",
   }.obs; // 将对象设置为可观察的
 
   void cleanimgaeList() {
@@ -18,7 +17,6 @@ class MOaddController extends GetxController {
       "type3": "",
       "type4": "",
       "type5": "",
-      "type6": "",
     };
     update(); // 更新状态
   }
@@ -46,12 +44,7 @@ class MOaddController extends GetxController {
     "powerPositionImg": "",
     "waterTreatmentDeviceImg": "",
     "otherImg": "",
-    "oldReformImgDataCompleteness": "ALL",
-    "productBrand": "",
-    "usedTimeYear": "",
-    "refType": "",
-    "coolCop": "",
-    "heatCop": "",
+    "oldReformImgDataCompleteness": "ALL"
   }.obs; // 将对象设置为可观察的
 
   // 清空默认值的方法
@@ -71,28 +64,13 @@ class MOaddController extends GetxController {
   }
 
 // 动态设置值的方法
-
-  void updateDeviceInfo(
-    String key,
-    String val,
-  ) {
-    jsonObject['$key'] = val; // 更新 deviceType
-    update(); // 更新状态
-  }
-
   void updateDeviceType(String newType) {
     jsonObject['deviceType'] = newType; // 更新 deviceType
     update(); // 更新状态
   }
 
-  void updateProductBrand(String newType) {
-    jsonObject['productBrand'] = newType; // 更新 deviceType
-    update(); // 更新状态
-  }
-
   void updateModifyType(String newType) {
     jsonObject['modifyType'] = newType; // 更新 modifyType
-    cleanimgaeList();
     update(); // 更新状态
   }
 

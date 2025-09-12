@@ -143,9 +143,13 @@ class _projectinfoState extends State<projectinfo_expend> {
                     onLongPress: () {
                       _copyTextToClipboard(info['code'].toString());
                     },
-                    child: Text(
-                      info['code'] ?? "",
-                      style: normalText(),
+                    child: Container(
+                      width: 230,
+                      child: Text(
+                        info['code'] ?? "",
+                        maxLines: 2,
+                        style: normalText(),
+                      ),
                     )),
                 if (info['projectType'] != null &&
                     info['projectType'] == "fjjngz")

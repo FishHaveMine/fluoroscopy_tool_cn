@@ -38,7 +38,8 @@ class _projectListState extends State<projectList> {
       MethodChannel('samples.flutter.dev/getProjectHandler');
   CustomPopupMenuController _controller = CustomPopupMenuController();
 
-  final cloudProjectController _selectController = Get.find();
+  final cloudProjectController _selectController =
+      Get.put(cloudProjectController());
   List<String> menuItems = [
     'createrproject',
     // '创建常规项目',
@@ -316,7 +317,7 @@ class _projectListState extends State<projectList> {
                                   searchProject(false);
                                 },
                                 child: Container(
-                                  width: 55,
+                                  width: 75,
                                   height: 36,
                                   margin: const EdgeInsets.all(5),
                                   decoration: BoxDecoration(

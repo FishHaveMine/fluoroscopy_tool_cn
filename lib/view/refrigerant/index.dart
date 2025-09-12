@@ -257,10 +257,14 @@ class _refrigerantTableState extends State<refrigerantTable> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(
-                            "refrigerant.checkResult.content",
-                            style: normalTextBlack(lineheight: 1),
-                          ).tr(),
+                          ConstrainedBox(
+                              constraints: const BoxConstraints(
+                                maxWidth: 140, // 最大宽度设为屏幕一半
+                              ),
+                              child: Text(
+                                "refrigerant.checkResult.content",
+                                style: normalTextBlack(lineheight: 1),
+                              ).tr()),
                           Text(
                             type == 1
                                 ? "refrigerant.checkResult.more"
@@ -532,6 +536,8 @@ class _infotabelState extends State<infotable> {
 
   @override
   Widget build(BuildContext context) {
+    bool isCN =
+        EasyLocalization.of(context)?.currentLocale!.languageCode == 'zh';
     int splitnum = titleColumn.length == 1 ? 2 : 3;
     return StickyHeadersTable(
       cellDimensions: CellDimensions.variableColumnWidthAndRowHeight(
@@ -589,18 +595,13 @@ class _infotabelState extends State<infotable> {
           borderRadius: BorderRadius.circular(0.0), // 圆角半径
         ),
         child: Center(
-            child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-              child: Text(titleRow[i],
-                      textAlign: TextAlign.center, style: normalTextBlack())
-                  .tr(),
-            )
-          ],
-        )),
+          child: Text(titleRow[i],
+                  maxLines: isCN ? 1 : 2,
+                  textAlign: TextAlign.center,
+                  style: normalTextBlack(
+                      lineheight: isCN ? 2 : 1, fSize: isCN ? 14 : 12))
+              .tr(),
+        ),
       ),
       contentCellBuilder: (i, j) => Container(
         width: double.infinity,
@@ -742,7 +743,7 @@ class deviceInfo extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "SN ${sn}",
+            "SN ${sn.toUpperCase()}",
             style: normalText(),
           ),
           if (deviceVersion != "" && systemOperation != "")

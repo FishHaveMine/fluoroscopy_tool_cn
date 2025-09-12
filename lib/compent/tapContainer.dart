@@ -173,6 +173,7 @@ class _tapContarinerState extends State<tapContariner> {
                                             child: Center(
                                               child: Text(
                                                 tapitem,
+                                                textAlign: TextAlign.center,
                                                 style: tap.indexOf(tapitem) ==
                                                         activeIndex
                                                     ? selectText()
@@ -189,16 +190,18 @@ class _tapContarinerState extends State<tapContariner> {
                     ),
                   ),
                   Expanded(
-                      child: Container(
-                    key: ValueKey("activeIndex_$activeIndex"),
-                    decoration: const BoxDecoration(
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(16.0),
-                          topRight: Radius.circular(16.0),
-                        ),
-                        color: Colors.white),
-                    child: childList[activeIndex],
-                  ))
+                    child: Container(
+                      height: 100,
+                      key: ValueKey("activeIndex_$activeIndex"),
+                      decoration: const BoxDecoration(
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(16.0),
+                            topRight: Radius.circular(16.0),
+                          ),
+                          color: Colors.white),
+                      child: childList[activeIndex],
+                    ),
+                  )
                 ],
               ),
             )));

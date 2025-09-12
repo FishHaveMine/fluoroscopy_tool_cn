@@ -503,7 +503,7 @@ class _ibutleractivePageState extends State<ibutleractivePage> {
                                     _filterdata();
                                   },
                                   child: Container(
-                                    width: 55,
+                                    width: 75,
                                     height: 36,
                                     margin: const EdgeInsets.all(5),
                                     decoration: BoxDecoration(

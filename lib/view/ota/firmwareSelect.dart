@@ -5,9 +5,9 @@ import 'dart:convert';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:fluoroscopy_tool/compent/submitbutton.dart';
 import 'package:fluoroscopy_tool/store/globalFunction.dart';
+import 'package:fluoroscopy_tool/store/http.dart';
 import 'package:fluoroscopy_tool/style/index.dart';
 import 'package:fluoroscopy_tool/view/local/publicFunction.dart';
-import 'package:fluoroscopy_tool/store/http.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -77,7 +77,12 @@ class _copybasepageState extends State<firmwareSelect> {
       //   "typePath":
       //       _selfController.selectType.value == 0 ? "vrf/outdoor" : "vrf/indoor"
       // });
-
+      // var data = jsonDecode(listFirmwares);
+      // print("listFirmwares: $data");
+      // if (data["errorCode"].toString() == "1001") {
+      //   tologout();
+      //   return;
+      // }
       var _send = {
         "query": {
           "pageSize": 20,
@@ -91,18 +96,10 @@ class _copybasepageState extends State<firmwareSelect> {
       final response = await MideaApi.getChipsList(_send);
 
       var data = response;
-      print("listFirmwares : ${_send}");
-      print("listFirmwares: $data");
-      for (var element in data["data"]) {
-        print("listFirmwares -- ${element.runtimeType}  $element");
-      }
-      // if (data["errorCode"].toString() == "1001") {
-      //   tologout();
-      //   return;
-      // }
       if (data["success"]) {
         totalCount = data["totalCount"];
         firmware.addAll(data["data"]);
+        print("firmware: ${firmware[0]}");
         setState(() {
           status = 1;
           firmware;
@@ -172,7 +169,6 @@ class _copybasepageState extends State<firmwareSelect> {
         });
       }
     } catch (e) {
-      print("listFirmwares: $e");
       setState(() {
         status = 1;
         firmware = [];
@@ -189,13 +185,7 @@ class _copybasepageState extends State<firmwareSelect> {
         "address": firmwareDetail_back["chips"]["address"],
         "size": firmwareDetail_back["chips"]["size"]
       });
-      print("_getfirmware : ${{
-        "url": firmwareDetail_back["firmwareDownloadUrl"]["downUrl"],
-        "address": firmwareDetail_back["chips"]["address"],
-        "size": firmwareDetail_back["chips"]["size"]
-      }}}");
       var data = jsonDecode(analysisPackage);
-      print("_getfirmware : ${data}}");
       EasyLoading.dismiss();
       if (data["success"] && data["data"]) {
         var startUpgrade =
@@ -370,8 +360,7 @@ class _copybasepageState extends State<firmwareSelect> {
                                                   byId: firmware[index - 1]
                                                           ["id"]
                                                       .toString()));
-                                          print(
-                                              "listFirmwares back: ${jsonEncode(back)}");
+                                          print("back: ${jsonEncode(back)}");
                                           if (back != null) {
                                             setState(() {
                                               onSelect = index - 1;

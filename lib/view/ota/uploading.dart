@@ -42,7 +42,7 @@ class _copybasepageState extends State<uploading> {
 
   final otaController _selfController = Get.put(otaController());
   _reload() async {
-    EasyLoading.show(status: "启动OTA中...");
+    EasyLoading.show(status: tr("startUpgrade"));
     var startUpgrade =
         await _selfplatform.invokeMethod('startUpgrade', <String, dynamic>{
       "deviceType": _selfController.selectType.value,

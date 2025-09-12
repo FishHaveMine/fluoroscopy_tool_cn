@@ -38,7 +38,7 @@ TextStyle versionTitle(context) {
       textBaseline: TextBaseline.alphabetic);
 }
 
-TextStyle versionValue(context) {
+TextStyle versionValue(context, {fs: null}) {
   bool isCN = EasyLocalization.of(context)?.currentLocale!.languageCode == 'zh';
   return TextStyle(
       // 文字颜色
@@ -50,7 +50,7 @@ TextStyle versionValue(context) {
       decorationStyle: TextDecorationStyle.solid,
       // 装饰线的颜色
       // 文字大小
-      fontSize: isCN ? 12 : 9,
+      fontSize: fs ?? 12,
       // normal 正常，italic 斜体
       fontStyle: FontStyle.normal,
       // 字体的粗细
@@ -78,7 +78,7 @@ TextStyle versionValueActive(context) {
       decorationStyle: TextDecorationStyle.solid,
       // 装饰线的颜色
       // 文字大小
-      fontSize: isCN ? 12 : 9,
+      fontSize: 12,
       // normal 正常，italic 斜体
       fontStyle: FontStyle.normal,
       // 字体的粗细
@@ -122,6 +122,7 @@ TextStyle versionValueBlock(context) {
 }
 
 TextStyle funName(context) {
+  bool isCN = EasyLocalization.of(context)?.currentLocale!.languageCode == 'zh';
   return TextStyle(
       // 文字颜色
       // fontFamily: 'PingFangMedium',
@@ -132,7 +133,7 @@ TextStyle funName(context) {
       decorationStyle: TextDecorationStyle.solid,
       // 装饰线的颜色
       // 文字大小
-      fontSize: 28.w,
+      fontSize: isCN ? 28.w : 12,
       // normal 正常，italic 斜体
       fontStyle: FontStyle.normal,
       // 字体的粗细
@@ -160,6 +161,33 @@ TextStyle cardFunName(context) {
       // 装饰线的颜色
       // 文字大小
       fontSize: 24.w,
+      // normal 正常，italic 斜体
+      fontStyle: FontStyle.normal,
+      // 字体的粗细
+      fontWeight: FontWeight.w400,
+      // 文字间的宽度
+      letterSpacing: 1.0,
+      // 文本行与行的高度，作为字体大小的倍数（取值1~2，如1.2）
+      height: 1,
+      //对齐文本的水平线:
+      //TextBaseline.alphabetic：文本基线是标准的字母基线
+      //TextBaseline.ideographic：文字基线是表意字基线；
+      //如果字符本身超出了alphabetic 基线，那么ideograhpic基线位置在字符本身的底部。
+      textBaseline: TextBaseline.alphabetic);
+}
+
+TextStyle cardFunNameSmall(context) {
+  return TextStyle(
+      // 文字颜色
+      // fontFamily: 'PingFangMedium',
+      color: const Color.fromRGBO(102, 102, 102, 1),
+      // none 不显示装饰线条，underline 字体下方，overline 字体上方，lineThrough穿过文字
+      decoration: TextDecoration.none,
+      // solid 直线，double 双下划线，dotted 虚线，dashed 点下划线，wavy 波浪线
+      decorationStyle: TextDecorationStyle.solid,
+      // 装饰线的颜色
+      // 文字大小
+      fontSize: 10,
       // normal 正常，italic 斜体
       fontStyle: FontStyle.normal,
       // 字体的粗细

@@ -178,12 +178,12 @@ class _HorizontalPercentageBarChartState
                         Padding(
                           padding: EdgeInsets.fromLTRB(0, 0, 4, 0),
                           child: SizedBox(
-                            width: 23,
+                            width: 38,
                             child: Text(
                               item.name,
                               maxLines: 1,
                               overflow: TextOverflow.clip,
-                              style: normalText(fSize: 10),
+                              style: normalText(fSize: 12),
                             ),
                           ),
                         ),

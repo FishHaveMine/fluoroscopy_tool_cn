@@ -31,7 +31,7 @@ class _accountState extends State<about> {
               icon: const Icon(Icons.chevron_left,
                   color: Colors.black, size: 36)),
           title: const Text(
-            'menu_About',
+            'menu_app',
             style: TextStyle(color: Colors.black),
           ).tr(),
           centerTitle: true,
@@ -54,7 +54,7 @@ class _accountState extends State<about> {
                       Padding(
                         padding: EdgeInsets.fromLTRB(8, 0, 0, 0),
                         child: Text(
-                          "$externalVersion($internalVersion)${apiHost == "mibp.midea.com" ? "Stable" : "Beta"}",
+                          "$externalVersion($internalVersion)${apiHost != "btri-dev.midea.com" && apiHost != "us-test.mideaibp.com" ? "Stable-us" : "Beta-us"}",
                           style: const TextStyle(
                               color: Color.fromRGBO(140, 140, 140, 1)),
                         ).tr(),

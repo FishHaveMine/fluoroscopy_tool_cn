@@ -1,9 +1,8 @@
 import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
-import 'package:fluoroscopy_tool/compent/EmailInputDialog.dart';
-import 'package:fluoroscopy_tool/view/local/checkData/index.dart';
 import 'package:fluoroscopy_tool/store/http.dart';
+import 'package:fluoroscopy_tool/view/local/checkData/index.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/src/widgets/container.dart';

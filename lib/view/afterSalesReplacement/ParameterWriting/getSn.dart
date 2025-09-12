@@ -1,7 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:fluoroscopy_tool/compent/snInput.dart';
 import 'package:fluoroscopy_tool/compent/submitbutton.dart';
-import 'package:fluoroscopy_tool/style/index.dart' hide ErrorTip;
+import 'package:fluoroscopy_tool/style/color.dart';
 import 'package:fluoroscopy_tool/view/afterSalesReplacement/publicFunction.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

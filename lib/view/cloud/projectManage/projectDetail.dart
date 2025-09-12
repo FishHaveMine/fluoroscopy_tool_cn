@@ -34,7 +34,8 @@ class projectDetail extends StatefulWidget {
 }
 
 class _copybasepageState extends State<projectDetail> {
-  final cloudProjectController _selectController = Get.find();
+  final cloudProjectController _selectController =
+      Get.put(cloudProjectController());
 
   final userinfoController _promissioncontroller = Get.find();
   final List _expansionPanel = [
@@ -43,8 +44,8 @@ class _copybasepageState extends State<projectDetail> {
     "projectDetail.expend3",
     "projectDetail.expend4",
     "projectDetail.expend5",
-    "projectDetail.expend6",
-    "projectDetail.expend7"
+    // "projectDetail.expend6",
+    // "projectDetail.expend7"
   ];
 
   Map nodemap = {
@@ -258,7 +259,7 @@ class _copybasepageState extends State<projectDetail> {
               }
             },
             child: SizedBox(
-              width: 110,
+              width: 140,
               child: Row(
                 children: [
                   Expanded(
@@ -549,7 +550,7 @@ class _copybasepageState extends State<projectDetail> {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 SizedBox(
-                                  width: 110,
+                                  width: 140,
                                   child: Row(
                                     children: [
                                       Expanded(
@@ -595,7 +596,12 @@ class _copybasepageState extends State<projectDetail> {
                             ).tr(),
                             trailing: setTrailing(index),
                             children: setContent(index),
-                          ))
+                          )),
+                  Container(
+                    height: 45,
+                    decoration:
+                        const BoxDecoration(color: Colors.white, border: null),
+                  )
                 ],
               ),
             )));
@@ -624,11 +630,12 @@ class cardinfo extends StatelessWidget {
                   height: 28.w,
                 ),
               ),
-              SafeText(
+              Expanded(
+                  child: SafeText(
                 item!['name']!,
                 style: const TextStyle(
                     fontSize: 14.0, color: Color.fromRGBO(13, 13, 13, 0.5)),
-              )
+              ))
             ],
           ),
           Padding(

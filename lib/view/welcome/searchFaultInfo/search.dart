@@ -4,6 +4,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:fluoroscopy_tool/compent/snInput.dart';
 import 'package:fluoroscopy_tool/store/globalData.dart';
 import 'package:fluoroscopy_tool/store/globalFunction.dart';
+import 'package:fluoroscopy_tool/store/http.dart';
 import 'package:fluoroscopy_tool/style/index.dart';
 import 'package:fluoroscopy_tool/view/errorAnalysis/errorDetail.dart';
 import 'package:flutter/material.dart';
@@ -28,23 +29,31 @@ class _searchFaultInfoState extends State<searchFaultInfo> {
       MethodChannel('samples.flutter.dev/getProjectHandler');
 
   _searchFaultInfo() async {
+    EasyLoading.show(status: 'loading...');
     bool conn = await checkNet(true);
     if (!conn) {
       EasyLoading.dismiss();
       return;
     }
-    EasyLoading.show(status: 'loading...');
     try {
-      var historyback = await platform.invokeMethod(
-          'getMideaAppHandler.searchFaultInfo', {"keyword": search});
-      var historydata = jsonDecode(historyback);
+      var send = {
+        "pageSize": 50,
+        "pageIndex": 1,
+        "errorCode": search,
+        "systemType": "vrf"
+      };
+      var historydata = await MideaApi.faultPagePost(send);
+
+      // var historyback = await platform.invokeMethod(
+      //     'getMideaAppHandler.searchFaultInfo', {"keyword": search});
+      // var historydata = jsonDecode(historyback);
       EasyLoading.dismiss();
       if (historydata["errorCode"] != null &&
           historydata["errorCode"].toString() == "1001") {
         //登录失效
         tologout();
       }
-      print("getSearchHistories:   ${historydata["data"]}");
+
       if (historydata["data"].isEmpty) {
         // EasyLoading.showError(tr("clound.searchEmptydevice"));
       } else {
@@ -53,21 +62,33 @@ class _searchFaultInfoState extends State<searchFaultInfo> {
         setState(() {
           history;
         });
-
-        print(
-            "getProfessionalToolsHandler.getSearchHisWithTags: ${history[0]}");
       }
     } catch (e) {
       EasyLoading.dismiss();
     }
   }
 
-  _getFaultDetail(id) async {
+  _getFaultDetail(id, errorCode) async {
     EasyLoading.show(status: 'loading...');
     try {
-      var historyback = await platform
-          .invokeMethod('getMideaAppHandler.getFaultDetail', {"id": id});
-      var historydata = jsonDecode(historyback);
+      // var historyback = await platform
+      //     .invokeMethod('getMideaAppHandler.getFaultDetail', {"id": id});
+      // var historydata = jsonDecode(historyback);
+
+      var historydata = await MideaApi.faultgetDetail(id.toString());
+
+      print(
+          "gethistory:  --------------------------------  errorCode :$errorCode");
+      var _getTspDataByKeywordback =
+          await MideaApi.getTspDataByKeyword(errorCode.toString());
+      String faultProcessWays = "";
+      try {
+        faultProcessWays =
+            _getTspDataByKeywordback["data"][0]["tspSolutionUrl"];
+      } catch (e) {}
+
+      print(
+          "gethistory:  --------------------------------  faultProcessWays :$faultProcessWays");
       EasyLoading.dismiss();
       if (historydata["errorCode"] != null &&
           historydata["errorCode"].toString() == "1001") {
@@ -100,14 +121,12 @@ class _searchFaultInfoState extends State<searchFaultInfo> {
           "faultReason": historydata["data"]['faultReason'].toString() == "{}"
               ? "--"
               : historydata["data"]['faultReason'],
-          "faultProcessWays":
-              historydata["data"]['processWay'].toString() == "{}"
-                  ? "--"
-                  : historydata["data"]['processWay'],
+          "faultProcessWays": faultProcessWays,
         };
         Get.to(() => errorDetailPage(item: null, showDetail: showData));
       }
     } catch (e) {
+      print("getProfessionalToolsHandler.getSearchHisWithTags: ${e}");
       EasyLoading.dismiss();
     }
   }
@@ -195,7 +214,7 @@ class _searchFaultInfoState extends State<searchFaultInfo> {
                                       _searchFaultInfo();
                                     },
                                     child: Container(
-                                      width: 55,
+                                      width: 75,
                                       height: 36,
                                       margin: const EdgeInsets.all(5),
                                       decoration: BoxDecoration(
@@ -230,7 +249,8 @@ class _searchFaultInfoState extends State<searchFaultInfo> {
                       itemBuilder: ((context, index) {
                         return InkWell(
                             onTap: () {
-                              _getFaultDetail(history[index]['id']);
+                              _getFaultDetail(history[index]['id'],
+                                  history[index]['errorCode']);
                             },
                             child: Stack(
                               children: [
@@ -247,20 +267,20 @@ class _searchFaultInfoState extends State<searchFaultInfo> {
                                         Expanded(
                                           child: Column(
                                             children: [
-                                              Row(
-                                                children: [
-                                                  Text(
-                                                    tr("errorName"),
-                                                    style: normalTextBlack(
-                                                        fw: FontWeight.w600),
-                                                  ),
-                                                  Expanded(
-                                                      child: SafeText(
-                                                    '${history[index]['errorName']}',
-                                                    style: normalTextBlack(),
-                                                  )),
-                                                ],
-                                              ),
+                                              // Row(
+                                              //   children: [
+                                              //     Text(
+                                              //       tr("errorName"),
+                                              //       style: normalTextBlack(
+                                              //           fw: FontWeight.w600),
+                                              //     ),
+                                              //     Expanded(
+                                              //         child: SafeText(
+                                              //       '${history[index]['codeName']}',
+                                              //       style: normalTextBlack(),
+                                              //     )),
+                                              //   ],
+                                              // ),
                                               Row(
                                                 children: [
                                                   Text(
@@ -284,7 +304,7 @@ class _searchFaultInfoState extends State<searchFaultInfo> {
                                                   ),
                                                   Expanded(
                                                       child: SafeText(
-                                                    '${history[index]['deviceType']}',
+                                                    '${history[index]['deviceTypeName']}',
                                                     style: normalTextBlack(),
                                                   ))
                                                 ],
@@ -298,7 +318,7 @@ class _searchFaultInfoState extends State<searchFaultInfo> {
                                                   ),
                                                   Expanded(
                                                       child: SafeText(
-                                                    '${history[index]['productType']}',
+                                                    '${history[index]['deviceVersion'] ?? "--"}',
                                                     style: normalTextBlack(),
                                                   ))
                                                 ],

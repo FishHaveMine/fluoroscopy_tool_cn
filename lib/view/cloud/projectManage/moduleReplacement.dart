@@ -29,7 +29,8 @@ class moduleReplacement extends StatefulWidget {
 }
 
 class _moduleReplacementState extends State<moduleReplacement> {
-  final cloudProjectController _selectController = Get.find();
+  final cloudProjectController _selectController =
+      Get.put(cloudProjectController());
   static const platform = MethodChannel('samples.flutter.dev/battery');
   static const _selfplatform =
       MethodChannel('samples.flutter.dev/getTopologyHandler');
@@ -397,7 +398,7 @@ class _moduleReplacementState extends State<moduleReplacement> {
                                               }
                                             },
                                             child: Container(
-                                              width: 55,
+                                              width: 75,
                                               height: 36,
                                               margin: const EdgeInsets.all(5),
                                               decoration: BoxDecoration(

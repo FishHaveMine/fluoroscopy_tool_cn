@@ -36,11 +36,6 @@ class snInputState extends State<snInput> {
     _focusNode.unfocus();
   }
 
-  void refeshtext(val) {
-    print("refeshtext: $val");
-    _controller.text = val;
-  }
-
   void _handleFocusChange() {
     if (_focusNode.hasFocus) {
       _showOverlay();

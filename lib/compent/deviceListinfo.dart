@@ -227,19 +227,22 @@ class _projectinfoState extends State<deviceListinfo> {
                       style: normalText(lineheight: 1, fontcolor: statusColor),
                     ),
                   ),
-                  Container(
-                    padding: const EdgeInsets.fromLTRB(8, 5, 8, 5),
-                    margin: const EdgeInsets.fromLTRB(10, 5, 0, 0),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(4),
-                        border: Border.all(
-                            width: 1,
-                            color: const Color.fromRGBO(13, 13, 13, 0.5))),
-                    child: Text(
-                      tr(info["netModelEnum"]),
-                      style: normalText(lineheight: 1),
-                    ),
-                  )
+                  // if (info["netModelEnum"] != null)
+                  //   Container(
+                  //     padding: const EdgeInsets.fromLTRB(8, 5, 8, 5),
+                  //     margin: const EdgeInsets.fromLTRB(10, 5, 0, 0),
+                  //     decoration: BoxDecoration(
+                  //         borderRadius: BorderRadius.circular(4),
+                  //         border: Border.all(
+                  //             width: 1,
+                  //             color: const Color.fromRGBO(13, 13, 13, 0.5))),
+                  //     child: Text(
+                  //       tr(info["netModelEnum"].toString() != "{}"
+                  //           ? info["netModelEnum"].toString()
+                  //           : ""),
+                  //       style: normalText(lineheight: 1),
+                  //     ),
+                  //   )
                 ],
               ),
             ),

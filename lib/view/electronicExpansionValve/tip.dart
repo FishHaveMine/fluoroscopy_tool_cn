@@ -3,6 +3,7 @@ import 'package:fluoroscopy_tool/compent/baseContainer.dart';
 import 'package:fluoroscopy_tool/compent/submitbutton.dart';
 import 'package:fluoroscopy_tool/store/globalFunction.dart';
 import 'package:fluoroscopy_tool/style/index.dart';
+import 'package:fluoroscopy_tool/view/afterSalesReplacement/connectStep3.dart';
 import 'package:fluoroscopy_tool/view/electronicExpansionValve/index.dart';
 import 'package:fluoroscopy_tool/view/local/publicFunction.dart';
 import 'package:fluoroscopy_tool/view/systemCapabilityAnalysis/step2/systemDetail.dart';
@@ -34,12 +35,14 @@ class _copybasepageState extends State<electronicExpansionValveTip> {
 
   @override
   Widget build(BuildContext context) {
+    bool isCN =
+        EasyLocalization.of(context)?.currentLocale!.languageCode == 'zh';
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.white,
           leading: IconButton(
               onPressed: () {
-                Get.offAllNamed('/home'); //
+                Navigator.pop(context);
               },
               icon: const Icon(Icons.chevron_left,
                   color: Colors.black, size: 36)),
@@ -71,7 +74,9 @@ class _copybasepageState extends State<electronicExpansionValveTip> {
                       padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
                       child: Center(
                         child: Image.asset(
-                          'public/images/communication/electronicExpansionValvetip.png',
+                          isCN
+                              ? 'public/images/communication/electronicExpansionValvetip.png'
+                              : "public/images/communication/electronicExpansionValvetip_en.png",
                           width: 600.w,
                         ),
                       ),
@@ -126,15 +131,18 @@ class _copybasepageState extends State<electronicExpansionValveTip> {
                     padding: EdgeInsets.fromLTRB(32.w, 16.h, 32.w, 16.h),
                     child: Center(
                       child: submitButton(
-                        isActive: isAgree &&
-                            !_deviceInfoController
-                                .loacalDevice.value.isconnected,
+                        isActive: isAgree,
                         label: tr('Instructionspage.next'),
                         onClick: () async {
-                          if (isAgree &&
-                              !_deviceInfoController
-                                  .loacalDevice.value.isconnected) {
-                            Get.to(() => electronicExpansionValve());
+                          if (isAgree) {
+                            if (!_deviceInfoController
+                                .loacalDevice.value.isconnected) {
+                              Get.to(() => connectStep3Page(
+                                    nextPage: electronicExpansionValve(),
+                                  ));
+                            } else {
+                              Get.to(() => electronicExpansionValve());
+                            }
                           }
                         },
                       ),

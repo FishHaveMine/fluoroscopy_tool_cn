@@ -18,9 +18,9 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:fluoroscopy_tool/compent/ImagePickerExample.dart';
 import 'package:fluoroscopy_tool/compent/location.dart';
 import 'package:fluoroscopy_tool/store/globalFunction.dart';
+import 'package:fluoroscopy_tool/view/connectselect/connecttype.dart';
 import 'package:fluoroscopy_tool/view/local/cardFunList.dart';
 import 'package:fluoroscopy_tool/view/local/checkData/index.dart';
 import 'package:fluoroscopy_tool/view/userinfo.dart';
@@ -73,34 +73,49 @@ class _localDeviceState extends State<localDevice> {
       MethodChannel('samples.flutter.dev/getDeviceUnlockHandler');
 
   Future<void> requestCameraPermission() async {
-    final status = await Permission.camera.status;
-    if (!status.isGranted) {
-      final result = await Permission.camera.request();
-      if (result.isGranted) {
-        // 权限已被授予
-        print('Camera permission granted');
-      } else if (result.isDenied) {
-        // 权限被拒绝
-        print('Camera permission denied');
-      } else if (result.isPermanentlyDenied) {
-        // 权限被永久拒绝
-        print('Camera permission permanently denied');
+    if (_isRequesting) return;
+    _isRequesting = true;
+    try {
+      final status = await Permission.camera.status;
+      if (!status.isGranted) {
+        final result = await Permission.camera.request();
+        if (result.isGranted) {
+          // 权限已被授予
+          print('Camera permission granted');
+        } else if (result.isDenied) {
+          // 权限被拒绝
+          print('Camera permission denied');
+        } else if (result.isPermanentlyDenied) {
+          // 权限被永久拒绝
+          print('Camera permission permanently denied');
+        }
+      } else {
+        // 权限已经被授予
+        print('Camera permission already granted');
       }
-    } else {
-      // 权限已经被授予
-      print('Camera permission already granted');
+    } catch (e) {
+    } finally {
+      _isRequesting = false;
     }
   }
 
+  bool _isRequesting = false;
   Future<void> requestPermission() async {
-    var status = await Permission.camera.status;
-    if (!status.isGranted) {
-      // 请求权限
-      if (await Permission.camera.request().isGranted) {
-        print("Camera permission granted");
-      } else {
-        print("Camera permission denied");
+    if (_isRequesting) return;
+    _isRequesting = true;
+    try {
+      var status = await Permission.camera.status;
+      if (!status.isGranted) {
+        // 请求权限
+        if (await Permission.camera.request().isGranted) {
+          print("Camera permission granted");
+        } else {
+          print("Camera permission denied");
+        }
       }
+    } catch (e) {
+    } finally {
+      _isRequesting = false;
     }
   }
 
@@ -115,7 +130,6 @@ class _localDeviceState extends State<localDevice> {
       requestPermission();
       inthttp();
       checkunlock();
-      requestCameraPermission();
     });
   }
 
@@ -203,7 +217,9 @@ class _localDeviceState extends State<localDevice> {
       prefs.remove("haveinithttp");
     } else {
       await initplatform.invokeMethod('init', <String, dynamic>{
-        "issit": apiHost == "btri-dev.midea.com",
+        "issit":
+            apiHost == "btri-dev.midea.com" || apiHost == "us-test.midea.com",
+        "apiHost": apiHost,
         "token": prefs.getString('token'),
         "uid": prefs.getString('username'),
       });
@@ -213,7 +229,11 @@ class _localDeviceState extends State<localDevice> {
   bool _isClickable = true; // 控制按钮是否可点击
   // 模拟加载数据
   intList() async {
-    if (_isClickable) {
+    Get.to(() => connecttypepage());
+    return;
+    if (appCOUNTRY == "US") {
+      Get.to(() => connecttypepage());
+    } else if (_isClickable) {
       // 第一次点击执行的逻辑
       _deviceInfoController.startPolling();
 
@@ -248,30 +268,31 @@ class _localDeviceState extends State<localDevice> {
         MediaQuery.of(context).padding.top -
         MediaQuery.of(context).padding.bottom;
     return GetBuilder<deviceInfoController>(
-        init: deviceInfoController(),
-        builder: (_) => Container(
-              height: 1280.h - 55,
-              clipBehavior: Clip.hardEdge, // 关键点！裁剪超出部分
-              decoration: const BoxDecoration(
-                  image: DecorationImage(
-                      image: AssetImage('public/images/devicePageBg.png'),
-                      fit: BoxFit.fill)),
-              child: SingleChildScrollView(
-                child: Column(
-                  key: ValueKey(
-                      'localMain_${_deviceInfoController.updateTime.value}'),
-                  children: [
-                    const deviceVersion(),
-                    deviceInfoPage(onStart: () {
-                      intList();
-                    }),
-                    publicFunctionList(),
-                    const otaCard(),
-                    const cardFunList()
-                  ],
-                ),
-              ),
-            ));
+      init: deviceInfoController(),
+      builder: (_) => Container(
+          height: 1280.h - 55,
+          clipBehavior: Clip.hardEdge, // 关键点！裁剪超出部分
+
+          decoration: const BoxDecoration(
+              image: DecorationImage(
+                  image: AssetImage('public/images/devicePageBg.png'),
+                  fit: BoxFit.fill)),
+          child: SingleChildScrollView(
+            child: Column(
+              key: ValueKey(
+                  'localMain_${_deviceInfoController.updateTime.value}'),
+              children: [
+                const deviceVersion(),
+                deviceInfoPage(onStart: () {
+                  intList();
+                }),
+                publicFunctionList(),
+                const otaCard(),
+                const cardFunList()
+              ],
+            ),
+          )),
+    );
   }
 }
 
@@ -284,6 +305,7 @@ class deviceVersion extends StatefulWidget {
 
 class _deviceVersionState extends State<deviceVersion> {
   final deviceInfoController _deviceInfoController = Get.find();
+  final userinfoController _promissioncontroller = Get.find();
 
   void _copyTextToClipboard(String text) {
     if (text != null) {
@@ -297,6 +319,7 @@ class _deviceVersionState extends State<deviceVersion> {
   }
 
   static const platform = MethodChannel('samples.flutter.dev/battery');
+
   openscan() async {
     try {
       await platform.invokeMethod('SCANNER_TRIG');
@@ -305,15 +328,10 @@ class _deviceVersionState extends State<deviceVersion> {
     }
   }
 
-  imgpick() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const ImagePickerExample()),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
+    bool isCN =
+        EasyLocalization.of(context)?.currentLocale!.languageCode == 'zh';
     return GetBuilder<deviceInfoController>(
         init: deviceInfoController(),
         builder: (_) => Container(
@@ -322,12 +340,22 @@ class _deviceVersionState extends State<deviceVersion> {
                   ? Column(
                       children: [
                         InkWell(
-                            onTap: () {},
+                            onTap: () {
+                              // openscan();
+                            },
                             child: Row(children: [
-                              Text(
-                                _deviceInfoController
-                                    .loacalDevice.value.machine,
-                                style: versionTitle(context),
+                              ConstrainedBox(
+                                constraints: const BoxConstraints(
+                                  maxWidth: 250, // 最大宽度限制为200
+                                ),
+                                child: Text(
+                                  _deviceInfoController
+                                      .loacalDevice.value.machine,
+                                  style: !isCN
+                                      ? versionTitle(context)
+                                          .copyWith(fontSize: 14)
+                                      : versionTitle(context),
+                                ).tr(),
                               ),
                               const Padding(
                                   padding: EdgeInsets.fromLTRB(8, 0, 0, 0)),
@@ -349,8 +377,7 @@ class _deviceVersionState extends State<deviceVersion> {
                                   .loacalDevice.value.isconnected
                               ? [
                                   Text(
-                                      _deviceInfoController
-                                              .loacalDevice.value.model +
+                                      tr('${_deviceInfoController.loacalDevice.value.model}') +
                                           tr('local.model'),
                                       style: versionValue(context)),
                                   const Padding(
@@ -373,7 +400,6 @@ class _deviceVersionState extends State<deviceVersion> {
                                           },
                                           child: Text(
                                               'SN ${_deviceInfoController.loacalDevice.value.sn.toUpperCase()}',
-                                              maxLines: 1,
                                               style: versionValue(context))))
                                 ]
                               : [],
@@ -382,17 +408,12 @@ class _deviceVersionState extends State<deviceVersion> {
                     )
                   : SizedBox(
                       width: 720.w,
-                      child: InkWell(
-                        onTap: () {
-                          imgpick();
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(0, 7, 0, 11),
-                          child: Text(
-                            'local.disconnect',
-                            style: versionTitle(context),
-                          ).tr(),
-                        ),
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(0, 7, 0, 11),
+                        child: Text(
+                          'local.disconnect',
+                          style: versionTitle(context),
+                        ).tr(),
                       ),
                     ),
             ));
@@ -566,7 +587,7 @@ class _deviceInfoPageState extends State<deviceInfoPage>
                             if (_deviceInfoController
                                 .loacalDevice.value.isconnected)
                               SizedBox(
-                                width: (656.w - 348.w - paddingLR * 2) / 2,
+                                width: (720.w - 348.w - paddingLR * 2) / 2,
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -706,7 +727,7 @@ class _deviceInfoPageState extends State<deviceInfoPage>
                                             return Positioned(
                                               bottom: 8.5,
                                               left: 62,
-                                              width: 128.w,
+                                              width: 64,
                                               height: _animation.value *
                                                   150.h, // 蒙层高度在 0 到 100 之间变化
                                               child: Container(
@@ -722,7 +743,7 @@ class _deviceInfoPageState extends State<deviceInfoPage>
                             if (_deviceInfoController
                                 .loacalDevice.value.isconnected)
                               SizedBox(
-                                  width: (656.w - 348.w - paddingLR * 2) / 2,
+                                  width: (720.w - 348.w - paddingLR * 2) / 2,
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     crossAxisAlignment:
@@ -816,7 +837,15 @@ class _deviceInfoPageState extends State<deviceInfoPage>
                                           child: Column(
                                             children: [
                                               Image.asset(
-                                                'public/images/icon/${_deviceInfoController.loacalDevice.value.isconnected ? 'connected' : 'disconnected'}.png',
+                                                _deviceInfoController
+                                                        .isBluetooth.value
+                                                    ? 'public/images/bluetooth/connect2.png'
+                                                    : _deviceInfoController
+                                                            .loacalDevice
+                                                            .value
+                                                            .isconnected
+                                                        ? 'public/images/bluetooth/connect1.png'
+                                                        : 'public/images/icon/disconnected.png',
                                                 width: 48.w,
                                               ),
                                               Padding(

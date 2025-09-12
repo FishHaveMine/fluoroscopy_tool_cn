@@ -28,72 +28,14 @@ class resultpage extends StatefulWidget {
 class _copybasepageState extends State<resultpage> {
   bool iserror = false;
   String checkResultEnum = "";
-  String checkSysResultEnum = "";
   final communicationController _selfController = Get.find();
   @override
   void initState() {
     super.initState();
-    if (_selfController.connectType.value == "2") {
-      /** 系统检测添加自定义的结果判断 */
-      /**
-       * 通讯正常 - 找到有地址内机台数+找到无地址地址台数=设定内机台数
-       * 通讯异常 - 内机台数缺失找到有地址内机台数+找到无地址台数不等于0，且小于设症内机台数
-       * 通讯异常 - 找到有地址内机台数+找到无地址台数等于0
-       */
-      int checkResultEnum = 0; // 找到无地址台数
-      int onlineIndoorList = 0; // 找到有地址内机台数
-      int indoorNum = 0; // 设定内机台数
-
-
-        print("resultpage -------- : result:  ${widget.result}");
-
-      try {
-        checkResultEnum = int.parse(widget.result["noAddressNum"].toString());
-      } catch (e) {
-        print("resultpage -------- : checkResultEnum:  $e");
-      }
-
-      try {
-        onlineIndoorList = widget.result["onlineIndoorList"].length;
-      } catch (e) {
-        print("resultpage -------- : onlineIndoorList:  $e");
-      }
-
-      try {
-        indoorNum = int.parse(
-            _selfController.needSetParameter.value["indoorNum"].toString());
-      } catch (e) {
-        print("resultpage -------- : indoorNum:  $e");
-      }
-
-      print(
-          "resultpage -------- : checkResultEnum:$checkResultEnum  onlineIndoorList:$onlineIndoorList  indoorNum:$indoorNum ");
-
-      if ((onlineIndoorList + checkResultEnum) != 0 &&
-          (onlineIndoorList + checkResultEnum) == indoorNum) {
-        iserror = false;
-        checkSysResultEnum = "通讯正常";
-      }
-
-      if ((onlineIndoorList + checkResultEnum) == 0) {
-        iserror = true;
-        checkSysResultEnum = "通讯异常";
-      }
-      if ((onlineIndoorList + checkResultEnum) != 0 &&
-          (onlineIndoorList + checkResultEnum) != indoorNum) {
-        iserror = true;
-        checkSysResultEnum = "通讯异常，内机台数不一致";
-      }
-      setState(() {
-        iserror;
-        checkSysResultEnum;
-      });
-    } else {
-      setState(() {
-        iserror = widget.result["checkResultEnum"] != "ABNORMAL";
-        checkResultEnum = widget.result["checkResultEnum"] ?? "";
-      });
-    }
+    setState(() {
+      iserror = widget.result["checkResultEnum"] != "ABNORMAL";
+      checkResultEnum = widget.result["checkResultEnum"] ?? "";
+    });
   }
 
   showTimeTip() async {
@@ -157,19 +99,13 @@ class _copybasepageState extends State<resultpage> {
                     Padding(
                       padding: const EdgeInsets.fromLTRB(0, 0, 0, 15),
                       child: Text(
-                        checkSysResultEnum == ""
-                            ? tr('resultpage.$checkResultEnum')
-                            : checkSysResultEnum,
+                        tr('resultpage.$checkResultEnum'),
                         style: normalTextBlack(
                             fw: FontWeight.w700,
                             fSize: 18,
-                            fontcolor: checkSysResultEnum == ""
-                                ? checkResultEnum == "NORMAL"
-                                    ? const Color.fromRGBO(32, 175, 66, 1)
-                                    : Colors.red
-                                : !iserror
-                                    ? const Color.fromRGBO(32, 175, 66, 1)
-                                    : Colors.red),
+                            fontcolor: checkResultEnum == "NORMAL"
+                                ? const Color.fromRGBO(32, 175, 66, 1)
+                                : Colors.red),
                       ),
                     ),
                     Container(
@@ -324,7 +260,6 @@ class _copybasepageState extends State<resultpage> {
                                                   ).tr()
                                                 ],
                                               ),
-
                                               // const Divider(
                                               //     color: Color(0xFFDFDFDF)),
                                               // Row(
@@ -478,23 +413,6 @@ class _copybasepageState extends State<resultpage> {
                                                         .spaceBetween,
                                                 children: [
                                                   Text(
-                                                    "electronicexpansionvalve.showtype6",
-                                                    style: normalTextBlack(),
-                                                  ).tr(),
-                                                  Text(
-                                                    "${widget.result["noAddressNum"] ?? '--'}",
-                                                    style: normalText(),
-                                                  ).tr()
-                                                ],
-                                              ),
-                                              const Divider(
-                                                  color: Color(0xFFDFDFDF)),
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  Text(
                                                     "communicationQualityEnum",
                                                     style: normalTextBlack(),
                                                   ).tr(),
@@ -520,7 +438,7 @@ class _copybasepageState extends State<resultpage> {
                                                     style: normalText(),
                                                   ).tr()
                                                 ],
-                                              ),
+                                              )
                                             ],
                                           ),
                                         )

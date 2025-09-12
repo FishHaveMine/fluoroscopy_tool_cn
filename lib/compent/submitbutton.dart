@@ -1,17 +1,22 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 class submitButton extends StatelessWidget {
   String label;
   bool isActive;
+  double? fs;
   VoidCallback onClick;
   submitButton(
       {super.key,
+      this.fs,
       required this.label,
       required this.onClick,
       required this.isActive});
 
   @override
   Widget build(BuildContext context) {
+    bool isCN =
+        EasyLocalization.of(context)?.currentLocale!.languageCode == 'zh';
     return GestureDetector(
       onTap: () {
         onClick();
@@ -46,8 +51,11 @@ class submitButton extends StatelessWidget {
         child: Center(
           child: Text(
             label,
-            style: const TextStyle(
-                color: Colors.white, fontSize: 18, fontWeight: FontWeight.w500),
+            textAlign: TextAlign.center,
+            style: TextStyle(
+                color: Colors.white,
+                fontSize: isCN ? 18 : fs ?? 16,
+                fontWeight: FontWeight.w500),
           ),
         ),
       ),
@@ -70,6 +78,8 @@ class normalButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool isCN =
+        EasyLocalization.of(context)?.currentLocale!.languageCode == 'zh';
     return GestureDetector(
       onTap: () {
         onClick();
@@ -93,9 +103,10 @@ class normalButton extends StatelessWidget {
         child: Center(
           child: Text(
             label,
+            textAlign: TextAlign.center,
             style: TextStyle(
                 color: fillTextColor ?? const Color(0xFF0080FF),
-                fontSize: 18,
+                fontSize: isCN ? 18 : 12,
                 fontWeight: FontWeight.w500),
           ),
         ),

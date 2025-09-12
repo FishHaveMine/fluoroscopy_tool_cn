@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:custom_pop_up_menu/custom_pop_up_menu.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:easy_stepper/easy_stepper.dart';
 import 'package:fluoroscopy_tool/compent/baseContainer.dart';
@@ -10,7 +9,6 @@ import 'package:fluoroscopy_tool/store/globalFunction.dart';
 import 'package:fluoroscopy_tool/style/index.dart';
 import 'package:fluoroscopy_tool/view/local/publicFunction.dart';
 import 'package:fluoroscopy_tool/view/trialRun/result.dart';
-import 'package:fluoroscopy_tool/view/trialRun/tryResultSimple.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -31,8 +29,6 @@ class _copybasepageState extends State<trialRunpage> {
   final deviceInfoController _deviceInfoController = Get.find();
   final GlobalKey<StepsWidgetState> _childKey = GlobalKey<StepsWidgetState>();
 
-  CustomPopupMenuController _controller = CustomPopupMenuController();
-  List menuItems = ["简易版报告", "详细版报告"];
   static const _snplatform = MethodChannel('samples.flutter.dev/tryRunHandler');
   int doingType = 0; // 0 未开始；1 试运行中；3 试运行成功；2 试运行失败；
   int page = 0;
@@ -204,76 +200,12 @@ class _copybasepageState extends State<trialRunpage> {
                   'trialRun.actionbtn',
                   style: normalTextS(),
                 ).tr())
-            // CustomPopupMenu(
-            //   horizontalMargin: 10.0,
-            //   verticalMargin: 0.0,
-            //   arrowColor: Colors.white,
-            //   menuBuilder: () => ClipRRect(
-            //     borderRadius: BorderRadius.circular(5),
-            //     child: Container(
-            //       color: Colors.white,
-            //       child: IntrinsicWidth(
-            //         child: Column(
-            //           crossAxisAlignment: CrossAxisAlignment.stretch,
-            //           children: menuItems
-            //               .map(
-            //                 (item) => GestureDetector(
-            //                   behavior: HitTestBehavior.translucent,
-            //                   onTap: () async {
-            //                     _controller.hideMenu();
-            //                     if (item == "详细版报告") {
-            //                       Get.to(() => tryResult(
-            //                             islocation:
-            //                                 doingType == 2 || doingType == 3,
-            //                             sn: _deviceInfoController
-            //                                 .loacalDevice.value.sn,
-            //                           ));
-            //                     } else {
-            //                       Get.to(() => tryResultSimple());
-            //                     }
-            //                   },
-            //                   child: Container(
-            //                     height: 40,
-            //                     padding:
-            //                         const EdgeInsets.symmetric(horizontal: 20),
-            //                     child: Row(
-            //                       children: <Widget>[
-            //                         Expanded(
-            //                           child: Container(
-            //                             // margin:
-            //                             //     const EdgeInsets.only(left: 10),
-            //                             padding: const EdgeInsets.symmetric(
-            //                                 vertical: 10),
-            //                             child: Text(
-            //                               tr(item),
-            //                               style: const TextStyle(
-            //                                 color: Colors.black,
-            //                                 fontSize: 14,
-            //                               ),
-            //                             ),
-            //                           ),
-            //                         ),
-            //                       ],
-            //                     ),
-            //                   ),
-            //                 ),
-            //               )
-            //               .toList(),
-            //         ),
-            //       ),
-            //     ),
-            //   ),
-            //   pressType: PressType.singleClick,
-            //   controller: _controller,
-            //   child: Padding(
-            //       padding: const EdgeInsets.fromLTRB(0, 15, 15, 0),
-            //       child: Text(
-            //         'trialRun.actionbtn',
-            //         style: normalTextS(),
-            //       ).tr()),
-            // ),
           ],
         ),
+        // floatingActionButton: FloatingActionButton(
+        //   onPressed: _showBottomSheet, // 点击显示弹框
+        //   child: Icon(Icons.history), // 悬浮按钮的图标
+        // ),
         body: Container(
           width: 720.w,
           height: 1280.h,
@@ -313,7 +245,7 @@ class _copybasepageState extends State<trialRunpage> {
                                       _deviceInfoController
                                           .loacalDevice.value.machine,
                                       style: ErrorTip(),
-                                    )
+                                    ).tr()
                                   ]),
                             ),
                             if (doingType == 0 || !is_startTryRun)

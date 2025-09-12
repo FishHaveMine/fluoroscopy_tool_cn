@@ -8,12 +8,17 @@
  * @FilePath: /fluoroscopy_tool/lib/view/local/checkData/index.dart
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
+import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:empty_widget/empty_widget.dart';
 import 'package:external_path/external_path.dart';
 import 'package:fluoroscopy_tool/compent/baseContainer.dart';
+import 'package:fluoroscopy_tool/compent/submitbutton.dart';
+import 'package:fluoroscopy_tool/store/globalFunction.dart';
+import 'package:fluoroscopy_tool/store/http.dart';
 import 'package:fluoroscopy_tool/view/local/checkData/IndoorUnitCentralControl/IndoorUnitCentralControl.dart';
 import 'package:fluoroscopy_tool/view/local/checkData/class.dart';
 import 'package:fluoroscopy_tool/view/local/publicFunction.dart';
@@ -94,10 +99,12 @@ class _checkDataPageState extends State<checkDataPage> {
                   deviceVersion(),
                   const deviceInfoPage(),
                   const countODUandIDUPage(),
-                  baseContainer(
-                      child: const Divider(
-                    color: Color.fromRGBO(238, 238, 238, 0.3),
-                  )),
+                  Container(
+                      padding: EdgeInsets.fromLTRB(32.w, 0, 32.w, 0.h),
+                      child: Container(
+                        height: 1,
+                        color: const Color.fromRGBO(238, 238, 238, 0.3),
+                      )),
                   if (!isload) const tablePage(),
                 ],
               ),
@@ -116,6 +123,8 @@ class _deviceVersionState extends State<deviceVersion> {
   final deviceInfoController _deviceInfoController = Get.find();
   @override
   Widget build(BuildContext context) {
+    bool isCN =
+        EasyLocalization.of(context)?.currentLocale!.languageCode == 'zh';
     return Container(
       padding: EdgeInsets.fromLTRB(paddingLR, 54.h, paddingLR, 0),
       child: Row(
@@ -133,6 +142,8 @@ class _deviceVersionState extends State<deviceVersion> {
           ),
           Expanded(
               child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(
                 height: 53.h,
@@ -140,40 +151,31 @@ class _deviceVersionState extends State<deviceVersion> {
                   Expanded(
                     child: Text(
                       _deviceInfoController.loacalDevice.value.machine,
-                      style: versionTitle(context),
-                      maxLines: 1,
+                      style: !isCN
+                          ? versionTitle(context).copyWith(fontSize: 14)
+                          : versionTitle(context),
+                      maxLines: !isCN ? 2 : 1,
                       overflow: TextOverflow.clip,
-                    ),
+                    ).tr(),
                   ),
                   const Padding(padding: EdgeInsets.fromLTRB(8, 0, 0, 0)),
                   // ignore: prefer_interpolation_to_compose_strings
                   Text(
                       tr('local.version') +
                           _deviceInfoController.loacalDevice.value.version,
-                      style: versionValue(context))
+                      style: versionValue(context, fs: 14.0))
                 ]),
               ),
-              const Padding(padding: EdgeInsets.fromLTRB(0, 0, 0, 7)),
-              Row(children: [
-                Text(
-                    _deviceInfoController.loacalDevice.value.model +
-                        tr('local.model'),
-                    style: versionValue(context)),
-                const Padding(
-                  padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                  child: SizedBox(
-                    width: 1,
-                    height: 11,
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(color: Colors.white),
-                    ),
-                  ),
-                ),
-                Expanded(
-                    child: Text(
-                        'SN ${_deviceInfoController.loacalDevice.value.sn.toUpperCase()}',
-                        style: versionValue(context)))
-              ])
+              const Padding(padding: EdgeInsets.fromLTRB(0, 0, 0, 10)),
+              Text(
+                  tr('local.model') +
+                      ":" +
+                      _deviceInfoController.loacalDevice.value.model,
+                  style: versionValue(context, fs: 14.0)),
+              const Padding(padding: EdgeInsets.fromLTRB(0, 0, 0, 10)),
+              Text(
+                  'SN:${_deviceInfoController.loacalDevice.value.sn.toUpperCase()}',
+                  style: versionValue(context, fs: 14.0))
             ],
           ))
         ],
@@ -273,7 +275,11 @@ class _deviceInfoPageState extends State<deviceInfoPage> {
           Column(
             children: [
               Image.asset(
-                'public/images/icon/${_deviceInfoController.loacalDevice.value.isconnected ? 'connected' : 'disconnected'}.png',
+                _deviceInfoController.isBluetooth.value
+                    ? 'public/images/bluetooth/connect2.png'
+                    : _deviceInfoController.loacalDevice.value.isconnected
+                        ? 'public/images/bluetooth/connect1.png'
+                        : 'public/images/icon/disconnected.png',
                 width: 48.w,
               ),
               Padding(padding: EdgeInsets.fromLTRB(0, 0, 0, 4.h)),
@@ -302,13 +308,11 @@ class _deviceInfoPageState extends State<deviceInfoPage> {
                 height: 33.h,
                 child: Center(
                   child: Text(
-                          _deviceInfoController.loacalDevice.value.errorCode ==
-                                  "0"
-                              ? '--'
-                              : '${_deviceInfoController.loacalDevice.value.errorCode}',
-                          textAlign: TextAlign.center,
-                          style: versionValue(context))
-                      .tr(),
+                      _deviceInfoController.loacalDevice.value.errorCode == "0"
+                          ? '--'
+                          : '${_deviceInfoController.loacalDevice.value.errorCode}',
+                      textAlign: TextAlign.center,
+                      style: versionValue(context)),
                 ),
               )
             ],
@@ -474,10 +478,50 @@ class _tablePageState extends State<tablePage> {
   String activeType = "IndoorUnitParameters";
 
   CustomPopupMenuController _controller = CustomPopupMenuController();
-  List<String> menuItems = [
-    '导出当前时刻的运行数据',
-    '导出最近一小时的运行数据',
-  ];
+  List<String> menuItems = ["export.type1", "export.type2"];
+
+  static const _selfplatform = MethodChannel('samples.flutter.dev/BackClip');
+  downlown(email) async {
+    EasyLoading.show(status: 'loading...');
+    try {
+      var historyback =
+          await _selfplatform.invokeMethod('getHistoryDataExcel', {});
+      var historydata = jsonDecode(historyback);
+      print("getHistoryDataExcel historydata： $historydata");
+      EasyLoading.dismiss();
+      if (historydata['errorCode'] != 200) {
+        EasyLoading.showSuccess(
+            tr("menu.export") + tr("unlockhistory.unlockerror"));
+        //返回的是 file.absolutePath 弹框输入邮箱并发送
+        return;
+      } else {
+        var uploadExcelFileback =
+            await MideaApi.uploadExcelFile(historydata["data"]);
+
+        print("getHistoryDataExcel uploadExcelFile： ${uploadExcelFileback}");
+        if (uploadExcelFileback["errorCode"] == 200) {
+          var fileurl = uploadExcelFileback["data"];
+          var send = {"email": email, "excelUrl": fileurl};
+          print("getHistoryDataExcel send： $send");
+          var sendEmaileback = await MideaApi.sendEmail(send);
+          print("getHistoryDataExcel sendEmaileback $sendEmaileback");
+          //继续下一步  --- 发送到邮箱
+          EasyLoading.showSuccess(
+              tr("menu.export") + tr("unlockhistory.unlocksuccess"));
+        } else {
+          EasyLoading.showSuccess(
+              tr("menu.export") + tr("unlockhistory.unlockerror"));
+        }
+
+        // await Future.delayed(const Duration(seconds: 2), () {
+        //   print('One second has passed.'); // Prints after 1 second.
+        // });
+      }
+    } catch (e) {
+      print("getHistoryDataExcel error $e");
+      EasyLoading.dismiss();
+    }
+  }
 
   List titleColumn = [];
   List titleRow = [];
@@ -512,24 +556,10 @@ class _tablePageState extends State<tablePage> {
 
       List tablebase = [];
       if (activeType == 'System') {
-        // 获取 deviceInfo 的当前值（非空处理）
-        final device = _deviceInfoController.loacalDevice.value.toMap();
-        // 获取 systemEntity 的当前值（非空处理）
-        final system = _deviceInfoController.systemEntity.value;
-        var sys = {...system, ...device};
-        for (var element in sys.keys) {
-          print("sys.$element: ${sys[element]}");
-        }
-        tablebase = [
-          {...system, ...device}
-        ];
+        tablebase = [_deviceInfoController.systemEntity];
       }
       if (['OutdoorUnit', 'Compressor', 'Sensor', 'ValveBody']
           .contains(activeType)) {
-        for (var element in _deviceInfoController.outdoorEntityList[0].keys) {
-          print(
-              "OutdoorUnit.$element: ${_deviceInfoController.outdoorEntityList[0][element]}");
-        }
         tablebase = _deviceInfoController.outdoorEntityList;
       }
       if (['IndoorUnitParameters'].contains(activeType)) {
@@ -539,7 +569,6 @@ class _tablePageState extends State<tablePage> {
         List base = [];
         for (var element in headerList) {
           String elementKey = element.split('.')[1];
-          print("System.${elementKey}:${tablebase[i][elementKey]}");
           base.add(
               '${tablebase[i][elementKey] ?? '--'} ${typeUnit[element] ?? ''}');
         }
@@ -564,18 +593,15 @@ class _tablePageState extends State<tablePage> {
     }
   }
 
-  ScreenshotController screenshotController = ScreenshotController();
-  static const _selfplatform = MethodChannel('samples.flutter.dev/BackClip');
-  downlown(email) async {
-    EasyLoading.show(status: 'loading...');
-    try {
-      EasyLoading.dismiss();
-    } catch (e) {
-      print("getHistoryDataExcel error $e");
-      EasyLoading.dismiss();
+  List<double> rowHeightsList(leng) {
+    List<double> out = [];
+    for (var i = 0; i < leng; i++) {
+      out.add(50.0);
     }
+    return out;
   }
 
+  ScreenshotController screenshotController = ScreenshotController();
   Future<void> captureAndSaveTable() async {
     EasyLoading.show(status: 'loading...');
     try {
@@ -599,20 +625,12 @@ class _tablePageState extends State<tablePage> {
       await imgFile.writeAsBytes(image);
 
       EasyLoading.dismiss();
-      EasyLoading.showSuccess('保存成功');
+      EasyLoading.showSuccess('${tr("exportsuccess")}: $filePath');
       print('保存成功: $filePath');
     } catch (e) {
-      EasyLoading.showError('保存失败:$e');
+      EasyLoading.showError('${tr("exporterror")}:$e');
       EasyLoading.dismiss();
     }
-  }
-
-  List<double> rowHeightsList(leng) {
-    List<double> out = [];
-    for (var i = 0; i < leng; i++) {
-      out.add(50.0);
-    }
-    return out;
   }
 
   @override
@@ -640,24 +658,30 @@ class _tablePageState extends State<tablePage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            TextButton(
-              onPressed: () {
-                refreshTable();
-              },
-              child: Row(
-                children: [
-                  Image.asset(
-                    'public/images/checkData/refresh_outlined.png',
-                    width: 36.w,
-                  ),
-                  const Padding(padding: EdgeInsets.fromLTRB(5, 0, 0, 0)),
-                  Text(
-                    'table.refresh',
-                    style: versionValue(context),
-                  ).tr()
-                ],
-              ),
-            ),
+            // TextButton(
+            //   onPressed: () {
+            //     refreshTable();
+            //   },
+            //   child: Row(
+            //     children: [
+            //       Image.asset(
+            //         'public/images/checkData/refresh_outlined.png',
+            //         width: 36.w,
+            //       ),
+            //       const Padding(padding: EdgeInsets.fromLTRB(5, 0, 0, 0)),
+            //       Text(
+            //         'table.refresh',
+            //         style: versionValue(context),
+            //       ).tr()
+            //     ],
+            //   ),
+            // ),
+            // Expanded(
+            //     child: Text(
+            //   '${tr('local.ODU')} ${_deviceInfoController.loacalDevice.value.ODU}  ${tr('local.IDU')} ${_deviceInfoController.loacalDevice.value.IDU}',
+            //   style: versionValue(context),
+            // )),
+            Container(),
             Row(
               children: [
                 TextButton(
@@ -673,7 +697,7 @@ class _tablePageState extends State<tablePage> {
                         const Padding(padding: EdgeInsets.fromLTRB(5, 0, 0, 0)),
                         Text(
                           'table.controlAll',
-                          style: versionValue(context),
+                          style: versionValue(context, fs: 14.0),
                         ).tr()
                       ],
                     )),
@@ -700,91 +724,78 @@ class _tablePageState extends State<tablePage> {
                 //   },
                 // ),
                 const Padding(padding: EdgeInsets.fromLTRB(0, 0, 20, 0)),
-
-                // CustomPopupMenu(
-                //   horizontalMargin: 10.0,
-                //   verticalMargin: 0.0,
-                //   arrowColor: Colors.white,
-                //   menuBuilder: () => ClipRRect(
-                //     borderRadius: BorderRadius.circular(5),
-                //     child: Container(
-                //       color: Colors.white,
-                //       child: IntrinsicWidth(
-                //         child: Column(
-                //           crossAxisAlignment: CrossAxisAlignment.stretch,
-                //           children: menuItems
-                //               .map(
-                //                 (item) => GestureDetector(
-                //                   behavior: HitTestBehavior.translucent,
-                //                   onTap: () async {
-                //                     _controller.hideMenu();
-                //                     if (item == menuItems[1]) {
-                //                       if (_deviceInfoController
-                //                               .loacalDevice.value.model !=
-                //                           'V8') {
-                //                         EasyLoading.showError("当前仅支持V8协议");
-                //                         return;
-                //                       }
-                //                       bool ischeckNet = await checkNet(false);
-                //                       if (ischeckNet) {
-                //                         EmailInputDialog.show(
-                //                           context,
-                //                           onConfirm: (email) {
-                //                             downlown(email);
-                //                           },
-                //                         );
-                //                       } else {
-                //                         EasyLoading.showError(
-                //                             tr("netword.error"));
-                //                       }
-                //                     } else {
-                //                       captureAndSaveTable();
-                //                     }
-                //                   },
-                //                   child: Container(
-                //                     padding:
-                //                         const EdgeInsets.fromLTRB(8, 8, 8, 0),
-                //                     child: Column(
-                //                       children: [
-                //                         Text(
-                //                           item,
-                //                           style: const TextStyle(fontSize: 14),
-                //                         ).tr(),
-                //                         Container(
-                //                           margin: const EdgeInsets.fromLTRB(
-                //                               0, 8, 0, 0),
-                //                           height: 1,
-                //                           color: item == menuItems[1]
-                //                               ? Colors.transparent
-                //                               : const Color.fromRGBO(
-                //                                   223, 223, 223, 1),
-                //                         )
-                //                       ],
-                //                     ),
-                //                   ),
-                //                 ),
-                //               )
-                //               .toList(),
-                //         ),
-                //       ),
-                //     ),
-                //   ),
-                //   pressType: PressType.singleClick,
-                //   controller: _controller,
-                //   child: Row(
-                //     children: [
-                //       Image.asset(
-                //         'public/images/checkData/import_export.png',
-                //         width: 36.w,
-                //       ),
-                //       const Padding(padding: EdgeInsets.fromLTRB(5, 0, 0, 0)),
-                //       Text(
-                //         'table.export',
-                //         style: versionValue(context),
-                //       ).tr()
-                //     ],
-                //   ),
-                // ),
+                CustomPopupMenu(
+                  horizontalMargin: 10.0,
+                  verticalMargin: 0.0,
+                  arrowColor: Colors.white,
+                  menuBuilder: () => ClipRRect(
+                    borderRadius: BorderRadius.circular(5),
+                    child: Container(
+                      color: Colors.white,
+                      child: IntrinsicWidth(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: menuItems
+                              .map(
+                                (item) => GestureDetector(
+                                  behavior: HitTestBehavior.translucent,
+                                  onTap: () async {
+                                    _controller.hideMenu();
+                                    if (item == menuItems[1]) {
+                                      EmailInputDialog.show(
+                                        context,
+                                        onConfirm: (email) {
+                                          downlown(email);
+                                        },
+                                      );
+                                    } else {
+                                      captureAndSaveTable();
+                                    }
+                                  },
+                                  child: Container(
+                                    padding:
+                                        const EdgeInsets.fromLTRB(8, 8, 8, 0),
+                                    child: Column(
+                                      children: [
+                                        Text(
+                                          item,
+                                          style: const TextStyle(fontSize: 14),
+                                        ).tr(),
+                                        Container(
+                                          margin: const EdgeInsets.fromLTRB(
+                                              0, 8, 0, 0),
+                                          height: 1,
+                                          color: item == menuItems[1]
+                                              ? Colors.transparent
+                                              : const Color.fromRGBO(
+                                                  223, 223, 223, 1),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                        ),
+                      ),
+                    ),
+                  ),
+                  pressType: PressType.singleClick,
+                  controller: _controller,
+                  child: Row(
+                    children: [
+                      Image.asset(
+                        'public/images/checkData/import_export.png',
+                        width: 36.w,
+                      ),
+                      const Padding(padding: EdgeInsets.fromLTRB(5, 0, 0, 0)),
+                      Text(
+                        'table.export',
+                        style: versionValue(context, fs: 14.0),
+                      ).tr()
+                    ],
+                  ),
+                ),
               ],
             )
           ],
@@ -828,6 +839,7 @@ class _tablePageState extends State<tablePage> {
                           child: Center(
                               child: Text(
                             tr(showType[index]['name']),
+                            textAlign: TextAlign.center,
                             style: activeType == showType[index]['key']
                                 ? versionValueActive(context)
                                 : versionValue(context),
@@ -1024,7 +1036,7 @@ class _tablePageState extends State<tablePage> {
                                       children: [
                                         Text(
                                           titleRow[i],
-                                          maxLines: 1,
+                                          maxLines: 2,
                                           overflow: TextOverflow.ellipsis,
                                           textAlign: TextAlign.center,
                                           style: tableLabel(context),
@@ -1063,7 +1075,7 @@ class _tablePageState extends State<tablePage> {
                                                               : 4) -
                                                   1,
                                               child: Text(titleColumn[i],
-                                                      maxLines: 1,
+                                                      maxLines: 2,
                                                       overflow:
                                                           TextOverflow.ellipsis,
                                                       textAlign:
@@ -1093,13 +1105,6 @@ class _tablePageState extends State<tablePage> {
                                       var yindex = titleColumn[j]
                                           .toString()
                                           .split('.')[1];
-                                      final device = _deviceInfoController
-                                          .loacalDevice.value
-                                          .toMap();
-                                      // 获取 systemEntity 的当前值（非空处理）
-                                      final system = _deviceInfoController
-                                          .systemEntity.value;
-                                      var sys = {...system, ...device};
                                       return Center(
                                           key: ValueKey(
                                               'checkDataPage$j $i _ ${_deviceInfoController.updateTime.value}'),
@@ -1114,7 +1119,8 @@ class _tablePageState extends State<tablePage> {
                                                   '${activeType == "IndoorUnitParameters" ? _deviceInfoController.indoorEntityList.isEmpty || _deviceInfoController.indoorEntityList[xindex] == null ? "--" : _deviceInfoController.indoorEntityList[xindex][yindex] : _deviceInfoController.outdoorEntityList.isEmpty || _deviceInfoController.outdoorEntityList[xindex] == null ? "--" : _deviceInfoController.outdoorEntityList[xindex][yindex]}',
                                                   yindex)
                                               : handelTabelRow(
-                                                  '${sys[yindex]}', yindex));
+                                                  '${_deviceInfoController.systemEntity[yindex]}',
+                                                  yindex));
                                     }),
                                   ),
                                   legendCell: Container(
@@ -1148,10 +1154,10 @@ class _tablePageState extends State<tablePage> {
                             width: 320.w,
                             height: 320.w,
                             child: Padding(
-                              padding: EdgeInsets.fromLTRB(0, 30.h, 0, 30.h),
+                              padding: EdgeInsets.fromLTRB(0, 10.h, 0, 10.h),
                               child: EmptyWidget(
                                 image: null,
-                                packageImage: null,
+                                packageImage: PackageImage.Image_1,
                                 title: tr('device.empty'),
                                 titleTextStyle: const TextStyle(
                                   fontSize: 22,
@@ -1182,4 +1188,124 @@ TextStyle tableValue(context) {
       color: Color.fromRGBO(136, 136, 136, 1),
       fontSize: 12,
       fontWeight: FontWeight.w400);
+}
+
+TextStyle tableLabelsmall(context) {
+  return const TextStyle(
+      color: Color.fromRGBO(136, 136, 136, 1),
+      fontSize: 9,
+      fontWeight: FontWeight.w400);
+}
+
+class EmailInputDialog {
+  static Future<void> show(
+    BuildContext context, {
+    String? initialValue,
+    required Function(String email) onConfirm,
+  }) async {
+    final TextEditingController _controller = TextEditingController(
+      text: initialValue,
+    );
+
+    final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+    await showDialog(
+      context: context,
+      barrierDismissible: false, // 点击外部不关闭
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+            Expanded(
+                child: Text(
+              tr("sendemail"),
+              style: dialogTitleG(context),
+            ))
+          ]),
+          titlePadding: EdgeInsets.fromLTRB(24.w, 40.w, 24.w, 0), // 标题外间距
+          // 标题样式 TextStyle
+          titleTextStyle: dialogTitleG(context),
+          contentPadding: const EdgeInsets.all(0), // 内容外间距
+          // 内容样式 TextStyle
+          contentTextStyle: const TextStyle(
+            color: Color.fromRGBO(38, 38, 38, 1),
+            fontSize: 16,
+          ),
+          elevation: 0,
+          content: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Form(
+              key: _formKey,
+              child: Container(
+                width: 200,
+                height: 110,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                      child: Text(
+                        "emailaddress",
+                        textAlign: TextAlign.left,
+                      ).tr(),
+                    ),
+                    TextFormField(
+                      controller: _controller,
+                      keyboardType: TextInputType.emailAddress,
+                      decoration: InputDecoration(
+                        hintText: tr('emailhinttext'),
+                        labelText: '',
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return tr('emailemptyr');
+                        }
+                        // 简单的邮箱格式验证
+                        if (!RegExp(
+                                r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$')
+                            .hasMatch(value)) {
+                          return tr('emailerror');
+                        }
+                        return null;
+                      },
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ),
+          actions: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                    width: 250.w,
+                    height: 98.h,
+                    padding: const EdgeInsets.all(10),
+                    child: normalButton(
+                        onClick: () {
+                          Navigator.of(context).pop(false);
+                        },
+                        label: tr('cancel'))),
+                Container(
+                    width: 250.w,
+                    height: 98.h,
+                    padding: const EdgeInsets.all(10),
+                    child: submitButton(
+                        onClick: () {
+                          if (_formKey.currentState?.validate() ?? false) {
+                            onConfirm(_controller.text.trim());
+                            Navigator.of(context).pop();
+                          }
+                        },
+                        isActive: true,
+                        label: tr('determine')))
+              ],
+            )
+          ],
+        );
+      },
+    );
+  }
 }

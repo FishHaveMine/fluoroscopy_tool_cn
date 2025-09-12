@@ -157,19 +157,25 @@ class _copybasepageState extends State<aicheckRunning> {
                           ),
                         ),
                         Padding(
-                            padding: EdgeInsets.fromLTRB(0, 130.h, 0, 0.h),
-                            child: Text.rich(TextSpan(
-                              style: normalTextBlack(
-                                  fSize: 18, fw: FontWeight.w800),
-                              text: tr("refrigerant.aicheck.checking"),
-                            ))),
-                        Text(
-                          tr("refrigerant.aicheck.checking.tip", namedArgs: {
-                            "val": (runningTime ~/ 60).toStringAsFixed(0)
-                          }),
-                          textAlign: TextAlign.center,
-                          style: normalText(),
-                        ),
+                            padding: EdgeInsets.fromLTRB(24, 130.h, 24, 0.h),
+                            child: Text.rich(
+                                textAlign: TextAlign.center,
+                                TextSpan(
+                                  style: normalTextBlack(
+                                      fSize: 18, fw: FontWeight.w800),
+                                  text: tr("refrigerant.aicheck.checking"),
+                                ))),
+                        Padding(
+                            padding: EdgeInsets.fromLTRB(24, 0.h, 24, 0.h),
+                            child: Text(
+                              tr("refrigerant.aicheck.checking.tip",
+                                  namedArgs: {
+                                    "val":
+                                        (runningTime ~/ 60).toStringAsFixed(0)
+                                  }),
+                              textAlign: TextAlign.center,
+                              style: normalText(),
+                            )),
                         Container(
                           margin: EdgeInsets.fromLTRB(0, 64.h, 0, 0.h),
                           width: 400.w,

@@ -501,14 +501,3 @@ class IconTextButton extends StatelessWidget {
     );
   }
 }
-
-void copyTextToClipboard(String text, context) {
-  if (text != null) {
-    Clipboard.setData(ClipboardData(text: text));
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('${tr('projectDetail.deviceManage.copy')}: $text'),
-      ),
-    );
-  }
-}

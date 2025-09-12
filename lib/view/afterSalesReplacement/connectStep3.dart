@@ -31,7 +31,7 @@ class _connectStep3PageState extends State<connectStep3Page> {
 
   static const platform = MethodChannel('samples.flutter.dev/battery');
 
-  init() {
+  init() async {
     _deviceInfoController.startPolling();
     setState(() {
       isConnecting = true;
@@ -199,9 +199,13 @@ class _connectStep3PageState extends State<connectStep3Page> {
                                 child: normalButton(
                                   label: tr('determine'),
                                   onClick: () async {
-                                    Get.to(() =>
-                                        widget.nextPage ??
-                                        NewBoardParameterImportAuthorization());
+                                    if (widget.nextPage == null) {
+                                      Get.offAllNamed('/home');
+                                    } else {
+                                      Get.to(() =>
+                                          widget.nextPage ??
+                                          NewBoardParameterImportAuthorization());
+                                    }
                                   },
                                 ),
                               )),

@@ -18,26 +18,45 @@ class connectStep1Page extends StatefulWidget {
 }
 
 class _connectStep1PageState extends State<connectStep1Page> {
-  final deviceInfoController _deviceInfoController = Get.find();
+  final deviceInfoController _deviceInfoController =
+      Get.put(deviceInfoController());
+
   List connectType = [
     'afterSalesReplacement.connectType1',
     'afterSalesReplacement.connectType2',
     'afterSalesReplacement.connectType3',
     'afterSalesReplacement.connectType4',
   ];
+
+  static const MSInterfaceplatform =
+      MethodChannel('samples.flutter.dev/MSInterface');
+
+  setLocalBluetoothConnect(isBluetoothConnect) async {
+    try {
+      _deviceInfoController.setIsBluetooth(false);
+      var _toolUnlock = await MSInterfaceplatform.invokeMethod(
+          'isBluetoothConnect',
+          <String, dynamic>{"isBluetoothConnect": isBluetoothConnect});
+    } on PlatformException catch (_, e) {
+      print(" setLocalBluetoothConnect:   $e");
+    }
+  }
+
   @override
   void initState() {
     super.initState();
-
-    if (_deviceInfoController.isPolling.value) {
-      Get.back();
-    }
-    if (widget.connectType != null) {
-      setState(() {
-        connectType = widget.connectType!;
-        print(connectType);
-      });
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      setLocalBluetoothConnect(false);
+      if (_deviceInfoController.isPolling.value) {
+        Get.back();
+      }
+      if (widget.connectType != null) {
+        setState(() {
+          connectType = widget.connectType!;
+          print(connectType);
+        });
+      }
+    });
   }
 
   @override
@@ -54,51 +73,49 @@ class _connectStep1PageState extends State<connectStep1Page> {
       Get.put(afterSalesReplacementController());
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<afterSalesReplacementController>(
-        builder: (_) => Scaffold(
-            appBar: AppBar(
-              backgroundColor: Colors.white,
-              leading: IconButton(
-                  onPressed: () {
-                    Get.back();
-                  },
-                  icon: const Icon(Icons.chevron_left,
-                      color: Colors.black, size: 36)),
-              title: const Text(
-                'afterSalesReplacement.connectStep1',
-                style: TextStyle(color: Colors.black),
-              ).tr(),
-              centerTitle: true,
-              actions: const [],
-            ),
-            body: Padding(
-              padding: EdgeInsets.fromLTRB(0.w, 24.w, 0.w, 24.w),
-              child: ListView.builder(
-                itemCount: connectType.length,
-                itemBuilder: ((context, index) => Container(
-                      decoration: const BoxDecoration(
-                          color: Colors.white,
-                          border: Border(
-                            bottom: BorderSide(
-                              color: Color.fromRGBO(223, 223, 223, 1),
-                              width: 0.5,
-                            ),
-                          )),
-                      child: ListTile(
-                        onTap: () {
-                          _selfController.setConnectType(connectType[index]);
-                          Get.to(() => connectStep2Page(
-                                title: connectType[index],
-                                nextPage: widget.nextPage,
-                              ));
-                        },
-                        title: Text(
-                            tr('afterSalesReplacement.connectTypeTitle') +
-                                tr(connectType[index])),
-                        trailing: Icon(Icons.navigate_next),
-                      ),
-                    )),
-              ),
-            )));
+    return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          leading: IconButton(
+              onPressed: () {
+                Get.back();
+              },
+              icon: const Icon(Icons.chevron_left,
+                  color: Colors.black, size: 36)),
+          title: const Text(
+            'afterSalesReplacement.connectStep1',
+            style: TextStyle(color: Colors.black),
+          ).tr(),
+          centerTitle: true,
+          actions: const [],
+        ),
+        body: Padding(
+          padding: EdgeInsets.fromLTRB(0.w, 24.w, 0.w, 24.w),
+          child: ListView.builder(
+            itemCount: connectType.length,
+            itemBuilder: ((context, index) => Container(
+                  decoration: const BoxDecoration(
+                      color: Colors.white,
+                      border: Border(
+                        bottom: BorderSide(
+                          color: Color.fromRGBO(223, 223, 223, 1),
+                          width: 0.5,
+                        ),
+                      )),
+                  child: ListTile(
+                    onTap: () {
+                      _selfController.setConnectType(connectType[index]);
+                      Get.to(() => connectStep2Page(
+                            title: connectType[index],
+                            nextPage: widget.nextPage,
+                          ));
+                    },
+                    title: Text(tr('afterSalesReplacement.connectTypeTitle') +
+                        tr(connectType[index])),
+                    trailing: Icon(Icons.navigate_next),
+                  ),
+                )),
+          ),
+        ));
   }
 }

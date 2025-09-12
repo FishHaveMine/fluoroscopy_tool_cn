@@ -1,15 +1,12 @@
 import 'package:dio/dio.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:fluoroscopy_tool/store/globalData.dart';
-import 'package:fluoroscopy_tool/view/cloud/publicFunction.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'deviceList.dart';
 import 'projectList.dart';
-
-import 'package:get/get.dart';
 
 class cloudSwitch extends StatefulWidget {
   const cloudSwitch({super.key});
@@ -20,8 +17,6 @@ class cloudSwitch extends StatefulWidget {
 
 class _cloudSwitchState extends State<cloudSwitch>
     with SingleTickerProviderStateMixin {
-  final cloudProjectController _selectController =
-      Get.put(cloudProjectController());
   int activeIndex = 0;
   void _handelTabSelection(val) {
     setState(() {

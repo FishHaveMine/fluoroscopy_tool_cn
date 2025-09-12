@@ -13,6 +13,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:get/get.dart';
 
+//页面拷贝页
+
 class copybasepage extends StatefulWidget {
   copybasepage({super.key});
 

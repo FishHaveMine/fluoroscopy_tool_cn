@@ -10,7 +10,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class BackClip extends StatefulWidget {
   BackClip({super.key});
@@ -96,32 +95,23 @@ class _accountState extends State<BackClip> {
     EasyLoading.show(status: 'loading...');
     try {
       EasyLoading.dismiss();
-      showPickerDialog(context, options);
+      showPickerDialog(context, []);
     } catch (e) {
       print(e);
 
-      showPickerDialog(context, options);
+      showPickerDialog(context, []);
       EasyLoading.dismiss();
     }
   }
 
   showPickerDialog(BuildContext context, options) async {
-    final prefs = await SharedPreferences.getInstance();
-    var deviceSn = await prefs.getString('deviceSn');
-    print('deviceSn:   $deviceSn.  ${deviceSn!.startsWith("MT95")}');
-    bool isMT90 = true;
     List options = [
-      'AC90_APP_v1.18.bin',
+      'AC90_APP_v1.12.bin',
+      'AC90_APP_v1.13.bin',
+      'AC90_APP_v1.14.bin',
+      'AC90_APP_v1.16.bin',
+      'AC90_APP_v1.17.bin'
     ];
-    if (deviceSn != null) {
-      isMT90 = deviceSn.startsWith("MT95");
-      if (isMT90) {
-        options = [
-          'AC90_APP_v1.20.bin',
-        ];
-      }
-    }
-
     // Show a custom dialog with options
     String? selectedOption = await showDialog<String>(
       context: context,
@@ -205,8 +195,8 @@ class _accountState extends State<BackClip> {
               icon: const Icon(Icons.chevron_left,
                   color: Colors.black, size: 36)),
           title: const Text(
-            'menu_ota',
-            style: TextStyle(color: Colors.black),
+            'menu_About',
+            style: TextStyle(color: Color.fromARGB(255, 71, 49, 49)),
           ).tr(),
           centerTitle: true,
           actions: const [],
@@ -218,11 +208,11 @@ class _accountState extends State<BackClip> {
               Expanded(
                   child: Column(
                 children: [
-                  // itembox(
-                  //   title: 'BackClip.IAPversion',
-                  //   val: BackClipIAPVersion,
-                  //   clickfun: _upgradeBackClipIAP,
-                  // ),
+                  itembox(
+                    title: 'BackClip.IAPversion',
+                    val: BackClipIAPVersion,
+                    clickfun: _upgradeBackClipIAP,
+                  ),
                   itembox(
                     title: 'BackClip.APPversion',
                     val: BackClipAPPVersion,

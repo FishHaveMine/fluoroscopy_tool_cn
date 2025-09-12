@@ -5,6 +5,7 @@ import 'package:fluoroscopy_tool/compent/baseContainer.dart';
 import 'package:fluoroscopy_tool/compent/snInput.dart';
 import 'package:fluoroscopy_tool/compent/submitbutton.dart';
 import 'package:fluoroscopy_tool/store/globalFunction.dart';
+import 'package:fluoroscopy_tool/style/color.dart';
 import 'package:fluoroscopy_tool/style/index.dart';
 import 'package:fluoroscopy_tool/view/local/publicFunction.dart';
 import 'package:flutter/material.dart';
@@ -63,7 +64,7 @@ class _deviceUnlockState extends State<deviceUnlock> {
                 child: Padding(
                   padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
                   child: Text(
-                    tr("deviceUnlock.unlocklimit",
+                    tr("deviceunlock.unlocklimit",
                         namedArgs: {"val": "$limit"}),
                     style: normalText(),
                   ),
@@ -116,7 +117,7 @@ class _deviceUnlockState extends State<deviceUnlock> {
                   icon: const Icon(Icons.chevron_left,
                       color: Colors.black, size: 36)),
               title: const Text(
-                'deviceUnlock.title',
+                'deviceunlock.title',
                 style: TextStyle(color: Colors.black),
               ).tr(),
               centerTitle: true,
@@ -129,7 +130,7 @@ class _deviceUnlockState extends State<deviceUnlock> {
                         Get.to(() => const unlockhistory());
                       },
                       child: Text(
-                        'deviceUnlock.unlockhistory',
+                        'deviceunlock.unlockhistory',
                         style: actionsTextButtonStyle(),
                       ).tr()),
                 )
@@ -212,7 +213,7 @@ class _deviceUnlockState extends State<deviceUnlock> {
                           Padding(
                             padding: EdgeInsets.fromLTRB(0, 15, 0, 0),
                             child: Text(
-                              tr("deviceUnlock.unlocklimit",
+                              tr("deviceunlock.unlocklimit",
                                   namedArgs: {"val": "$limit"}),
                               style: normalText(),
                             ),
@@ -227,22 +228,22 @@ class _deviceUnlockState extends State<deviceUnlock> {
                           isActive: sn ==
                                   _deviceInfoController.loacalDevice.value.sn &&
                               limit < 4,
-                          label: tr('deviceUnlock.unlockbtn'),
+                          label: tr('deviceunlock.unlockbtn'),
                           onClick: () async {
                             if (limit > 4) {
                               return;
                             }
                             if (sn == "") {
-                              EasyLoading.showError(tr('deviceUnlock.snempty'));
+                              EasyLoading.showError(tr('deviceunlock.snempty'));
                               return;
                             }
                             if (sn ==
                                 _deviceInfoController.loacalDevice.value.sn) {
                               bool issend = await divConfirmOnlyDialog(context,
                                   confirmText: tr(
-                                      'deviceUnlock.unlockbtn.confirmbutton'),
+                                      'deviceunlock.unlockbtn.confirmbutton'),
                                   confirmTitle:
-                                      tr("deviceUnlock.unlockbtn.confirmTitle"),
+                                      tr("deviceunlock.unlockbtn.confirmTitle"),
                                   isSubmitButton: true,
                                   confirmDescriptionWidget: makesurebox(
                                 onchange: (val) {
@@ -257,7 +258,7 @@ class _deviceUnlockState extends State<deviceUnlock> {
                               }
                             } else {
                               EasyLoading.showError(
-                                  tr('deviceUnlock.entererror'));
+                                  tr('deviceunlock.entererror'));
                             }
 
                             // if (sn ==
@@ -322,7 +323,7 @@ class _deviceUnlockState extends State<deviceUnlock> {
                           ),
                         ),
                         const Text(
-                          "deviceUnlock.writeSn",
+                          "deviceunlock.writeSn",
                           textAlign: TextAlign.center,
                           style: TextStyle(
                               fontSize: 12,
@@ -371,12 +372,12 @@ class _makesureboxState extends State<makesurebox> {
             Padding(
               padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
               child: Text(
-                'deviceUnlock.unlockbtn.confirm1',
+                'deviceunlock.unlockbtn.confirm1',
                 style: normalTextBlack(),
               ).tr(),
             ),
             Text(
-              'deviceUnlock.unlockbtn.confirm2',
+              'deviceunlock.unlockbtn.confirm2',
               style: normalTextBlack(),
             ).tr(),
             Padding(

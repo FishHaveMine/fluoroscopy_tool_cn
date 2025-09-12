@@ -92,19 +92,23 @@ class _copybasepageState extends State<aicheckResult> {
                               )
                           ],
                         )),
-                  Text(
-                    tr("refrigerant.aicheck.finish.${imagkey}"),
-                    textAlign: TextAlign.center,
-                    style: imagkey != "empty"
-                        ? normalText()
-                        : normalTextBlack(fSize: 18, fw: FontWeight.w800),
-                  ),
+                  Padding(
+                      padding: EdgeInsets.fromLTRB(24, 0.h, 24, 20.h),
+                      child: Text(
+                        tr("refrigerant.aicheck.finish.${imagkey}"),
+                        textAlign: TextAlign.center,
+                        style: imagkey != "empty"
+                            ? normalText()
+                            : normalTextBlack(fSize: 18, fw: FontWeight.w800),
+                      )),
                   if (imagkey == "empty")
-                    Text(
-                      tr("refrigerant.aicheck.finish.${imagkey}.tip"),
-                      textAlign: TextAlign.center,
-                      style: normalText(),
-                    ),
+                    Padding(
+                        padding: EdgeInsets.fromLTRB(24, 0.h, 24, 20.h),
+                        child: Text(
+                          tr("refrigerant.aicheck.finish.${imagkey}.tip"),
+                          textAlign: TextAlign.center,
+                          style: normalText(),
+                        )),
                   Container(
                     margin: EdgeInsets.fromLTRB(0, 64.h, 0, 0.h),
                     width: 208.w,

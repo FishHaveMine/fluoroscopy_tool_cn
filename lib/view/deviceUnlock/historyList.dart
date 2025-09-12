@@ -320,7 +320,7 @@ class _unlockhistoryState extends State<unlockhistory> {
                                                       searchsn();
                                                     },
                                                     child: Container(
-                                                      width: 55,
+                                                      width: 75,
                                                       height: 36,
                                                       margin:
                                                           const EdgeInsets.all(

@@ -75,7 +75,7 @@
     document.getElementById('bodyBox') //被打水印的Dom, 非必填，不填的情况下为body
   )
   var dataparams = dataparamReplace;
-  
+
   var output2 = "";
   var output3 = "";
   var output4 = "";
@@ -135,18 +135,18 @@
   }
 
   function formatToThreeDecimal(num) {
-  // 判断是否是数字
-  if (isNaN(num)) return num;
+    // 判断是否是数字
+    if (isNaN(num)) return num;
 
-  const str = num.toString();
-  const decimalPart = str.split('.')[1];
+    const str = num.toString();
+    const decimalPart = str.split('.')[1];
 
-  if (decimalPart && decimalPart.length > 3) {
-    return parseFloat(num).toFixed(3);  // 保留三位
+    if (decimalPart && decimalPart.length > 3) {
+      return parseFloat(num).toFixed(3);  // 保留三位
+    }
+
+    return num; // 原样返回
   }
-
-  return num; // 原样返回
-}
 
   a.forEach(function (z, index) {
     output5 += '<tr></tr>';

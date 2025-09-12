@@ -5,6 +5,7 @@ import 'package:fluoroscopy_tool/compent/baseContainer.dart';
 import 'package:fluoroscopy_tool/compent/snInput.dart';
 import 'package:fluoroscopy_tool/compent/submitbutton.dart';
 import 'package:fluoroscopy_tool/store/globalFunction.dart';
+import 'package:fluoroscopy_tool/style/color.dart';
 import 'package:fluoroscopy_tool/style/index.dart';
 import 'package:fluoroscopy_tool/view/cloud/projectManage/addmodelM0/step2.dart';
 import 'package:fluoroscopy_tool/view/systemCapabilityAnalysis/step2/systemDetail.dart';

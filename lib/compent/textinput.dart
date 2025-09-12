@@ -13,7 +13,6 @@ class textinput extends StatefulWidget {
   TextInputType keyboardType = TextInputType.text;
   String? val = "";
   bool isrequired = false;
-  bool autoclear = false;
   bool enabled = true;
   double lineheight = 2;
   Function? validator;
@@ -26,7 +25,6 @@ class textinput extends StatefulWidget {
       this.hintText,
       this.isrequired = false,
       this.enabled = true,
-      this.autoclear = true,
       this.validator,
       this.keyboardType = TextInputType.text,
       this.textAlign = TextAlign.start});
@@ -68,11 +66,8 @@ class _textinputState extends State<textinput> {
     _overlayEntry = null;
   }
 
-  final TextEditingController _controller = TextEditingController();
   void _handleFocusChange() {
     if (_focusNode.hasFocus) {
-      _controller.text = "";
-      widget.onChanged("");
       _showOverlay();
     } else {
       _hideOverlay();
@@ -83,7 +78,6 @@ class _textinputState extends State<textinput> {
   @override
   void initState() {
     super.initState();
-    _controller.text = widget.val ?? "";
     _focusNode.addListener(_handleFocusChange);
   }
 
@@ -91,7 +85,6 @@ class _textinputState extends State<textinput> {
   void dispose() {
     super.dispose();
     _focusNode.unfocus();
-    _controller.dispose();
     _focusNode.dispose();
     _hideOverlay();
   }
@@ -101,8 +94,8 @@ class _textinputState extends State<textinput> {
     return TextFormField(
         enabled: widget.enabled, // 设置为 false 禁用 TextFormField
         focusNode: _focusNode,
-        controller: _controller,
         keyboardType: widget.keyboardType,
+        initialValue: widget.val,
         validator: (value) {
           print("TextFormField validator $value");
 

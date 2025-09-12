@@ -6,18 +6,14 @@
  * @FilePath: /HVAC/fluoroscopy_tool/lib/main.dart
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
-
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:fluoroscopy_tool/store/http.dart';
-
+import 'package:fluoroscopy_tool/view/afterSalesReplacement/publicFunction.dart';
 import 'package:fluoroscopy_tool/view/login.dart';
 import 'package:fluoroscopy_tool/view/userinfo.dart';
-import 'package:fluoroscopy_tool/waterpumb/warterpumbIndex.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:permission_handler/permission_handler.dart';
 // ignore: depend_on_referenced_packages
 import 'package:provider/provider.dart';
 // ignore: depend_on_referenced_packages
@@ -25,8 +21,10 @@ import 'package:get/get.dart';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'Themes.dart';
+import 'config/config.dart';
 import 'store/TextScaleController.dart';
 import 'store/globalData.dart';
+import 'store/http.dart';
 import 'view/cloud/projectManage/deviceManage.dart';
 import 'view/cloud/projectManage/projectDetail.dart';
 import 'view/communication/index.dart';
@@ -45,76 +43,47 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 import 'config/config_dev.dart' as devConfig;
 import 'config/config_prod.dart' as prodConfig;
-import 'waterpumb/index.dart';
-import 'waterpumb/productSelect.dart';
 
 int startTime = 0;
 int endTime = 0;
 
-class AppConfig {
-  static late String baseUrl;
-
-  static late String externalVersion;
-  static late String internalVersion;
-
-  static void loadConfig() {
-    //  flutter build apk --dart-define=ENV=dev
-    //  flutter build apk --dart-define=ENV=prod
-
-    const EXV = String.fromEnvironment('EXV', defaultValue: '');
-    const ITV = String.fromEnvironment('ITV', defaultValue: '');
-
-    const env = String.fromEnvironment('ENV', defaultValue: 'dev');
-    if (env == 'dev') {
-      baseUrl = devConfig.Config.baseUrl;
-    } else {
-      baseUrl = prodConfig.Config.baseUrl;
-    }
-
-    externalVersion = EXV;
-    internalVersion = ITV;
-    print("loadConfig baseUrl :$baseUrl");
-    print("loadConfig externalVersion :$externalVersion");
-    print("loadConfig internalVersion :$internalVersion");
-  }
-}
-
 void main() async {
-  //设置运行环境
-  AppConfig.loadConfig();
-  apiHost = AppConfig.baseUrl;
-
-  externalVersion = AppConfig.externalVersion; //云端请求的host
-  internalVersion = AppConfig.internalVersion; //云端请求的host
-  MideaApi.init();
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
-
-  //加载云端的多语言
-  String zh_CN = await checkFileExistence("zh_CN");
-  await EasyLocalization.ensureInitialized();
 
   final deviceInfoPlugin = DeviceInfoPlugin();
   final deviceInfo = await deviceInfoPlugin.deviceInfo;
   final allInfo = deviceInfo.data;
+
+  WidgetsFlutterBinding.ensureInitialized();
+  await EasyLocalization.ensureInitialized();
   //加载本地多语言处理，注意 tr（）内的处理需要转换成全小写
+
   if (allInfo["product"] == "NLS-MT9055-GL" ||
       kDebugMode ||
       allInfo["product"].toString().contains('NLS-MT')) {
+    //设置运行环境
+    await AppConfig.loadConfig();
+    apiHost = AppConfig.baseUrl; //云端请求的host
+    print("baseUrl: $apiHost");
+    appCOUNTRY = AppConfig.ct; //判断内销版 还是 外销版
+
+    MideaApi.init();
+
     Get.put(TextScaleController()); // 全局单例
     //加载云端的多语言
     // String zh_CN = await checkFileExistence("zh_CN");
     runApp(EasyLocalization(
         saveLocale: true,
         supportedLocales: const [
-          Locale('zh', 'CN'),
           Locale('en', 'US'),
+          Locale('zh', 'CN'),
         ],
         path: 'assets/translations',
-        fallbackLocale: const Locale('zh', 'CN'),
+        fallbackLocale: const Locale('en', 'US'),
         child: const MyApp()));
   } else {
-    runApp(MaterialApp(
+    runApp(const MaterialApp(
       title: 'Welcome ',
       debugShowCheckedModeBanner: false,
       home: orderdevicepage(),
@@ -164,30 +133,42 @@ class MyAppState extends State<MyAppRe> with WidgetsBindingObserver {
   final userinfoController _promissioncontroller =
       Get.put(userinfoController());
 
+  final afterSalesReplacementController _selfController =
+      Get.put(afterSalesReplacementController());
+
   powerOn() async {
     // McuUtilplatform.invokeMethod('powerOn');
   }
 
+  //关闭背夹电源
   powerOff() async {
     McuUtilplatform.invokeMethod('powerOff');
   }
 
   String _appVersion = 'Unknown';
   String _buildNumber = 'Unknown';
+
+  //读取app的构建版本并缓存，用于和云端的版本做匹配
   Future<void> _fetchAppVersion() async {
+    setState(() {
+      _appVersion = AppConfig.externalVersion; //云端请求的host
+      _buildNumber = AppConfig.internalVersion; //云端请求的host
+    });
+    externalVersion = _appVersion;
+    internalVersion = _buildNumber;
     print(
-        "_appVersion: $_appVersion  _buildNumber:$_buildNumber apiHost:$apiHost");
+        "_appVersion: $_appVersion  _buildNumber:$_buildNumber  --- apiHost:$apiHost");
 
     //判断是非能连接外网，并加载多语言文件
-    // try {
-    //   bool conn = await checkNet(false);
-    //   if (conn) {
-    //     try {
-    //       fetchAndSaveJsonData("zh_CN");
-    //       fetchAndSaveJsonData("en_US");
-    //     } catch (e) {}
-    //   }
-    // } catch (e) {}
+    try {
+      bool conn = await checkNet(false);
+      if (conn) {
+        try {
+          // fetchAndSaveJsonData("zh_CN");
+          // fetchAndSaveJsonData("en_US");
+        } catch (e) {}
+      }
+    } catch (e) {}
   }
 
   @override
@@ -272,11 +253,11 @@ class MyAppState extends State<MyAppRe> with WidgetsBindingObserver {
       darkTheme: ThemeData.dark(),
       themeMode: ThemeMode.light,
       debugShowCheckedModeBanner: false,
-      onGenerateTitle: (context) => tr('helloWorld'),
+      onGenerateTitle: (context) {
+        ///根据语言环境来获取 taskTitle
+        return tr('helloWorld');
+      },
       key: ValueKey(context.locale.toString()),
-      localizationsDelegates: context.localizationDelegates,
-      supportedLocales: context.supportedLocales,
-      locale: context.locale,
       home: Obx(() {
         final controller = Get.find<TextScaleController>(); // 获取已有实例
         return MediaQuery(
@@ -284,19 +265,11 @@ class MyAppState extends State<MyAppRe> with WidgetsBindingObserver {
             textScaleFactor: controller.textScaleFactor.value,
           ),
           child: context.watch<GlobalData>().isLogin
-              ? productSelect()
+              ? welcomePage()
               : const loginPage(),
         );
       }),
-
-      // 简化路由定义，移除重复的 MediaQuery
       getPages: [
-        GetPage(
-            name: '/productSelect',
-            page: () => ScalableTextApp(child: productSelect())),
-        GetPage(
-            name: '/warterpumbIndex',
-            page: () => const ScalableTextApp(child: warterpumbWelcomePage())),
         GetPage(
             name: '/home',
             page: () => const ScalableTextApp(child: welcomePage())),
@@ -331,25 +304,13 @@ class MyAppState extends State<MyAppRe> with WidgetsBindingObserver {
             name: '/RefrigerantDetectCharge',
             page: () => ScalableTextApp(child: refrigerantTable())),
       ],
+      onUnknownRoute: (setting) {
+        return MaterialPageRoute(builder: (_) => Text(externalVersion));
+      },
+      localizationsDelegates: context.localizationDelegates,
+      supportedLocales: context.supportedLocales,
+      locale: context.locale,
     );
-  }
-}
-
-class AuthMiddleware extends GetMiddleware {
-  final bool hasPermission;
-
-  AuthMiddleware({required this.hasPermission});
-
-  final userinfoController _promissioncontroller =
-      Get.put(userinfoController());
-  @override
-  RouteSettings? redirect(String? route) {
-    // 检查权限
-    if (!_promissioncontroller.checkLocalPromission(route)) {
-      // 如果没有权限，跳转到登录页或提示页面
-      return const RouteSettings(name: '/login');
-    }
-    return null; // 允许跳转
   }
 }
 

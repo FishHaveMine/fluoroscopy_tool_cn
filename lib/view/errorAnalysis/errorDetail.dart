@@ -6,7 +6,9 @@ import 'package:fluoroscopy_tool/compent/baseContainer.dart';
 import 'package:fluoroscopy_tool/compent/submitbutton.dart';
 import 'package:fluoroscopy_tool/store/globalData.dart';
 import 'package:fluoroscopy_tool/store/globalFunction.dart';
+import 'package:fluoroscopy_tool/store/http.dart';
 import 'package:fluoroscopy_tool/style/index.dart';
+import 'package:fluoroscopy_tool/view/errorAnalysis/pdf.dart';
 import 'package:fluoroscopy_tool/view/local/publicFunction.dart';
 import 'package:fluoroscopy_tool/view/systemCapabilityAnalysis/step2/systemDetail.dart';
 import 'package:flutter/material.dart';
@@ -45,23 +47,43 @@ class _errorDetailPageState extends State<errorDetailPage> {
 
   final deviceInfoController _deviceInfoController = Get.find();
   final List _datatype = [
-    "faultDescription",
-    "faultReason",
+    // "faultDescription",
+    // "faultReason",
     "faultProcessWays"
   ];
   List _datatypeshow = ["faultProcessWays"];
   List showingtype = [
     "errorCode",
-    "codeName",
+    // "codeName",
     "deviceVersion",
     "deviceTypeName",
   ];
+  checknet() async {
+    bool isnetconnecd = false;
+
+    EasyLoading.show(status: 'loading...');
+    try {
+      final response = await Dio().get('https://${apiHost}/');
+      isnetconnecd = response.statusCode == 200;
+
+      if (isnetconnecd) {
+        init();
+      } else {
+        EasyLoading.dismiss();
+        EasyLoading.showError(tr("netword.error"));
+      }
+    } catch (e) {
+      EasyLoading.dismiss();
+      EasyLoading.showError(tr("netword.error"));
+    }
+  }
 
   init() async {
     if (widget.showDetail != null) {
       setState(() {
         data = widget.showDetail;
       });
+      EasyLoading.dismiss();
       return;
     }
     bool conn = await checkNet(true);
@@ -70,19 +92,33 @@ class _errorDetailPageState extends State<errorDetailPage> {
       return;
     }
     try {
-      print("gethistory : ${{
-        "errorCode": widget.item["errorCode"],
-        "deviceversion": widget.deviceversion ??
-            _deviceInfoController.loacalDevice.value.model
-      }}");
-      var gethistory =
-          await _selfplatform.invokeMethod('getDetailByCode', <String, dynamic>{
-        "errorCode": widget.item["errorCode"],
-        "deviceversion": widget.deviceversion ??
-            _deviceInfoController.loacalDevice.value.model
-      });
-      print("gethistory: ${gethistory}");
+      var send = {
+        "pageSize": 20,
+        "pageIndex": 1,
+        "systemType": "vrf",
+        "deviceType": "outdoor",
+        "deviceVersion":
+            _deviceInfoController.loacalDevice.value.model.toUpperCase(),
+        "errorCode": widget.item[2]
+      };
+      var gethistory = await MideaApi.faultPagePost(send);
+
+      var _getTspDataByKeywordback =
+          await MideaApi.getTspDataByKeyword(widget.item[2]);
+      // var gethistory =
+      //     await _selfplatform.invokeMethod('getDetailByCode', <String, dynamic>{
+      //   "errorCode": widget.item["errorCode"],
+      //   "deviceversion": widget.deviceversion ??
+      //       _deviceInfoController.loacalDevice.value.model
+      // });
+
+      String faultProcessWays = "";
+      try {
+        faultProcessWays =
+            _getTspDataByKeywordback["data"][0]["tspSolutionUrl"];
+      } catch (e) {}
       if (gethistory["errorCode"] == 1001) {
+        EasyLoading.dismiss();
         EasyLoading.showError(tr("network_error"));
         // EasyLoading.showError(gethistory["errorMsg"]);
         // await signout();
@@ -92,34 +128,32 @@ class _errorDetailPageState extends State<errorDetailPage> {
         // Navigator.pop(context);
       } else {
         if (gethistory['errorMsg'] != "") {
+          EasyLoading.dismiss();
           EasyLoading.showError(gethistory['errorMsg']);
+          return;
         }
-        gethistory["data"].forEach((key, value) {
+        if (gethistory["data"] == null || gethistory["data"].length == 0) {
+          EasyLoading.dismiss();
+          EasyLoading.showError(tr('search.empty'));
+          return;
+        }
+        print("gethistory : ${gethistory["data"][0]["id"]}");
+        var faultgetDetail = await MideaApi.faultgetDetail(
+            gethistory["data"][0]["id"].toString());
+        print("gethistory : ${faultgetDetail}");
+        faultgetDetail["data"].forEach((key, value) {
           data[key] = value;
         });
+        data["faultProcessWays"] = faultProcessWays;
         setState(() {
           data;
         });
-      }
-    } catch (e) {}
-  }
-
-  checknet() async {
-    bool isnetconnecd = false;
-
-    EasyLoading.show(status: 'loading...');
-    try {
-      final response = await Dio().get('https://${apiHost}/');
-      isnetconnecd = response.statusCode == 200;
-      EasyLoading.dismiss();
-      if (isnetconnecd) {
-        init();
-      } else {
-        EasyLoading.showError(tr("netword.error"));
+        EasyLoading.dismiss();
       }
     } catch (e) {
+      print("gethistory : ${e}");
       EasyLoading.dismiss();
-      EasyLoading.showError(tr("netword.error"));
+      EasyLoading.showError(tr('search.empty'));
     }
   }
 
@@ -187,7 +221,7 @@ class _errorDetailPageState extends State<errorDetailPage> {
                         Text(
                           data[key] ?? "--",
                           style: normalText(),
-                        ).tr()
+                        )
                       ]),
                 ),
               Container(
@@ -227,42 +261,16 @@ class _errorDetailPageState extends State<errorDetailPage> {
                       },
                       body: Container(
                         width: 720.w,
-                        height: 250,
+                        height: 450,
                         padding: EdgeInsets.all(30.w),
                         child: item == "faultProcessWays"
                             ? data[item] == null
                                 ? Container()
                                 : GestureDetector(
-                                    onTap: () async {
-                                      print(data[item]);
-                                      if (await isImageAccessible(data[item])) {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                FullScreenImage(
-                                                    imageUrl: data[item]),
-                                          ),
-                                        );
-                                      } else {}
-                                    },
-                                    child: Image.network(
-                                      data[item],
-                                      height: 200,
-                                      errorBuilder: (BuildContext context,
-                                          Object error,
-                                          StackTrace? stackTrace) {
-                                        return Container(
-                                          width: 200,
-                                          height: 200,
-                                          color: Colors.grey[300],
-                                          child: const Icon(
-                                            Icons.error,
-                                            color: Colors.red,
-                                            size: 50,
-                                          ),
-                                        );
-                                      },
+                                    onTap: () async {},
+                                    child: PdfViewerScreen(
+                                      pdfUrl: data[item],
+                                      pdfTitle: data['errorCode'],
                                     ))
                             : Text.rich(TextSpan(
                                 style: normalText(), text: data[item])),
@@ -286,21 +294,6 @@ class FullScreenImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        leading: IconButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            icon:
-                const Icon(Icons.chevron_left, color: Colors.white, size: 36)),
-        title: Text(
-          '',
-          style: const TextStyle(color: Colors.black),
-        ).tr(),
-        centerTitle: true,
-        actions: [],
-      ),
       backgroundColor: Colors.black,
       body: GestureDetector(
         onTap: () {

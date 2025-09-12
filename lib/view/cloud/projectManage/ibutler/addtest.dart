@@ -327,7 +327,7 @@ class _addtestState extends State<addtest> {
         // await _selectStartTime(context);
       } else if (picked != null && picked!.start == picked!.end) {
         // 可以在这里显示提示信息
-        EasyLoading.showError('开始日期和结束日期不能是同一天');
+        EasyLoading.showError(tr('timepickerror'));
         // ScaffoldMessenger.of(context).showSnackBar(
         //   SnackBar(content: Text('开始日期和结束日期不能是同一天')),
         // );
@@ -450,7 +450,7 @@ class _addtestState extends State<addtest> {
                               _filterdata();
                             },
                             child: Container(
-                              width: 55,
+                              width: 75,
                               height: 36,
                               margin: const EdgeInsets.all(5),
                               decoration: BoxDecoration(
@@ -518,7 +518,7 @@ class _addtestState extends State<addtest> {
                                       '{}' &&
                                   data[index]["contractEndTime"].toString() !=
                                       '{}') {
-                                EasyLoading.showError("当前设备已有合约，不能开启试用");
+                                EasyLoading.showError(tr("havecontracttime"));
                                 return;
                               }
 
@@ -577,7 +577,7 @@ class _addtestState extends State<addtest> {
                                     val: data[index]["devStableTag"]
                                                 .toString() ==
                                             "1"
-                                        ? "非新装机"
+                                        ? tr("devstabletag1")
                                         : tr(
                                             "devStableTag${data[index]["devStableTag"]}"),
                                   ),
@@ -825,7 +825,7 @@ class _YearMonthDayPickerState extends State<YearMonthDayPicker> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "开始日期",
+                          tr("tryusesetstart"),
                           style: normalTextBlack(
                               fontcolor: setStart
                                   ? const Color.fromRGBO(25, 98, 255, 1)
@@ -859,7 +859,7 @@ class _YearMonthDayPickerState extends State<YearMonthDayPicker> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "结束日期",
+                          tr("tryusesetend"),
                           style: normalTextBlack(
                               fontcolor: !setStart
                                   ? const Color.fromRGBO(25, 98, 255, 1)
@@ -878,7 +878,7 @@ class _YearMonthDayPickerState extends State<YearMonthDayPicker> {
             ),
           ),
           Text(
-            "根据您选中的设备，您最⻓可选的试⽤⽇期为${maxDate.year}/${maxDate.month < 10 ? '0${maxDate.month}' : maxDate.month}/${maxDate.day < 10 ? '0${maxDate.day}' : maxDate.day}",
+            "${tr("tryuse")}${maxDate.year}/${maxDate.month < 10 ? '0${maxDate.month}' : maxDate.month}/${maxDate.day < 10 ? '0${maxDate.day}' : maxDate.day}",
             style: const TextStyle(fontSize: 12, color: Colors.red),
           ),
           Expanded(

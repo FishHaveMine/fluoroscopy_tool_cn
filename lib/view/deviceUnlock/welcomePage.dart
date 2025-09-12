@@ -21,7 +21,7 @@ import 'package:get/get.dart';
 import 'package:roundcheckbox/roundcheckbox.dart';
 
 import '../afterSalesReplacement/connectStep2.dart';
-import 'deviceUnlock.dart';
+import 'deviceunlock.dart';
 import 'historyList.dart';
 import 'unlock.dart';
 import 'writeSn.dart';
@@ -66,7 +66,7 @@ class _deviceUnlockState extends State<deviceUnlockWelcomePage> {
                   icon: const Icon(Icons.chevron_left,
                       color: Colors.black, size: 36)),
               title: const Text(
-                'deviceUnlock.title',
+                'deviceunlock.title',
                 style: TextStyle(color: Colors.black),
               ).tr(),
               centerTitle: true,
@@ -79,7 +79,7 @@ class _deviceUnlockState extends State<deviceUnlockWelcomePage> {
                         Get.to(() => const unlockhistory());
                       },
                       child: Text(
-                        'deviceUnlock.unlockhistory',
+                        'deviceunlock.unlockhistory',
                         style: actionsTextButtonStyle(),
                       ).tr()),
                 )
@@ -96,23 +96,23 @@ class _deviceUnlockState extends State<deviceUnlockWelcomePage> {
                           ? Padding(
                               padding: EdgeInsets.symmetric(horizontal: 16),
                               child: Text(
-                                tr("deviceUnlock.welcomePage.tip1"),
+                                tr("deviceunlock.welcomePage.tip1"),
                                 style: normalText(),
                               ),
                             )
                           : InkWell(
                               onTap: () async {
                                 if (index > 0) {
-                                  EasyLoading.showError("功能暂未开放");
+                                  EasyLoading.showError(tr("noopen"));
                                   return;
                                 }
                                 bool issend = await divConfirmOnlyDialog(
                                     context,
                                     confirmText: _deviceInfoController
                                             .loacalDevice.value.isconnected
-                                        ? tr('deviceUnlock.enter')
-                                        : tr('deviceUnlock.connecd'),
-                                    confirmTitle: tr("deviceUnlock"),
+                                        ? tr('deviceunlock.enter')
+                                        : tr('deviceunlock.connecd'),
+                                    confirmTitle: tr("deviceunlock"),
                                     isSubmitButton: true,
                                     confirmDescriptionWidget: SizedBox(
                                       width: 560.w,
@@ -128,11 +128,11 @@ class _deviceUnlockState extends State<deviceUnlockWelcomePage> {
                                                 CrossAxisAlignment.start,
                                             children: [
                                               Text(
-                                                'deviceUnlock.tip1',
+                                                'deviceunlock.tip1',
                                                 style: titleStyleS(),
                                               ).tr(),
                                               Text(
-                                                'deviceUnlock.tip2',
+                                                'deviceunlock.tip2',
                                                 style: titleStyleS(),
                                               ).tr(),
                                               Padding(
@@ -145,22 +145,22 @@ class _deviceUnlockState extends State<deviceUnlockWelcomePage> {
                                                     : const EdgeInsets.fromLTRB(
                                                         0, 15, 0, 0),
                                                 child: Text(
-                                                  'deviceUnlock.tip3',
+                                                  'deviceunlock.tip3',
                                                   style: titleStyleS(),
                                                 ).tr(),
                                               ),
                                               Text(
-                                                'deviceUnlock.tip4',
+                                                'deviceunlock.tip4',
                                                 style: titleStyleS(),
                                               ).tr(),
                                               _deviceInfoController.loacalDevice
                                                       .value.isconnected
                                                   ? Text(
-                                                      'deviceUnlock.tip5',
+                                                      'deviceunlock.tip5',
                                                       style: titleStyleS(),
                                                     ).tr()
                                                   : const Text(
-                                                      'deviceUnlock.tip5_error',
+                                                      'deviceunlock.tip5_error',
                                                       style: TextStyle(
                                                           color: Colors.red),
                                                     ).tr(),
@@ -196,11 +196,12 @@ class _deviceUnlockState extends State<deviceUnlockWelcomePage> {
                                         height: 136.h,
                                       ),
                                     ),
-                                    Text(
-                                      tr("deviceUnlock.welcomePage.type${index + 1}") +
-                                          "${index > 0 ? "(暂未开放)" : ""}",
+                                    Expanded(
+                                        child: Text(
+                                      tr("deviceunlock.welcomePage.type${index + 1}") +
+                                          (index > 0 ? tr("needdone") : ""),
                                       style: titleText(),
-                                    )
+                                    ))
                                   ],
                                 ),
                               ),
@@ -215,7 +216,7 @@ class _deviceUnlockState extends State<deviceUnlockWelcomePage> {
                     if (!_deviceInfoController.loacalDevice.value.isconnected) {
                       _selfController.setConnectType(connectType[0]);
                       Get.to(() => connectStep2Page(
-                            title: tr('deviceUnlock'),
+                            title: tr('deviceunlock'),
                             nextPage: const writeSn(),
                           ));
                     } else {
@@ -250,7 +251,7 @@ class _deviceUnlockState extends State<deviceUnlockWelcomePage> {
                           ),
                         ),
                         const Text(
-                          "deviceUnlock.writeSn",
+                          "deviceunlock.writeSn",
                           textAlign: TextAlign.center,
                           style: TextStyle(
                               fontSize: 12,

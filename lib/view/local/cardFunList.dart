@@ -4,13 +4,10 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:easy_localization/easy_localization.dart';
-import 'package:fluoroscopy_tool/store/globalData.dart';
 import 'package:fluoroscopy_tool/store/globalFunction.dart';
 import 'package:fluoroscopy_tool/view/afterSalesReplacement/connectStep1.dart';
-import 'package:fluoroscopy_tool/view/afterSalesReplacement/publicFunction.dart';
 import 'package:fluoroscopy_tool/view/communication/index.dart';
 import 'package:fluoroscopy_tool/view/electronicExpansionValve/tip.dart';
-import 'package:fluoroscopy_tool/view/originTracking/originTracking.dart';
 import 'package:fluoroscopy_tool/view/protocoldetection/welcomePage.dart';
 import 'package:fluoroscopy_tool/view/refrigerant/index.dart';
 import 'package:fluoroscopy_tool/view/systemCapabilityAnalysis/index.dart';
@@ -20,7 +17,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../afterSalesReplacement/connectStep2.dart';
 import '../afterSalesReplacement/style.dart';
 import '../electronicExpansionValve/index.dart';
 import '../waterPumpInspection/index.dart';
@@ -29,6 +25,9 @@ import 'publicFunction.dart';
 import 'style.dart';
 
 import 'package:get/get.dart';
+
+/// 本地连接最下面的卡片组建
+/// 包含水泵检测、膨胀阀检测、协议检测等
 
 class cardFunList extends StatefulWidget {
   const cardFunList({super.key});
@@ -41,31 +40,34 @@ class _cardFunListState extends State<cardFunList> {
   final deviceInfoController _deviceInfoController = Get.find();
   final userinfoController _promissioncontroller = Get.find();
 
-  final afterSalesReplacementController _selfController =
-      Get.put(afterSalesReplacementController());
-
   static const _selfplatform =
       MethodChannel('samples.flutter.dev/RefrigerantService');
 
+  static const MSInterfaceplatform =
+      MethodChannel('samples.flutter.dev/MSInterface');
+
   static const platform = MethodChannel('samples.flutter.dev/battery');
+
+  /// 卡片方法的排列对象
   List funNameList = [
     "communication",
     "waterPump",
     "electronicExpansionValve",
     "protocol",
-    "systemAnalysis",
-    "refrigerant",
-    "origintracking"
+    // "systemAnalysis",
+    "refrigerant"
   ];
 
+  /// 用于匹配方法的多语言处理
   Map pk = {
     "communication": "CommunicateDetect",
     "waterPump": "WaterPumpDetect",
     "electronicExpansionValve": "ElecExpansValveDetect",
     "protocol": "ProtocolDetect",
     "systemAnalysis": "SystemCapabilityAnalysis",
-    "refrigerant": "RefrigerantDetectCharge",
+    "refrigerant": "RefrigerantDetectCharge"
   };
+
   List<Widget> allFun = [];
   bool isV8V6 = false;
   bool isAllV8 = false;
@@ -102,62 +104,51 @@ class _cardFunListState extends State<cardFunList> {
     }
   }
 
-  initFun() async {
+  initFun({String? languageCode}) async {
+    print("languageCode: $languageCode");
     for (var i = 0; i < funNameList.length; i++) {
       allFun.add(GestureDetector(
-        child: Container(
-          width: (656.w - 48.w - 24.w) / 4,
-          height: 120.h,
-          padding: EdgeInsets.fromLTRB(0, 12.w, 0, 0),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Image.asset(
-                  'public/images/icon/CommunicationDetection${i + 1}.png',
-                  width: 64.w,
+        child: Opacity(
+            opacity: _deviceInfoController.isBluetooth.value ? 0.4 : 1,
+            child: Container(
+              width: (656.w - 48.w - 24.w) / 4,
+              height: 120.h,
+              padding: EdgeInsets.fromLTRB(0, 12.w, 0, 0),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Image.asset(
+                      'public/images/icon/CommunicationDetection${i + 1}.png',
+                      width: 64.w,
+                    ),
+                    const Padding(padding: EdgeInsets.fromLTRB(0, 0, 0, 5)),
+                    Center(
+                      child: Text(funNameList[i],
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: languageCode == 'zh' ? 1 : 2, // 只显示一行
+                              textAlign: TextAlign.center,
+                              style: languageCode == 'zh'
+                                  ? cardFunName(context)
+                                  : cardFunNameSmall(context))
+                          .tr(),
+                    )
+                  ],
                 ),
-                const Padding(padding: EdgeInsets.fromLTRB(0, 0, 0, 5)),
-                Center(
-                  child: Text(funNameList[i],
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1, // 只显示一行
-                          textAlign: TextAlign.center,
-                          style: cardFunName(context))
-                      .tr(),
-                )
-              ],
-            ),
-          ),
-        ),
+              ),
+            )),
         onTap: () async {
-          if (funNameList[i] == 'origintracking') {
-            if (!_promissioncontroller.checkLocalPromission('SourceTracking')) {
-              return;
-            }
-
-            if (_deviceInfoController.loacalDevice.value.isconnected) {
-              bool ispass = await isV8();
-              if (ispass) {
-                Get.to(() => originTrackingPage());
-                return;
-              }
-            } else {
-              _selfController
-                  .setConnectType('afterSalesReplacement.connectType1');
-              Get.to(() => connectStep2Page(
-                    title: tr('origintracking'),
-                    nextPage: originTrackingPage(),
-                  ));
-            }
+          if (!_deviceInfoController.loacalDevice.value.isconnected) {
+            await _deviceInfoController.setLocalBluetoothConnect(false);
+          }
+          if (_deviceInfoController.isBluetooth.value) {
+            EasyLoading.showError(tr("bluetooth.dissupport"));
             return;
           }
-
           if (!_promissioncontroller.checkLocalPromission(pk[funNameList[i]])) {
             return;
           }
-
           if (funNameList[i] == 'communication') {
             Get.to(() => communicationTypeSelectPage());
           }
@@ -168,8 +159,8 @@ class _cardFunListState extends State<cardFunList> {
             bool issend = await divConfirmOnlyDialog(context,
                 confirmText:
                     _deviceInfoController.loacalDevice.value.isconnected
-                        ? "查看连接指引"
-                        : tr('deviceUnlock.connecd'),
+                        ? tr("connecthelp")
+                        : tr('deviceunlock.connecd'),
                 confirmTitle: tr("electronicExpansionValve.title"),
                 isSubmitButton: true,
                 confirmDescriptionWidget: SizedBox(
@@ -185,7 +176,7 @@ class _cardFunListState extends State<cardFunList> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'deviceUnlock.tip1',
+                            'deviceunlock.tip1',
                             style: titleStyleS(),
                           ).tr(),
                           Text(
@@ -198,12 +189,12 @@ class _cardFunListState extends State<cardFunList> {
                                 ? const EdgeInsets.fromLTRB(0, 25, 0, 0)
                                 : const EdgeInsets.fromLTRB(0, 15, 0, 0),
                             child: Text(
-                              'deviceUnlock.tip3',
+                              'deviceunlock.tip3',
                               style: titleStyleS(),
                             ).tr(),
                           ),
-                          !_deviceInfoController
-                                      .loacalDevice.value.isconnected ||
+                          _deviceInfoController
+                                      .loacalDevice.value.isconnected &&
                                   _deviceInfoController
                                           .indoorEntityList.length ==
                                       1
@@ -217,11 +208,11 @@ class _cardFunListState extends State<cardFunList> {
                                 ).tr(),
                           _deviceInfoController.loacalDevice.value.isconnected
                               ? Text(
-                                  'deviceUnlock.tip5',
+                                  'deviceunlock.tip5',
                                   style: titleStyleS(),
                                 ).tr()
                               : const Text(
-                                  'deviceUnlock.tip5_error',
+                                  'deviceunlock.tip5_error',
                                   style: TextStyle(color: Colors.red),
                                 ).tr(),
                         ],
@@ -259,7 +250,7 @@ class _cardFunListState extends State<cardFunList> {
                 confirmText:
                     _deviceInfoController.loacalDevice.value.isconnected
                         ? tr('determine')
-                        : tr('deviceUnlock.connecd'),
+                        : tr('deviceunlock.connecd'),
                 confirmTitle: tr("waterPump"),
                 isSubmitButton: true,
                 confirmDescriptionWidget: SingleChildScrollView(
@@ -275,7 +266,7 @@ class _cardFunListState extends State<cardFunList> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'deviceUnlock.tip1',
+                            'deviceunlock.tip1',
                             style: titleStyleS(),
                           ).tr(),
                           Text(
@@ -288,7 +279,7 @@ class _cardFunListState extends State<cardFunList> {
                                 ? const EdgeInsets.fromLTRB(0, 25, 0, 0)
                                 : const EdgeInsets.fromLTRB(0, 15, 0, 0),
                             child: Text(
-                              'deviceUnlock.tip3',
+                              'deviceunlock.tip3',
                               style: titleStyleS(),
                             ).tr(),
                           ),
@@ -306,11 +297,11 @@ class _cardFunListState extends State<cardFunList> {
                                 ).tr(),
                           _deviceInfoController.loacalDevice.value.isconnected
                               ? Text(
-                                  'deviceUnlock.tip5',
+                                  'deviceunlock.tip5',
                                   style: titleStyleS(),
                                 ).tr()
                               : const Text(
-                                  'deviceUnlock.tip5_error',
+                                  'deviceunlock.tip5_error',
                                   style: TextStyle(color: Colors.red),
                                 ).tr(),
                         ],
@@ -358,15 +349,16 @@ class _cardFunListState extends State<cardFunList> {
                 confirmText:
                     _deviceInfoController.loacalDevice.value.isconnected
                         ? tr('determine')
-                        : tr('deviceUnlock.connecd'),
+                        : tr('deviceunlock.connecd'),
                 confirmTitle: tr("refrigerant.confirm.title"),
                 isSubmitButton: true,
                 confirmDescriptionWidget: SingleChildScrollView(
-                  child: SizedBox(
-                    width: 600.w,
-                    height: _deviceInfoController.loacalDevice.value.isconnected
-                        ? 426.h
-                        : 460.h,
+                    child: SizedBox(
+                  width: 600.w,
+                  height: _deviceInfoController.loacalDevice.value.isconnected
+                      ? 426.h
+                      : 460.h,
+                  child: SingleChildScrollView(
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
                       child: Column(
@@ -374,7 +366,7 @@ class _cardFunListState extends State<cardFunList> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'deviceUnlock.tip1',
+                            'deviceunlock.tip1',
                             style: titleStyleS(),
                           ).tr(),
                           Text(
@@ -387,7 +379,7 @@ class _cardFunListState extends State<cardFunList> {
                                 ? const EdgeInsets.fromLTRB(0, 25, 0, 0)
                                 : const EdgeInsets.fromLTRB(0, 15, 0, 0),
                             child: Text(
-                              'deviceUnlock.tip3',
+                              'deviceunlock.tip3',
                               style: titleStyleS(),
                             ).tr(),
                           ),
@@ -405,18 +397,18 @@ class _cardFunListState extends State<cardFunList> {
                                 ).tr(),
                           _deviceInfoController.loacalDevice.value.isconnected
                               ? Text(
-                                  'deviceUnlock.tip5',
+                                  'deviceunlock.tip5',
                                   style: titleStyleS(),
                                 ).tr()
                               : const Text(
-                                  'deviceUnlock.tip5_error',
+                                  'deviceunlock.tip5_error',
                                   style: TextStyle(color: Colors.red),
                                 ).tr(),
                         ],
                       ),
                     ),
                   ),
-                ));
+                )));
             if (issend) {
               if (!_deviceInfoController.loacalDevice.value.isconnected) {
                 Get.to(() => connectStep1Page(
@@ -447,7 +439,7 @@ class _cardFunListState extends State<cardFunList> {
                 confirmText:
                     _deviceInfoController.loacalDevice.value.isconnected
                         ? tr('determine')
-                        : tr('deviceUnlock.connecd'),
+                        : tr('deviceunlock.connecd'),
                 confirmTitle: tr("protocoldetection"),
                 isSubmitButton: true,
                 confirmDescriptionWidget: SizedBox(
@@ -463,7 +455,7 @@ class _cardFunListState extends State<cardFunList> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'deviceUnlock.tip1',
+                            'deviceunlock.tip1',
                             style: titleStyleS(),
                           ).tr(),
                           Text(
@@ -476,35 +468,40 @@ class _cardFunListState extends State<cardFunList> {
                                 ? const EdgeInsets.fromLTRB(0, 25, 0, 0)
                                 : const EdgeInsets.fromLTRB(0, 15, 0, 0),
                             child: Text(
-                              'deviceUnlock.tip3',
+                              'deviceunlock.tip3',
                               style: titleStyleS(),
                             ).tr(),
                           ),
-                          // _deviceInfoController.loacalDevice.value.model ==
-                          //             'V8' ||
-                          //         _deviceInfoController
-                          //                 .loacalDevice.value.model ==
-                          //             'V6' ||
-                          //         _deviceInfoController
-                          //                 .loacalDevice.value.model ==
-                          //             'V4+' ||
-                          //         _deviceInfoController
-                          //                 .loacalDevice.value.model ==
-                          //             'V4Plus' ||
-                          //         !_deviceInfoController
-                          //             .loacalDevice.value.isconnected
-                          //     ? Text(
-                          //         'protocoldetection.tip4',
-                          //         style: titleStyleS(),
-                          //       ).tr()
-                          //     : const Text(
-                          //         'protocoldetection.tip4_error',
-                          //         style: TextStyle(color: Colors.red),
-                          //       ).tr(),
-                          Text(
-                            'protocoldetection.tip5',
-                            style: titleStyleS(),
-                          ).tr(),
+                          _deviceInfoController.loacalDevice.value.model ==
+                                      'V8' ||
+                                  _deviceInfoController
+                                          .loacalDevice.value.model ==
+                                      'V6' ||
+                                  _deviceInfoController
+                                          .loacalDevice.value.model ==
+                                      'V4+' ||
+                                  _deviceInfoController
+                                          .loacalDevice.value.model ==
+                                      'V4Plus' ||
+                                  !_deviceInfoController
+                                      .loacalDevice.value.isconnected
+                              ? Text(
+                                  'protocoldetection.tip4',
+                                  style: titleStyleS(),
+                                ).tr()
+                              : const Text(
+                                  'protocoldetection.tip4_error',
+                                  style: TextStyle(color: Colors.red),
+                                ).tr(),
+                          _deviceInfoController.loacalDevice.value.isconnected
+                              ? Text(
+                                  'deviceunlock.tip5',
+                                  style: titleStyleS(),
+                                ).tr()
+                              : const Text(
+                                  'deviceunlock.tip5_error',
+                                  style: TextStyle(color: Colors.red),
+                                ).tr(),
                         ],
                       ),
                     ),
@@ -539,6 +536,9 @@ class _cardFunListState extends State<cardFunList> {
           }
         },
       ));
+      setState(() {
+        allFun;
+      });
     }
   }
 
@@ -546,7 +546,11 @@ class _cardFunListState extends State<cardFunList> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    initFun();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      String? languageCode =
+          EasyLocalization.of(context)?.currentLocale?.languageCode;
+      initFun(languageCode: languageCode);
+    });
   }
 
   @override
@@ -557,7 +561,8 @@ class _cardFunListState extends State<cardFunList> {
       margin: EdgeInsets.fromLTRB(paddingLR, 10, paddingLR, 0),
       padding: const EdgeInsets.all(12),
       decoration: cardStyle(context),
-      child: Column(
+      child: SingleChildScrollView(
+          child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -571,7 +576,7 @@ class _cardFunListState extends State<cardFunList> {
             children: allFun,
           )
         ],
-      ),
+      )),
     );
   }
 }

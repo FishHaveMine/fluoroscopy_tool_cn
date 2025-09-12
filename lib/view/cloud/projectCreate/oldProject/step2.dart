@@ -17,8 +17,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:get/get.dart';
 
-import '../../publicFunction.dart';
-
 class step2page extends StatefulWidget {
   var project;
   step2page({super.key, this.project});
@@ -30,7 +28,6 @@ class step2page extends StatefulWidget {
 class _copybasepageState extends State<step2page> {
   Map mock = {};
 
-  final cloudProjectController _selectController = Get.find();
   static const platform =
       MethodChannel('samples.flutter.dev/getProjectHandler');
   @override
@@ -100,7 +97,7 @@ class _copybasepageState extends State<step2page> {
                           padding: const EdgeInsets.all(8),
                           child: ExpansionTile(
                             title: infobox(
-                              label: "项目名称",
+                              label: tr("info.sysname"),
                               val: mock["name"],
                             ),
                             children: [
@@ -108,7 +105,7 @@ class _copybasepageState extends State<step2page> {
                                 padding:
                                     const EdgeInsets.fromLTRB(16, 8, 16, 8),
                                 child: infobox(
-                                  label: "项目编号",
+                                  label: tr("info.syscode"),
                                   val: mock["code"],
                                 ),
                               ),
@@ -116,27 +113,26 @@ class _copybasepageState extends State<step2page> {
                                 padding:
                                     const EdgeInsets.fromLTRB(16, 8, 16, 8),
                                 child: infobox(
-                                  label: "项目类型",
-                                  val: "氟机节能改造",
+                                  label: tr("project.type"),
+                                  val: tr("project.projecthinttext"),
                                 ),
                               ),
-                              if (SCENE != null)
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(16, 8, 16, 8),
-                                  child: infobox(
-                                    label: "项目场景",
-                                    val: SCENE[mock["projectScene"]
-                                            .toString()
-                                            .toUpperCase()] ??
-                                        mock["projectScene"],
-                                  ),
-                                ),
                               Padding(
                                 padding:
                                     const EdgeInsets.fromLTRB(16, 8, 16, 8),
                                 child: infobox(
-                                  label: "所属区域",
+                                  label: tr("info.projectscene"),
+                                  val: SCENE[mock["projectScene"]
+                                          .toString()
+                                          .toUpperCase()] ??
+                                      mock["projectScene"],
+                                ),
+                              ),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                                child: infobox(
+                                  label: tr("info.completeareaname"),
                                   val: mock["completeAreaName"],
                                 ),
                               ),
@@ -144,7 +140,7 @@ class _copybasepageState extends State<step2page> {
                                 padding:
                                     const EdgeInsets.fromLTRB(16, 8, 16, 8),
                                 child: infobox(
-                                  label: "地址",
+                                  label: tr("info.address"),
                                   val: mock["address"],
                                 ),
                               ),
@@ -152,7 +148,7 @@ class _copybasepageState extends State<step2page> {
                                 padding:
                                     const EdgeInsets.fromLTRB(16, 8, 16, 8),
                                 child: infobox(
-                                  label: "甲方信息",
+                                  label: tr("info.associatedusername"),
                                   val: mock["associatedUserName"] +
                                       " / " +
                                       mock["phoneNumber"],
@@ -177,34 +173,6 @@ class _copybasepageState extends State<step2page> {
                 isActive: true,
                 label: tr('moadd.step4.title'),
                 onClick: () async {
-                  print(mock);
-                  var e = mock;
-                  var pro = {
-                    "project": {
-                      "id": e["id"].runtimeType == String ? e["id"] : "--",
-                      "name":
-                          e["name"].runtimeType == String ? e["name"] : "--",
-                      "code":
-                          e["code"].runtimeType == String ? e["code"] : "--",
-                      "systemCount": e["systemNum"].runtimeType == int
-                          ? e["systemNum"]
-                          : 0,
-                      "indoorCount": e["indoorNum"].runtimeType == int
-                          ? e["indoorNum"]
-                          : 0,
-                      "outdoorCount": e["outdoorNum"].runtimeType == int
-                          ? e["outdoorNum"]
-                          : 0,
-                      "address": e["location"].runtimeType == String
-                          ? e["location"]
-                          : "--",
-                      "projectType": e["projectType"] != null
-                          ? e["projectType"].toString()
-                          : ""
-                    },
-                  };
-                  _selectController.setSelectProject(pro);
-
                   Get.off(addmodelM0(projectCode: mock["code"].toString()));
                 },
               ),
@@ -234,7 +202,7 @@ class infobox extends StatelessWidget {
             child: Text(
           val,
           style: normalText(),
-        ))
+        ).tr())
       ],
     );
   }

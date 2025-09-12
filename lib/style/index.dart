@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-Color? snInputColors = Colors.grey[200];
 TextStyle actionsTextButtonStyle() {
   return const TextStyle(
       color: Color.fromRGBO(140, 140, 140, 1),

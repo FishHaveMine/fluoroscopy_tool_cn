@@ -1,15 +1,19 @@
 import 'dart:convert';
 
+import 'package:custom_pop_up_menu/custom_pop_up_menu.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:fluoroscopy_tool/compent/deviceListinfo.dart';
+import 'package:fluoroscopy_tool/compent/deviceSearchListinfo.dart';
 import 'package:fluoroscopy_tool/compent/snInput.dart';
 import 'package:fluoroscopy_tool/store/globalFunction.dart';
 import 'package:fluoroscopy_tool/style/index.dart';
 import 'package:fluoroscopy_tool/view/userinfo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/src/animation/animation_controller.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter/src/widgets/ticker_provider.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -26,7 +30,8 @@ class deviceList extends StatefulWidget {
 }
 
 class _deviceListState extends State<deviceList> {
-  final cloudProjectController _selectController = Get.find();
+  final cloudProjectController _selectController =
+      Get.put(cloudProjectController());
 
   final userinfoController _promissioncontroller = Get.find();
   bool inputfocus = false;
@@ -244,7 +249,7 @@ class _deviceListState extends State<deviceList> {
                                   getSearchHistories();
                                 },
                                 child: Container(
-                                  width: 55,
+                                  width: 75,
                                   height: 36,
                                   margin: const EdgeInsets.all(5),
                                   decoration: BoxDecoration(

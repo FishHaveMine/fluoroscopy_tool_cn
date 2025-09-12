@@ -25,7 +25,8 @@ class addmodel4g extends StatefulWidget {
 }
 
 class _addmodel4gState extends State<addmodel4g> {
-  final cloudProjectController _selectController = Get.find();
+  final cloudProjectController _selectController =
+      Get.put(cloudProjectController());
   static const platform = MethodChannel('samples.flutter.dev/battery');
   static const _selfplatform =
       MethodChannel('samples.flutter.dev/getTopologyHandler');
@@ -234,7 +235,7 @@ class _addmodel4gState extends State<addmodel4g> {
                           }
                         },
                         child: Container(
-                          width: 55,
+                          width: 75,
                           height: 36,
                           margin: const EdgeInsets.all(5),
                           decoration: BoxDecoration(

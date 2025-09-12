@@ -33,7 +33,8 @@ class _copybasepageState extends State<batchUnbindDevices> {
   static const platform =
       MethodChannel('samples.flutter.dev/getProjectHandler');
 
-  final cloudProjectController _selectController = Get.find();
+  final cloudProjectController _selectController =
+      Get.put(cloudProjectController());
   List<String> menuItems = [
     // 'projectDetail.deviceManage.action1',
     // 'projectDetail.deviceManage.action2',

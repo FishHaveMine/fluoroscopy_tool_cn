@@ -42,6 +42,21 @@ class _copybasepageState extends State<Instructionspage> {
       "public/images/communication/systemPQ.png",
     ]
   ];
+
+  static const tipimageen = [
+    [
+      "public/images/communication/outdoorM1M2_en.png",
+      "public/images/communication/outdoorPQ_en.png",
+    ],
+    [
+      "public/images/communication/indoorM1M2_en.png",
+      "public/images/communication/indoorPQ_en.png",
+    ],
+    [
+      "public/images/communication/systemM1M2_en.png",
+      "public/images/communication/systemPQ_en.png",
+    ]
+  ];
   @override
   void initState() {
     super.initState();
@@ -49,6 +64,9 @@ class _copybasepageState extends State<Instructionspage> {
 
   @override
   Widget build(BuildContext context) {
+    bool isCN =
+        EasyLocalization.of(context)?.currentLocale!.languageCode == 'zh';
+
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.white,
@@ -82,7 +100,7 @@ class _copybasepageState extends State<Instructionspage> {
                     _selfController.connectType.value.toString() != '0'
                         ? Text.rich(TextSpan(
                             style: normalTextBlack(),
-                            text: '1、请确认内机已上电\n2、请确认当前的接线方式，具体接线要求参考以下接线方式:'))
+                            text: tr('instructionspage.tip1.2')))
                         : Text.rich(TextSpan(
                             style: normalTextBlack(),
                             text: tr('Instructionspage.tip1'))),
@@ -94,8 +112,11 @@ class _copybasepageState extends State<Instructionspage> {
                       padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
                       child: Center(
                         child: Image.asset(
-                          tipimage[int.parse(_selfController.connectType.value)]
-                              [0],
+                          isCN
+                              ? tipimage[int.parse(
+                                  _selfController.connectType.value)][0]
+                              : tipimageen[int.parse(
+                                  _selfController.connectType.value)][0],
                           width: 487.w,
                         ),
                       ),
@@ -108,8 +129,11 @@ class _copybasepageState extends State<Instructionspage> {
                       padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
                       child: Center(
                         child: Image.asset(
-                          tipimage[int.parse(_selfController.connectType.value)]
-                              [1],
+                          isCN
+                              ? tipimage[int.parse(
+                                  _selfController.connectType.value)][1]
+                              : tipimageen[int.parse(
+                                  _selfController.connectType.value)][1],
                           width: 487.w,
                         ),
                       ),

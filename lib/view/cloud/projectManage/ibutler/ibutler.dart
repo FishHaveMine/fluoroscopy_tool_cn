@@ -369,12 +369,12 @@ class _ibutlerState extends State<ibutler> {
                               style: normalTextBlack(fSize: 16),
                               overflow: TextOverflow.ellipsis,
                             ).tr(),
-                            TooltipOnClick(msg: '展示当前项目可试用外机设备数据')
+                            TooltipOnClick(msg: tr('ibutler.card4.tip'))
                           ],
                         ),
                         card2(
                             key: ValueKey("card3_$card3key"),
-                            title: "可试用设备",
+                            title: tr("ibutler.card4.datapiechar"),
                             dataPieChar: [
                               {
                                 "key": tr("ibutler.card4.dataPieChar1"),
@@ -505,7 +505,7 @@ class _TooltipOnClickState extends State<TooltipOnClick> {
         confirmTitle: tr("ibutleractive.tip1_title"),
         confirmDescriptionWidget: SizedBox(
           width: 560.w,
-          height: 280,
+          height: 140,
           child: SingleChildScrollView(
               child: Padding(
             padding: const EdgeInsets.all(24),
@@ -564,7 +564,7 @@ class _checkOrderState extends State<checkOrder> {
       var indoorHistorydata = jsonDecode(initHistory);
       print(indoorHistorydata);
       if (!indoorHistorydata['success']) {
-        EasyLoading.showError('无法搜索到该订单，请检查订单编号的正确性');
+        EasyLoading.showError(tr('searchordererror'));
       } else {
         setState(() {
           orderList = indoorHistorydata["data"]["materialInfos"];

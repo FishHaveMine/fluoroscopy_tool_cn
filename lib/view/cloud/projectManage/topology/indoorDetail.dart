@@ -87,7 +87,7 @@ class _indoorDetailState extends State<indoorDetail> {
     try {
       var getIndoorDeviceParamback = await platform
           .invokeMethod('getTopologyHandler.getIndoorDeviceParam', {
-        "nid": 'vrf%2Fvrf_0000CC311178CCM262A254100103DKQ0%2Findoor%2F6',
+        "nid": widget.nid,
       });
 
       var getIndoorDeviceParam = jsonDecode(getIndoorDeviceParamback);
@@ -216,7 +216,7 @@ class _indoorDetailState extends State<indoorDetail> {
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   Text(
-                                    baseinfo[i],
+                                    tr("baseinfo.${i.toString().toLowerCase()}"),
                                     style: normalTextBlack(lineheight: 1),
                                   ),
                                   Expanded(
@@ -242,7 +242,7 @@ class _indoorDetailState extends State<indoorDetail> {
                       padding: const EdgeInsets.symmetric(
                           vertical: 12, horizontal: 16),
                       child: Text(
-                        "高级信息",
+                        tr("baseinfo1"),
                         style: normalText(),
                       ),
                     ),
@@ -258,7 +258,7 @@ class _indoorDetailState extends State<indoorDetail> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Text(
-                                baseinfo1[i],
+                                tr("baseinfo1.${i.toString().toLowerCase()}"),
                                 style: normalTextBlack(lineheight: 1),
                               ),
                               Expanded(

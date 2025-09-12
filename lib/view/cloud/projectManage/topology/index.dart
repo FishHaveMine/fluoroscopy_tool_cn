@@ -60,11 +60,11 @@ class _topologyIndexState extends State<topologyIndex> {
 
   Map statusEnumMap = {
     "-1": "all",
-    "0": "离线",
-    "5": "在线",
-    "1": "运行",
-    "2": "故障",
-    "3": "关机",
+    "0": "statusenummap0",
+    "5": "statusenummap5",
+    "1": "statusenummap1",
+    "2": "statusenummap2",
+    "3": "statusenummap3",
   };
 
   String updateKey = "";

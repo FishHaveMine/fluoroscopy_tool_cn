@@ -162,14 +162,6 @@ class _resultBoxState extends State<resultBox> {
                   ? 'public/images/protocoldetection/undifind.jpg'
                   : 'public/images/V8/${base["indoortype"] == null ? "IduType_1" : base["indoortype"]}.png',
               width: 124.w,
-              errorBuilder:
-                  (BuildContext context, Object error, StackTrace? stackTrace) {
-                // 图片加载失败时显示默认图片
-                return Image.asset(
-                  'public/images/protocoldetection/undifind.jpg',
-                  width: 124.w,
-                );
-              },
             ),
           ),
           Expanded(
@@ -185,15 +177,14 @@ class _resultBoxState extends State<resultBox> {
                   children: [
                     Row(
                       children: [
-                        if (base["address"] != null)
-                          Text(
-                            "${base["address"]}#",
-                            style: selectText(
-                                fontcolor: base["iduProtocolTypeEnum"] !=
-                                        "UN_KNOW"
-                                    ? Colors.black
-                                    : const Color.fromRGBO(255, 133, 25, 1)),
-                          ),
+                        Text(
+                          "${base["address"]}#",
+                          style: selectText(
+                              fontcolor:
+                                  base["iduProtocolTypeEnum"] != "UN_KNOW"
+                                      ? Colors.black
+                                      : const Color.fromRGBO(255, 133, 25, 1)),
+                        ),
                         if (base["onOff"] != null)
                           Text(
                             base["onOff"] == "ON"
@@ -219,17 +210,15 @@ class _resultBoxState extends State<resultBox> {
                               padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
                               child: runningModelImage(base['mode']),
                             ),
-                            if (base["mode"] != null)
-                              Text('${base['mode']}', style: labelStyle()).tr(),
+                            Text('${base['mode']}', style: labelStyle()).tr(),
                             const Padding(
                               padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
                               child: Text('|'),
                             ),
-                            if (base["temp"] != null)
-                              Text(
-                                  tr('tempShow',
-                                      namedArgs: {"val": "${base['temp']}"}),
-                                  style: labelStyle())
+                            Text(
+                                tr('tempShow',
+                                    namedArgs: {"val": "${base['temp']}"}),
+                                style: labelStyle())
                           ],
                         )
                       : Container(),
@@ -237,17 +226,16 @@ class _resultBoxState extends State<resultBox> {
               ],
             ),
           )),
-          if (base["protocol"] != null)
-            SizedBox(
-              width: 80.w,
-              height: 182.h,
-              child: Center(
-                child: Text(
-                  base["protocol"] ?? "",
-                  style: normalTextBlack(fSize: 16, fw: FontWeight.w600),
-                ),
+          SizedBox(
+            width: 80.w,
+            height: 182.h,
+            child: Center(
+              child: Text(
+                base["protocol"] ?? "",
+                style: normalTextBlack(fSize: 16, fw: FontWeight.w600),
               ),
-            )
+            ),
+          )
         ],
       ),
     );

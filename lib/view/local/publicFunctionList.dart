@@ -5,9 +5,9 @@ import 'package:fluoroscopy_tool/store/globalFunction.dart';
 import 'package:fluoroscopy_tool/view/afterSalesReplacement/connectStep1.dart';
 import 'package:fluoroscopy_tool/view/afterSalesReplacement/connectStep2.dart';
 import 'package:fluoroscopy_tool/view/afterSalesReplacement/publicFunction.dart';
+import 'package:fluoroscopy_tool/view/connectselect/connecttype.dart';
 import 'package:fluoroscopy_tool/view/local/parameters/index.dart';
 import 'package:fluoroscopy_tool/view/userinfo.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -17,6 +17,7 @@ import '../afterSalesReplacement/style.dart';
 import '../deviceUnlock/welcomePage.dart';
 import '../parametersSetting/index.dart';
 import '../trialRun/index.dart';
+import 'checkData/IndoorUnitCentralControl/IndoorUnitCentralControl.dart';
 import 'publicFunction.dart';
 import 'style.dart';
 
@@ -52,13 +53,26 @@ class publicFunctionList extends StatelessWidget {
                   // } catch (e) {
                   //   return;
                   // }
-                  Get.to(() => const deviceUnlockWelcomePage());
-                  return;
+                  if (_deviceInfoController.isBluetooth.value) {
+                    if (_deviceInfoController.loacalDevice.value.isconnected) {
+                      Get.to(() => const IndoorUnitCentralControl());
+                      return;
+                    } else {
+                      Get.to(() => connecttypepage(
+                            nextPage: const IndoorUnitCentralControl(),
+                          ));
+                      return;
+                    }
+                  } else {
+                    Get.to(() => const IndoorUnitCentralControl());
+                    return;
+                  }
+
                   bool issend = await divConfirmOnlyDialog(context,
                       confirmText:
                           _deviceInfoController.loacalDevice.value.isconnected
-                              ? tr('deviceUnlock.enter')
-                              : tr('deviceUnlock.connecd'),
+                              ? tr('deviceunlock.enter')
+                              : tr('deviceunlock.connecd'),
                       confirmTitle: tr("deviceUnlock"),
                       isSubmitButton: true,
                       confirmDescriptionWidget: SizedBox(
@@ -72,11 +86,11 @@ class publicFunctionList extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'deviceUnlock.tip1',
+                                'deviceunlock.tip1',
                                 style: titleStyleS(),
                               ).tr(),
                               Text(
-                                'deviceUnlock.tip2',
+                                'deviceunlock.tip2',
                                 style: titleStyleS(),
                               ).tr(),
                               Padding(
@@ -85,22 +99,22 @@ class publicFunctionList extends StatelessWidget {
                                     ? const EdgeInsets.fromLTRB(0, 25, 0, 0)
                                     : const EdgeInsets.fromLTRB(0, 15, 0, 0),
                                 child: Text(
-                                  'deviceUnlock.tip3',
+                                  'deviceunlock.tip3',
                                   style: titleStyleS(),
                                 ).tr(),
                               ),
                               Text(
-                                'deviceUnlock.tip4',
+                                'deviceunlock.tip4',
                                 style: titleStyleS(),
                               ).tr(),
                               _deviceInfoController
                                       .loacalDevice.value.isconnected
                                   ? Text(
-                                      'deviceUnlock.tip5',
+                                      'deviceunlock.tip5',
                                       style: titleStyleS(),
                                     ).tr()
                                   : const Text(
-                                      'deviceUnlock.tip5_error',
+                                      'deviceunlock.tip5_error',
                                       style: TextStyle(color: Colors.red),
                                     ).tr(),
                             ],
@@ -110,8 +124,8 @@ class publicFunctionList extends StatelessWidget {
                   if (issend) {
                     if (!_deviceInfoController.loacalDevice.value.isconnected) {
                       _selfController.setConnectType(connectType[0]);
-                      Get.to(() => connectStep2Page(
-                            title: tr('deviceUnlock'),
+                      Get.to(() => connecttypepage(
+                            title: tr('deviceunlock'),
                             nextPage: const deviceUnlockWelcomePage(),
                           ));
                     } else {
@@ -132,7 +146,7 @@ class publicFunctionList extends StatelessWidget {
                 if (_promissioncontroller
                     .checkLocalPromission("InstallParams")) {
                   if (!_deviceInfoController.loacalDevice.value.isconnected) {
-                    Get.to(() => connectStep1Page(
+                    Get.to(() => connecttypepage(
                           connectType: const [
                             'afterSalesReplacement.connectType1',
                             'afterSalesReplacement.connectType3',
@@ -149,11 +163,6 @@ class publicFunctionList extends StatelessWidget {
               imageUrl: 'public/images/icon/function3.png',
               title: 'trialRun',
               onClick: () async {
-                if (kDebugMode) {
-                  Get.to(() => trialRunpage());
-                  return;
-                }
-
                 if (_promissioncontroller.checkLocalPromission("TestRun")) {
 //本地连接设备类型
                   // ODU(0)
@@ -164,7 +173,7 @@ class publicFunctionList extends StatelessWidget {
                       confirmText:
                           _deviceInfoController.loacalDevice.value.isconnected
                               ? tr('determine')
-                              : tr('deviceUnlock.connecd'),
+                              : tr('deviceunlock.connecd'),
                       confirmTitle: tr("trialRun"),
                       isSubmitButton: true,
                       confirmDescriptionWidget: SizedBox(
@@ -178,7 +187,7 @@ class publicFunctionList extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'deviceUnlock.tip1',
+                                'deviceunlock.tip1',
                                 style: titleStyleS(),
                               ).tr(),
                               Text(
@@ -191,7 +200,7 @@ class publicFunctionList extends StatelessWidget {
                                     ? const EdgeInsets.fromLTRB(0, 25, 0, 0)
                                     : const EdgeInsets.fromLTRB(0, 15, 0, 0),
                                 child: Text(
-                                  'deviceUnlock.tip3',
+                                  'deviceunlock.tip3',
                                   style: titleStyleS(),
                                 ).tr(),
                               ),
@@ -233,7 +242,7 @@ class publicFunctionList extends StatelessWidget {
                   if (issend) {
                     if (!_deviceInfoController.loacalDevice.value.isconnected) {
                       _selfController.setConnectType(connectType[0]);
-                      Get.to(() => connectStep2Page(
+                      Get.to(() => connecttypepage(
                             title: tr('afterSalesReplacement.connectTypeTitle'),
                             nextPage: trialRunpage(),
                           ));
@@ -306,7 +315,7 @@ class publicFunctionList extends StatelessWidget {
                         confirmText:
                             _deviceInfoController.loacalDevice.value.isconnected
                                 ? tr('determine')
-                                : tr('deviceUnlock.connecd'),
+                                : tr('deviceunlock.connecd'),
                         confirmDescriptionWidget: SizedBox(
                             width: 560.w,
                             height: 200,
@@ -363,7 +372,7 @@ class publicFunctionList extends StatelessWidget {
                     if (issend != null) {
                       if (!_deviceInfoController
                           .loacalDevice.value.isconnected) {
-                        Get.to(() => connectStep1Page(
+                        Get.to(() => connecttypepage(
                               title:
                                   tr('afterSalesReplacement.connectTypeTitle'),
                               connectType: const [

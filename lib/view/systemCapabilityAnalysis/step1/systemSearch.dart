@@ -204,7 +204,7 @@ class _systemSearchState extends State<systemSearch> {
                                                   searchBySn();
                                                 },
                                                 child: Container(
-                                                  width: 55,
+                                                  width: 75,
                                                   height: 36,
                                                   margin:
                                                       const EdgeInsets.all(5),

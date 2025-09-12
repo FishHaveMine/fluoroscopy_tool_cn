@@ -6,11 +6,17 @@
  * @FilePath: /fluoroscopy_tool/lib/view/mine/index.dart
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
+import 'dart:async';
 import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:fluoroscopy_tool/compent/bottomSelectSheet.dart';
 import 'package:fluoroscopy_tool/compent/fontSetting.dart';
+import 'package:fluoroscopy_tool/config/config.dart';
+import 'package:fluoroscopy_tool/store/globalData.dart';
+import 'package:fluoroscopy_tool/store/globalFunction.dart';
+import 'package:fluoroscopy_tool/store/http.dart';
+import 'package:fluoroscopy_tool/view/local/publicFunction.dart';
 import 'package:fluoroscopy_tool/view/local/style.dart';
 import 'package:fluoroscopy_tool/view/log/list.dart';
 import 'package:fluoroscopy_tool/view/mine/account.dart';
@@ -18,16 +24,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:widgets_to_image/widgets_to_image.dart';
 
 import 'package:get/get.dart';
 
+import '../../style/index.dart';
 import 'BackClip.dart';
 import 'about.dart';
 
 import 'package:file_picker/file_picker.dart';
 
 import 'fileManage.dart';
+
+import 'package:path_provider/path_provider.dart';
+import 'package:flutter_pdfview/flutter_pdfview.dart';
+import 'package:fluoroscopy_tool/config/config_dev.dart' as devConfig;
+import 'package:fluoroscopy_tool/config/config_prod.dart' as prodConfig;
 
 class minePgae extends StatefulWidget {
   const minePgae({super.key});
@@ -44,19 +57,36 @@ class _minePgaeState extends State<minePgae> {
   String usbPath = '未开始';
   bool statr = false;
 
+  final deviceInfoController _deviceInfoController = Get.find();
   // to save image bytes of widget
   Uint8List? bytes;
   Future<void> changeLocale(context) async {
+    // if (_deviceInfoController.loacalDevice.value.isconnected) {
+    //   divConfirmDialog(
+    //     context,
+    //     isSubmitButton: true,
+    //     confirmTitle: tr("switchlange.tip"),
+    //   ).then((value) => {
+    //         if (value) {_toset()}
+    //       });
+    // } else {
+    //   _toset();
+    // }
+    _toset();
+  }
+
+  _toset() async {
+    final prefs = await SharedPreferences.getInstance();
     Future<sheetBack?> selectedIndex = await showCustomModalBottomSheet(
         isMultiple: false,
         context,
         [
-          {'label': tr('self.en'), 'name': tr('self.en'), 'value': 1},
-          {'label': tr('self.cn'), 'name': tr('self.cn'), 'value': 2},
+          {'label': 'self.en', 'name': 'self.en', 'value': 1},
+          {'label': 'self.cn', 'name': 'self.cn', 'value': 2},
         ],
         // ignore: unrelated_type_equality_checks
         baseValue: [
-          EasyLocalization.of(context)?.currentLocale!.languageCode == 'en'
+          EasyLocalization.of(context)?.currentLocale!.languageCode != 'zh'
               ? '1'
               : '2'
         ],
@@ -65,18 +95,17 @@ class _minePgaeState extends State<minePgae> {
           if (value != null)
             {
               if (value.baseValue![0] == '1')
-                {_changeLanguage(switchLanguage(0))}
+                {
+                  prefs.setString('languageCode', 'en'),
+                  EasyLocalization.of(context)?.setLocale(switchLanguage(0))
+                }
               else if (value.baseValue![0] == '2')
-                {_changeLanguage(switchLanguage(1))}
+                {
+                  prefs.setString('languageCode', 'zh'),
+                  EasyLocalization.of(context)?.setLocale(switchLanguage(1))
+                }
             }
         });
-  }
-
-  Future<void> _changeLanguage(Locale locale) async {
-    await EasyLocalization.of(context)?.setLocale(locale);
-    // 语言变更完成后，可以添加额外的刷新逻辑
-    setState(() {}); // 强制重建（通常不需要，仅作备用）
-    print('Current locale: ${context.locale}');
   }
 
   Locale switchLanguage(int index) {
@@ -113,13 +142,43 @@ class _minePgaeState extends State<minePgae> {
     }
   }
 
+  String pathPDF = "";
+  Future<File> fromAsset(String asset, String filename) async {
+    // To open from assets, you can copy them to the app storage folder, and the access them "locally"
+    Completer<File> completer = Completer();
+
+    try {
+      var dir = await getApplicationDocumentsDirectory();
+      File file = File("${dir.path}/$filename");
+      var data = await rootBundle.load(asset);
+      var bytes = data.buffer.asUint8List();
+      await file.writeAsBytes(bytes, flush: true);
+      completer.complete(file);
+    } catch (e) {
+      throw Exception('Error parsing asset file!');
+    }
+
+    return completer.future;
+  }
+
+  String _apiHost = "";
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    setState(() {
+      _apiHost = apiHost;
+    });
     SystemChrome.setSystemUIOverlayStyle(
         const SystemUiOverlayStyle(statusBarColor: Colors.transparent));
 
+    fromAsset('assets/demo.pdf', 'demo.pdf').then((f) {
+      print(f);
+      setState(() {
+        pathPDF = f.path;
+      });
+    });
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       // 设置MethodCallHandler监听挂载事件
       platform.setMethodCallHandler((call) async {
@@ -191,12 +250,55 @@ class _minePgaeState extends State<minePgae> {
 
   late Directory documentsDirectory;
 
+  _swicthdatacenter() async {
+    String ct = apiHost == prodConfig.Config.baseUrl_eu ? 'US' : 'EU';
+    String cttr = apiHost == prodConfig.Config.baseUrl_eu
+        ? 'datacenter_us'
+        : 'datacenter_eu';
+    bool issend = await divConfirmDialog(context,
+        isSubmitButton: true,
+        confirmTitle: tr("device.controltDialog.confirmTitle"),
+        confirmDescriptionWidget: SingleChildScrollView(
+          child: Container(
+              width: 560.w,
+              height: 80,
+              padding: EdgeInsets.fromLTRB(24.w, 24.w, 24.w, 0),
+              child: Text.rich(
+                  textAlign: TextAlign.center,
+                  TextSpan(
+                      style: normalTextBlack(),
+                      text: tr('datacenter.seitch',
+                          namedArgs: {"val": " ${tr(cttr)} "})))),
+        ));
+    if (issend) {
+      await AppConfig.setcountry(ct); // 切换到欧洲
+      apiHost = AppConfig.baseUrl; //云端请求的host
+      MideaApi.init();
+      inthttp();
+    }
+  }
+
+  static const initplatform = MethodChannel('samples.flutter.dev/init');
+  inthttp() async {
+    final prefs = await SharedPreferences.getInstance();
+    await initplatform.invokeMethod('init', <String, dynamic>{
+      "issit":
+          apiHost == "btri-dev.midea.com" || apiHost == "us-test.midea.com",
+      "apiHost": apiHost,
+      "token": prefs.getString('token'),
+      "uid": prefs.getString('username'),
+    });
+    setState(() {
+      _apiHost = apiHost;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return WidgetsToImage(
         controller: controller,
         child: Container(
-          height: double.infinity,
+          height: 1280.h - 60,
           decoration: const BoxDecoration(
               image: DecorationImage(
                   image: AssetImage('public/images/mineBg.png'),
@@ -231,8 +333,8 @@ class _minePgaeState extends State<minePgae> {
                       const fontSetting(),
                       ListTile(
                         onTap: () {
-                          EasyLoading.showInfo(tr("codingtip.Text"));
-                          return;
+                          // EasyLoading.showInfo(tr("codingtip.Text"));
+                          // return;
                           changeLocale(context);
                         },
                         leading: Image.asset(
@@ -262,7 +364,7 @@ class _minePgaeState extends State<minePgae> {
                           'public/images/icon/icon_Account.png',
                           height: 48.w,
                         ),
-                        title: const Text('menu_account').tr(),
+                        title: const Text('menu_Account').tr(),
                         trailing: Image.asset(
                           'public/images/icon/rightP.png',
                           height: 48.w,
@@ -333,19 +435,75 @@ class _minePgaeState extends State<minePgae> {
                           'public/images/icon/rightP.png',
                           height: 48.w,
                         ),
-                      ),
+                      )
+                    ],
+                  ),
+                ),
+                Container(
+                  decoration: cardStyle(context),
+                  padding: EdgeInsets.fromLTRB(0, 0, 0, 0.h),
+                  child: Column(
+                    children: [
                       ListTile(
                         onTap: () async {
-                          Get.offAllNamed('/productSelect');
+                          if (pathPDF.isNotEmpty) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => PDFScreen(path: pathPDF),
+                              ),
+                            );
+                          }
                         },
                         leading: Image.asset(
                           'public/images/icon/CommunicationDetection1.png',
                           height: 48.w,
                         ),
-                        title: const Text('切换产品').tr(),
+                        title: Text(tr('apphelp')),
                         trailing: Image.asset(
                           'public/images/icon/rightP.png',
                           height: 48.w,
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+                Container(
+                  decoration: cardStyle(context),
+                  padding: EdgeInsets.fromLTRB(0, 0, 0, 0.h),
+                  child: Column(
+                    children: [
+                      ListTile(
+                        onTap: () async {
+                          _swicthdatacenter();
+                        },
+                        leading: Image.asset(
+                          'public/images/icon/AftermarketReplacement.png',
+                          height: 48.w,
+                        ),
+                        title: Text(tr('datacenter')),
+                        trailing: SizedBox(
+                          width: 100,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  _apiHost == prodConfig.Config.baseUrl_eu
+                                      ? "datacenter_eu"
+                                      : "datacenter_us",
+                                  textAlign: TextAlign.right,
+                                ).tr(),
+                              ),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              Image.asset(
+                                'public/images/icon/rightP.png',
+                                height: 48.w,
+                              )
+                            ],
+                          ),
                         ),
                       )
                     ],
@@ -355,5 +513,130 @@ class _minePgaeState extends State<minePgae> {
             ),
           ),
         ));
+  }
+}
+
+class PDFScreen extends StatefulWidget {
+  final String? path;
+
+  PDFScreen({Key? key, this.path}) : super(key: key);
+
+  _PDFScreenState createState() => _PDFScreenState();
+}
+
+class _PDFScreenState extends State<PDFScreen> with WidgetsBindingObserver {
+  final Completer<PDFViewController> _controller =
+      Completer<PDFViewController>();
+  int? pages = 0;
+  int? currentPage = 0;
+  bool isReady = false;
+  String errorMessage = '';
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        leading: IconButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon:
+                const Icon(Icons.chevron_left, color: Colors.black, size: 36)),
+        title: Text(
+          tr('apphelp'),
+          style: TextStyle(color: Color.fromARGB(255, 71, 49, 49)),
+        ),
+        centerTitle: true,
+        actions: const [],
+      ),
+      body: Stack(
+        children: <Widget>[
+          PDFView(
+            filePath: widget.path,
+            enableSwipe: true,
+            swipeHorizontal: true,
+            autoSpacing: true,
+            pageFling: true,
+            pageSnap: true,
+            defaultPage: currentPage!,
+            fitPolicy: FitPolicy.BOTH,
+            preventLinkNavigation:
+                true, // if set to true the link is handled in flutter
+            backgroundColor: Colors.black,
+            onRender: (_pages) {
+              setState(() {
+                pages = _pages;
+                isReady = true;
+              });
+            },
+            onError: (error) {
+              setState(() {
+                errorMessage = error.toString();
+              });
+              print(error.toString());
+            },
+            onPageError: (page, error) {
+              setState(() {
+                errorMessage = '$page: ${error.toString()}';
+              });
+              print('$page: ${error.toString()}');
+            },
+            onViewCreated: (PDFViewController pdfViewController) {
+              _controller.complete(pdfViewController);
+
+              //默认跳转到pdf第几页
+              // pdfViewController.setPage(10);
+            },
+            onLinkHandler: (String? uri) {
+              print('goto uri: $uri');
+            },
+            onPageChanged: (int? page, int? total) {
+              print('page change: ${page ?? 0 + 1}/$total');
+              setState(() {
+                currentPage = page;
+              });
+            },
+          ),
+          errorMessage.isEmpty
+              ? !isReady
+                  ? const Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  : Container()
+              : Center(
+                  child: Text(errorMessage),
+                )
+        ],
+      ),
+      floatingActionButton: FutureBuilder<PDFViewController>(
+        future: _controller.future,
+        builder: (context, AsyncSnapshot<PDFViewController> snapshot) {
+          return Container(
+            width: 720.w,
+            // color: Colors.black,
+            padding: EdgeInsets.fromLTRB(32, 0, 0, 0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                FloatingActionButton(
+                  onPressed: () async {
+                    await snapshot.data!.setPage(currentPage! - 1);
+                  },
+                  child: const Icon(Icons.arrow_back),
+                ),
+                FloatingActionButton(
+                  onPressed: () async {
+                    await snapshot.data!.setPage(currentPage! + 1);
+                  },
+                  child: const Icon(Icons.arrow_forward),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
   }
 }
