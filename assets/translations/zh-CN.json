@@ -521,7 +521,7 @@
   "writesn.error1": "请输入正确的SN",
   "devicesn": "设备SN",
   "deviceunlock.unlockhistory": "解锁记录",
-  "deviceunlock.unlockbtn": "内机锁定",
+  "deviceunlock.unlockbtn": "本地解锁",
   "unlockhistory.upcloud": "上报",
   "unlockhistory.type1": "全部",
   "unlockhistory.type2": "解锁成功",
