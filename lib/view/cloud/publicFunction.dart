@@ -86,6 +86,24 @@ class cloudProjectController extends GetxController {
     update();
   }
 
+  var sensorList = [].obs;
+  setSensorList(val) {
+    sensorList.value = val;
+    update();
+  }
+
+  var valveList = [].obs;
+  setValveList(val) {
+    valveList.value = val;
+    update();
+  }
+
+  var compressorlist = [].obs;
+  setCompressorlist(val) {
+    compressorlist.value = val;
+    update();
+  }
+
   var snJumpModule = {}.obs;
   setsnJumpModule(val) {
     Map updatedData = val.map((key, value) {

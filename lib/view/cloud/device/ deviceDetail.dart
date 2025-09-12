@@ -113,57 +113,98 @@ class _checkDataPageState extends State<deviceDetail> {
 
         refresh(() async {
           try {
-            var sysDevCheckData = await platform.invokeMethod(
-                'getDeviceHandler.sysDevCheckData', {"sysid": nid});
-            var sys = jsonDecode(sysDevCheckData);
+            String projectCode =
+                _deviceInfoController.selectDevice.value['projectCode'] ?? "";
+            // var sysDevCheckData = await platform.invokeMethod(
+            //     'getDeviceHandler.sysDevCheckData', {"sysid": nid});
+
+            var sys = await MideaApi.sysDevCheckDataV2(nid, projectCode);
+
+            // var sys = jsonDecode(sysDevCheckData);
             // print('getSystemDataHandler.sysDevCheckData: $sys');
+            for (var element in sys["data"].keys) {
+              print(
+                  'sysData.data - [${element}]: [${sys["data"]["$element"]}]');
+            }
             if (sys["success"]) {
               var sysmap = {};
               if (sys["data"]["sysData"] != null) {
                 // for (var element in sys["data"]["sysData"]["properties"]) {
                 //   print(
-                //       'getSystemDataHandler.sysData.properties - [${element["title"]["cn"]}]: ${element}');
+                //       'getSystemDataHandler.sysData.properties - [${element["title"]["cn"]}]: [${element["value"]}]');
                 // }
 
                 sysmap = fixValue(sys["data"]["sysData"], "system.", nodeTr);
-                fixValue(sys["data"]["sysData"], "outdoor.", nodeTr);
+                for (var element in sysmap.keys) {
+                  print('sysmap.$element: ${sysmap[element]}');
+                }
               }
               _deviceInfoController.setSysDevCheckData(sysmap);
 
               var outdoorList = [];
-              // print(
-              //     'getSystemDataHandler.outdoorList.length: ${sys["data"]["outdoorList"].length}');
               if (sys["data"]["outdoorList"] != null) {
+                fixValue(sys["data"]["outdoorList"][0], "outdoor.", nodeTr);
                 for (var element in sys["data"]["outdoorList"]) {
-                  // print('getSystemDataHandler.outdoorList: $element');
                   outdoorList.add({}
                     ..addAll(element)
                     ..addAll(fixValue(element, "outdoor.", nodeTr)));
                 }
+                _deviceInfoController.setOutdoorList(outdoorList);
+              } else {
+                _deviceInfoController.setOutdoorList([]);
               }
-              // print(
-              //     'getSystemDataHandler.outdoorList.length:  --------- ${outdoorList.length}');
-              // for (var item in outdoorList) {
-              //   print("item: $item");
-              // }
-              _deviceInfoController.setOutdoorList(outdoorList);
+
+              var compressorList = [];
+              if (sys["data"]["compressorList"] != null) {
+                fixValue(sys["data"]["compressorList"][0], "compressorlist.",
+                    nodeTr);
+                for (var element in sys["data"]["compressorList"]) {
+                  compressorList.add({}
+                    ..addAll(element)
+                    ..addAll(fixValue(element, "compressorlist.", nodeTr)));
+                }
+                _deviceInfoController.setCompressorlist(compressorList);
+              } else {
+                _deviceInfoController.setCompressorlist([]);
+              }
+
+              var sensorList = [];
+              if (sys["data"]["sensorList"] != null) {
+                fixValue(sys["data"]["sensorList"][0], "sensorlist.", nodeTr);
+                for (var element in sys["data"]["sensorList"]) {
+                  sensorList.add({}
+                    ..addAll(element)
+                    ..addAll(fixValue(element, "sensorlist.", nodeTr)));
+                }
+                _deviceInfoController.setSensorList(sensorList);
+              } else {
+                _deviceInfoController.setSensorList([]);
+              }
+
+              var valveList = [];
+              if (sys["data"]["valveList"] != null) {
+                fixValue(sys["data"]["valveList"][0], "valvelist.", nodeTr);
+                for (var element in sys["data"]["valveList"]) {
+                  valveList.add({}
+                    ..addAll(element)
+                    ..addAll(fixValue(element, "valvelist.", nodeTr)));
+                }
+                _deviceInfoController.setValveList(valveList);
+              } else {
+                _deviceInfoController.setValveList([]);
+              }
 
               // print(
               //     'getSystemDataHandler.outdoorList.length:  --------- ${outdoorList.where((number) => number["idx"] != "").toList().length}');
               var indoorList = [];
 
-              // print(
-              //     'getSystemDataHandler.indoorList.length: ${sys["data"]["indoorList"].length}');
-              // if (sys["data"]["indoorList"] != null) {
-              //   for (var element in sys["data"]["indoorList"]) {
-              //     print('getSystemDataHandler.indoorList: $element');
-              //     indoorList.add({}
-              //       ..addAll(element)
-              //       ..addAll(fixValue(element, "indoor.", nodeTr)));
-              //   }
-              // }
-              // print(
-              //     'getSystemDataHandler.indoorList.length: --------- ${indoorList.length}');
+              if (sys["data"]["indoorList"] != null) {
+                for (var element in sys["data"]["indoorList"]) {
+                  indoorList.add({}
+                    ..addAll(element)
+                    ..addAll(fixValue(element, "indoor.", nodeTr)));
+                }
+              }
               _deviceInfoController.setIndoorList(indoorList);
             }
             _deviceInfoController.setNoderTr(nodeTr);
@@ -1242,6 +1283,7 @@ class _tablePageState extends State<tablePage> {
   refreshTable() {
     try {
       List headerList = [];
+      print(_cloudProjectController.nodeTr);
       if (activeType != "IndoorUnitParameters") {
         headerList = showTypeColund
             .where((element) => element['key'] == activeType)
@@ -1268,6 +1310,41 @@ class _tablePageState extends State<tablePage> {
           return indexA.compareTo(indexB); // 按照指定顺序比较
         });
       }
+      if (activeType == "System") {
+        headerList = _cloudProjectController.nodeTr.keys
+            .toList()
+            .where((element) => element.toString().contains("system."))
+            .toList();
+      }
+
+      if (activeType == "OutdoorUnit") {
+        headerList = _cloudProjectController.nodeTr.keys
+            .toList()
+            .where((element) => element.toString().contains("outdoor."))
+            .toList();
+      }
+
+      if (activeType == "Compressor") {
+        headerList = _cloudProjectController.nodeTr.keys
+            .toList()
+            .where((element) => element.toString().contains("compressorlist."))
+            .toList();
+      }
+
+      if (activeType == "Sensor") {
+        headerList = _cloudProjectController.nodeTr.keys
+            .toList()
+            .where((element) => element.toString().contains("sensorlist."))
+            .toList();
+      }
+
+      if (activeType == "ValveBody") {
+        headerList = _cloudProjectController.nodeTr.keys
+            .toList()
+            .where((element) => element.toString().contains("valvelist."))
+            .toList();
+      }
+
       List<Widget> itemList = [tableHeaderIndex()];
       data = [];
       titleRow = [];
@@ -1280,10 +1357,22 @@ class _tablePageState extends State<tablePage> {
       if (activeType == 'System') {
         tablebase = [_cloudProjectController.sysData];
       }
-      if (['OutdoorUnit', 'Compressor', 'Sensor', 'ValveBody']
-          .contains(activeType)) {
-        tablebase = _cloudProjectController.outdoorList;
+      if (activeType == 'OutdoorUnit') {
+        tablebase = [..._cloudProjectController.outdoorList];
       }
+
+      if (activeType == 'Compressor') {
+        tablebase = [..._cloudProjectController.compressorlist];
+      }
+
+      if (activeType == 'Sensor') {
+        tablebase = [..._cloudProjectController.sensorList];
+      }
+
+      if (activeType == 'ValveBody') {
+        tablebase = [..._cloudProjectController.valveList];
+      }
+
       if (['IndoorUnitParameters'].contains(activeType)) {
         tablebase = _cloudProjectController.indoorList;
       }

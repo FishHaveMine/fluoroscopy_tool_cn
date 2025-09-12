@@ -94,20 +94,25 @@ class _gaywayRTUCheckPageState extends State<gaywayRTUCheckPage> {
   static const McuUtilplatform = MethodChannel('samples.flutter.dev/McuUtil');
   var starttime = '';
   bool ischecking = false;
+  bool iswaiting = false;
   _start() async {
     if (ischecking) {
       return;
     }
     try {
+      EasyLoading.show(status: 'loading...');
       setState(() {
         checkingStatus = 2;
         _pointValueMap = null;
       });
       ischecking = true;
-
+      iswaiting = true;
       McuUtilplatform.invokeMethod('powerOn');
       await Future.delayed(const Duration(seconds: 1));
-
+      Future.delayed(const Duration(seconds: 2), () {
+        iswaiting = false;
+        EasyLoading.dismiss();
+      });
       starttime = getCurrentFormattedTime();
       platform.invokeMethod('checkDevice', <String, dynamic>{
         "debugModel": _gettype(debugModel),
@@ -117,9 +122,16 @@ class _gaywayRTUCheckPageState extends State<gaywayRTUCheckPage> {
         "address": address,
         "readstart": readstart,
         "readlength": readlength
-      }).then((value) => {ischecking = false, _handelresult(value)});
+      }).then((value) => {
+            _handelresult(value),
+            Future.delayed(const Duration(seconds: 1), () {
+              EasyLoading.dismiss();
+              ischecking = false;
+            })
+          });
     } catch (e) {
       ischecking = false;
+      EasyLoading.dismiss();
       setState(() {
         checkingStatus = 1;
       });
@@ -192,8 +204,8 @@ class _gaywayRTUCheckPageState extends State<gaywayRTUCheckPage> {
 
   bool isStoping = false;
   _starsetStop() async {
-    print('isStoping: $isStoping');
-    if (isStoping) {
+    print('isStoping: $isStoping.  iswaiting: $iswaiting');
+    if (isStoping || iswaiting) {
       print('跳出 _starsetStop');
       return;
     }

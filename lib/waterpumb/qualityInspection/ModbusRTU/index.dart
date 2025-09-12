@@ -63,7 +63,9 @@ class _modbusRTUPageState extends State<modbusRTUPage> {
             children: [
               InkWell(
                   onTap: () {
-                    Get.to(WifiScanner());
+                    EasyLoading.showError("功能暂未开放");
+                    return;
+                    // Get.to(WifiScanner());
                   },
                   child: infosWidget(
                       'public/images/icon/modbusRTUPage1.png', '常规串口检测')),

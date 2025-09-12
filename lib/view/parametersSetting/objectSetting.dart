@@ -2593,6 +2593,31 @@ var selectMap = {
     {"label": "无限制", "name": "无限制", "value1": "NO_LIMIT", "value": 0},
     {"label": "95%", "name": "95%", "value1": "LIMIT_95", "value": 1},
     {"label": "90%", "name": "90%", "value1": "LIMIT_90", "value": 3},
+  ],
+  "mdvLinkVoltageVersion": [
+    {"label": "24V电压", "name": "24V电压", "value1": "INVALID", "value": 0},
+    {"label": "36V电压", "name": "36V电压", "value1": "ENABLED", "value": 1},
+  ],
+  "chipModel": [
+    {"label": "ST芯片", "name": "ST芯片", "value1": "ST", "value": 0},
+    {"label": "GD芯片", "name": "GD芯片", "value1": "GD", "value": 1},
+  ],
+  "heatStatusEnum": [
+    {"label": "换热器关", "name": "换热器关", "value1": "STATUS_0", "value": 0},
+    {"label": "冷凝器", "name": "冷凝器", "value1": "STATUS_1", "value": 1},
+    {
+      "label": "热泵D2，热回收D1",
+      "name": "热泵D2，热回收D1",
+      "value1": "STATUS_2",
+      "value": 3
+    },
+    {"label": "蒸发器", "name": "蒸发器", "value1": "STATUS_3", "value": 3},
+    {
+      "label": "热泵F2，热回收F1",
+      "name": "热泵F2，热回收F1",
+      "value1": "STATUS_4",
+      "value": 4
+    },
   ]
 };
 

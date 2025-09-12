@@ -383,4 +383,12 @@ class MideaApi {
         .get('/fluorine/energy/img/detail?systemId=$systemId', data: {});
     return response.data;
   }
+
+  static Future<Map<String, dynamic>> sysDevCheckDataV2(
+      String sysid, String projectCode) async {
+    final response = await _dio.get(
+        '/device/sysDevCheckDataV2?nid=$sysid&projectCode=$projectCode',
+        data: {});
+    return response.data;
+  }
 }

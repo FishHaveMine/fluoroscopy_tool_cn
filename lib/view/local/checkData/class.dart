@@ -262,7 +262,7 @@ List localshowType = [
       "System.protocol", // 系统协议类型
       "System.linkSetting", //  连接设置
       "System.allV8Indoor", //  是否全V8内机
-      "System.systemcapacity", //  系统总能力
+      "System.totalMatches", //  系统总能力
       "System.indoorHorse", //内机总能力
       "System.mode", // 运行模式
       "System.systemStartupIndoorAvgT2", //开机室内机T2平均
@@ -271,7 +271,7 @@ List localshowType = [
       "System.systemConTem", // 系统目标冷凝温度TCS
       "System.tcMax", // TcMax
       "System.teMin", // TeMin
-      "System.runmodeextype", // 启动类型
+      "System.startupType", // 启动类型
       "System.priorModeSetting", // 模式优先设置
       "System.mpc", // MPC
       "System.silentMode", // 静音模式
@@ -279,7 +279,6 @@ List localshowType = [
       "System.timeSetting", // 夜间静音档位设置
       "System.powerLimit", // 限电状态
       "System.maxFrequencyLimit", //限功率状态
-      //主机4G流量用量
     ]
   },
   {
@@ -372,8 +371,8 @@ List localshowType = [
       "ValveBody.exvb",
       "ValveBody.exvc",
       "ValveBody.eevd",
-      "ValveBody.EXVE", // EXVE开度
-      "ValveBody.EXVQ", // EXVQ开度
+      "ValveBody.exve", // EXVE开度
+      "ValveBody.exvq", // EXVQ开度
       "ValveBody.sv4", // SV4/SV4A
       "ValveBody.sv4B", // SV4B
       "ValveBody.sv5",

@@ -95,13 +95,15 @@ class _UnlockPageState extends State<UnlockPage> {
       var GenCode =
           await platform.invokeMethod('sendPassword', <String, dynamic>{});
       var data = jsonDecode(GenCode);
+
+      print("_sendPassword: $data");
       setState(() {
         code = data["data"];
       });
       EasyLoading.showSuccess("下发成功");
     } catch (e) {
       print("_sendPassword catch: $e");
-      EasyLoading.showError("下发失败: $e");
+      EasyLoading.showError("下发失败");
     }
   }
 

@@ -517,12 +517,19 @@ class _tablePageState extends State<tablePage> {
         // 获取 systemEntity 的当前值（非空处理）
         final system = _deviceInfoController.systemEntity.value;
         var sys = {...system, ...device};
+        for (var element in sys.keys) {
+          print("sys.$element: ${sys[element]}");
+        }
         tablebase = [
           {...system, ...device}
         ];
       }
       if (['OutdoorUnit', 'Compressor', 'Sensor', 'ValveBody']
           .contains(activeType)) {
+        for (var element in _deviceInfoController.outdoorEntityList[0].keys) {
+          print(
+              "OutdoorUnit.$element: ${_deviceInfoController.outdoorEntityList[0][element]}");
+        }
         tablebase = _deviceInfoController.outdoorEntityList;
       }
       if (['IndoorUnitParameters'].contains(activeType)) {

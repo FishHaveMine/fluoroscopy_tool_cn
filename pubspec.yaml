@@ -1,7 +1,7 @@
 name: fluoroscopy_tool
 description: A new Flutter project.
 publish_to: none
-version: 1.0.2+81
+version: 1.0.2+84
 environment:
     sdk: '>=2.18.0-271.7.beta <3.0.0'
 dependencies:
