@@ -1,9 +1,9 @@
 name: fluoroscopy_tool
 description: A new Flutter project.
 publish_to: none
-version: 1.0.2+84
+version: 1.0.2+85
 environment:
-    sdk: '>=2.18.0-271.7.beta <3.0.0'
+    sdk: '>=2.18.0 <3.0.0'
 dependencies:
     flutter:
         sdk: flutter
@@ -45,7 +45,9 @@ dependencies:
     external_path: ^1.0.1
     android_intent_plus: ^3.1.9
     signature: ^5.2.1
-    wifi_iot: ^0.3.19+2
+    flutter_html_to_pdf: ^0.7.0
+    media_scanner: ^2.2.0
+    printing: ^5.9.3
 
 dev_dependencies:
     flutter_test:
@@ -61,6 +63,7 @@ flutter:
         - assets/
         - assets/translations/
         - public/
+        - public/html/dataExport.html
         - public/html/testRunReport.html
         - public/images/
         - public/images/prowaterpumb/

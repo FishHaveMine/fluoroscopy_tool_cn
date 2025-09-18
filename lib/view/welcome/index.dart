@@ -15,23 +15,18 @@
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
-import 'package:fluoroscopy_tool/compent/EmailInputDialog.dart';
 import 'package:fluoroscopy_tool/compent/file_picker.dart';
 import 'package:fluoroscopy_tool/store/globalData.dart';
 import 'package:fluoroscopy_tool/store/globalFunction.dart';
 import 'package:fluoroscopy_tool/view/cloud/index.dart';
 import 'package:fluoroscopy_tool/view/local/index.dart';
 import 'package:fluoroscopy_tool/view/mine/index.dart';
-import 'package:fluoroscopy_tool/store/http.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 import '../local/publicFunction.dart';
 import 'package:get/get.dart';
@@ -137,19 +132,24 @@ class _welcomePageState extends State<welcomePage> {
                       : Container(
                           width: 80,
                           height: 150,
-                          // child: Column(
-                          //   mainAxisAlignment: MainAxisAlignment.end,
-                          //   crossAxisAlignment: CrossAxisAlignment.end,
-                          //   children: [
-                          //     IconTextButton(
-                          //       icon: Icons.import_export_sharp,
-                          //       text: '数据导出',
-                          //       onPressed: () {
-                          //         getDBFile(context);
-                          //       },
-                          //     ),
-                          //   ],
-                          // ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              // IconTextButton(
+                              //   icon: Icons.import_export_sharp,
+                              //   text: '数据导出',
+                              //   onPressed: () async {
+                              //     const String filePath =
+                              //         'public/html/dataExport.html';
+                              //     final String content =
+                              //         await rootBundle.loadString(filePath);
+                              //     String htmlcontent = content;
+                              //     exportPdf(htmlcontent);
+                              //   },
+                              // ),
+                            ],
+                          ),
                         ),
                   bottomNavigationBar: BottomNavigationBar(
                     selectedItemColor: Theme.of(context).colorScheme.primary,

@@ -11,3 +11,6 @@ android/.DS_Store
 设计稿/
 log.text
 .gitignore
+
+# FVM Version Cache
+.fvm/

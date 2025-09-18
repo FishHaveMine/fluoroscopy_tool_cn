@@ -19,19 +19,24 @@
 
 ### public/html/testRunReport.html
 
- 本地试运行报告运行模板
+本地试运行报告运行模板
+
 ### assets/translations/
 
- 本地多语言文件，第一次加载app先加载本地语言版本，当联网后缓存云端的多语言版本在第二次进入后自动使用缓存的云端版本
+本地多语言文件，第一次加载app先加载本地语言版本，当联网后缓存云端的多语言版本在第二次进入后自动使用缓存的云端版本
+
 ### public/images/
 
- 本地图片
+本地图片
+
 ### lib/view/local
 
- 本地功能入口
+本地功能入口
+
 ### lib/view/cloud
 
- 云端功能入口
+云端功能入口
+
 ### app维护更新支持  btri-dev -- iBUILDING
 
 ### app版本控制:
@@ -58,7 +63,12 @@ https://btri-dev.midea.com/web/oam/open/i18n/space/phrase?spaceId=1000&category=
 
 正式环境打包.app、测试环境打包.app，使用 Automator 打开，修改里面的项目地址，然后双击运行即可
 
-
 git checkout cn_waterpumb
 git fetch origin
 git merge origin/cn_neixiao
+
+
+Flutter 3.3.0-0.5.pre • channel beta • https://github.com/flutter/flutter.git
+Framework • revision 096162697a (3 年前) • 2022-08-22 15:34:14 -0700
+Engine • revision ad3d868e0d
+Tools • Dart 2.18.0 (build 2.18.0-271.7.beta) • DevTools 2.15.03.3.0-0.5.pre

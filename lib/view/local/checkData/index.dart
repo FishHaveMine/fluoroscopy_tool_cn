@@ -8,16 +8,22 @@
  * @FilePath: /fluoroscopy_tool/lib/view/local/checkData/index.dart
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:empty_widget/empty_widget.dart';
 import 'package:external_path/external_path.dart';
+import 'package:fluoroscopy_tool/compent/EmailInputDialog.dart';
 import 'package:fluoroscopy_tool/compent/baseContainer.dart';
+import 'package:fluoroscopy_tool/compent/file_picker.dart';
+import 'package:fluoroscopy_tool/store/globalData.dart';
+import 'package:fluoroscopy_tool/store/globalFunction.dart';
 import 'package:fluoroscopy_tool/view/local/checkData/IndoorUnitCentralControl/IndoorUnitCentralControl.dart';
 import 'package:fluoroscopy_tool/view/local/checkData/class.dart';
 import 'package:fluoroscopy_tool/view/local/publicFunction.dart';
 import 'package:fluoroscopy_tool/view/local/style.dart';
+import 'package:fluoroscopy_tool/view/parametersSetting/objectSetting.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -26,13 +32,16 @@ import 'package:flutter_table/table_sticky_headers.dart';
 
 // ignore: depend_on_referenced_packages
 import 'package:get/get.dart';
+import 'package:media_scanner/media_scanner.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share_extend/share_extend.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:widgets_to_image/widgets_to_image.dart';
 
 import 'package:custom_pop_up_menu/custom_pop_up_menu.dart';
+// import 'package:media_scanner/media_scanner.dart';
 
 class checkDataPage extends StatefulWidget {
   checkDataPage({super.key});
@@ -476,7 +485,7 @@ class _tablePageState extends State<tablePage> {
   CustomPopupMenuController _controller = CustomPopupMenuController();
   List<String> menuItems = [
     '导出当前时刻的运行数据',
-    '导出最近一小时的运行数据',
+    '导出本次连接时间内的运行数据',
   ];
 
   List titleColumn = [];
@@ -506,8 +515,6 @@ class _tablePageState extends State<tablePage> {
           _deviceInfoController.outdoorEntityList.value.length == 1) {
         headerList.remove("System.salveSnList");
       }
-      print(
-          "headerList ${_deviceInfoController.outdoorEntityList.value.length}: $headerList");
       titleColumn = headerList;
 
       List tablebase = [];
@@ -566,43 +573,192 @@ class _tablePageState extends State<tablePage> {
 
   ScreenshotController screenshotController = ScreenshotController();
   static const _selfplatform = MethodChannel('samples.flutter.dev/BackClip');
-  downlown(email) async {
-    EasyLoading.show(status: 'loading...');
-    try {
-      EasyLoading.dismiss();
-    } catch (e) {
-      print("getHistoryDataExcel error $e");
-      EasyLoading.dismiss();
-    }
-  }
 
   Future<void> captureAndSaveTable() async {
     EasyLoading.show(status: 'loading...');
+    /** 新版导出html png */
     try {
-      // 请求权限
+      var _base = List.from(localshowType);
+      var alltabel = [];
+      for (var element in _base) {
+        var _data = [];
+        var _titleRow = [];
+        var _activeType = element["key"];
+        var _headerList = _base
+            .where((element) => element['key'] == _activeType)
+            .toList()[0]['children'];
+
+        if (_activeType == "System" &&
+            _deviceInfoController.outdoorEntityList.value.length == 1) {
+          _headerList.remove("System.salveSnList");
+        }
+        var _titleColumn = _headerList;
+
+        List tablebase = [];
+        if (_activeType == 'System') {
+          // 获取 deviceInfo 的当前值（非空处理）
+          final device = _deviceInfoController.loacalDevice.value.toMap();
+          // 获取 systemEntity 的当前值（非空处理）
+          final system = _deviceInfoController.systemEntity.value;
+          var sys = {...system, ...device};
+
+          tablebase = [
+            {...system, ...device}
+          ];
+        }
+        if (['OutdoorUnit', 'Compressor', 'Sensor', 'ValveBody']
+            .contains(_activeType)) {
+          tablebase = _deviceInfoController.outdoorEntityList;
+        }
+        if (['IndoorUnitParameters'].contains(_activeType)) {
+          tablebase = _deviceInfoController.indoorEntityList;
+        }
+        for (var i = 0; i < tablebase.length; i++) {
+          List base = [];
+          for (var element in _headerList) {
+            String elementKey = element.split('.')[1];
+            var val = selectMap[elementKey] != null
+                ? selectMapfilterOp(elementKey, tablebase[i][elementKey])
+                : tablebase[i][elementKey];
+            base.add('${val ?? '--'} ${typeUnit[element] ?? ''}');
+          }
+          if (_activeType == 'System') {
+            _titleRow.add('$i#');
+          } else {
+            _titleRow.add("${tablebase[i]['address']}#");
+          }
+          _data.add(base);
+        }
+        alltabel.add({
+          "activeType": _activeType,
+          "titleRow": _titleRow,
+          "data": _data,
+          "titleColumn":
+              _titleColumn.map((i) => tr(i.toString().toLowerCase())).toList(),
+        });
+      }
+      final directory = await getApplicationDocumentsDirectory();
+      final filePath = '${directory.path}/data_export.json';
+      final file = File(filePath);
+
+      // 将数据写入文件
+      await file.writeAsString(json.encode(alltabel));
+      const String htmlfilePath = 'public/html/dataExport.html';
+      final String content = await rootBundle.loadString(htmlfilePath);
+
+      final prefs = await SharedPreferences.getInstance();
+      var useinfoSting = prefs.getString("useinfo");
+      String phone = "";
+      if (useinfoSting != null) {
+        try {
+          var useinfo = jsonDecode(useinfoSting);
+          phone = useinfo["phone"];
+        } catch (e) {}
+      }
+      String? usernameprefs = await prefs.getString("usernameA");
+      String htmlcontent =
+          content.replaceAll("dataparamReplace", jsonEncode(alltabel));
+      htmlcontent =
+          htmlcontent.replaceFirst("Midea楼宇科技", "$usernameprefs-$phone");
+      _deviceInfoController.toDataExportDisConnectStopPolling();
+      String? patch = await exportPdf(htmlcontent);
+      _deviceInfoController.startPolling();
+
+      EasyLoading.dismiss();
+      if (patch != null) {
+        bool issend = await divConfirmDialog(context,
+            confirmTitle: tr("device.controltDialog.confirmTitle"),
+            confirmDescriptionWidget: SingleChildScrollView(
+              child: SizedBox(
+                  width: 560.w,
+                  height: 140,
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: const [Text("已导出到本地相册，是否发送到邮箱?")],
+                    ),
+                  )),
+            ));
+        if (issend) {
+          EmailInputDialog.show(
+            context,
+            onConfirm: (email) {
+              downlownPDF(email, patch);
+            },
+          );
+        } else {
+          return;
+        }
+      } else {
+        EasyLoading.showError("生成文件失败");
+      }
+    } catch (e) {
+      if (!_deviceInfoController.isPolling.value) {
+        _deviceInfoController.startPolling();
+      }
+      EasyLoading.dismiss();
+    }
+    return;
+
+    /** 旧版导出当前组件图片 */
+    try {
+      // 请求存储权限
       var status = await Permission.storage.request();
-      if (!status.isGranted) return;
+      if (!status.isGranted) {
+        EasyLoading.dismiss();
+        EasyLoading.showInfo('需要存储权限才能保存图片');
+        return;
+      }
 
-      // 生成图片
+      // 生成截图
       final Uint8List? image = await screenshotController.capture();
-      if (image == null) return;
+      if (image == null) {
+        EasyLoading.dismiss();
+        EasyLoading.showError('截图失败');
+        return;
+      }
 
-      // 获取公共目录路径（如 Downloads）
+      // 获取下载目录路径
       final String downloadsDir =
           await ExternalPath.getExternalStoragePublicDirectory(
-              ExternalPath.DIRECTORY_DOWNLOADS);
-      final String filePath =
-          '$downloadsDir/table_${activeType}_${DateTime.now().millisecondsSinceEpoch}.png';
+        ExternalPath.DIRECTORY_DOWNLOADS,
+      );
+      // 生成唯一文件名（避免重复）
+      final String fileName =
+          'table_${activeType}_${DateTime.now().millisecondsSinceEpoch}.png';
+      final String filePath = '$downloadsDir/$fileName';
 
-      // 保存文件
+      // 保存图片到文件
       final File imgFile = File(filePath);
       await imgFile.writeAsBytes(image);
 
+      // 关键：通知系统扫描该文件，使其在相册中显示
+      await MediaScanner.loadMedia(path: filePath);
+
+      // 提示成功
       EasyLoading.dismiss();
-      EasyLoading.showSuccess('保存成功');
-      print('保存成功: $filePath');
+      EasyLoading.showSuccess('保存成功，已同步到相册');
+      print('保存路径: $filePath');
     } catch (e) {
-      EasyLoading.showError('保存失败:$e');
+      EasyLoading.dismiss();
+      EasyLoading.showError('保存失败: ${e.toString()}');
+    }
+  }
+
+  togetLastDBFile(context) async {
+    EasyLoading.show(status: 'loading...');
+    try {
+      _deviceInfoController.toDataExportDisConnectStopPolling();
+      await getLastDBFile(context);
+      _deviceInfoController.startPolling();
+
+      EasyLoading.dismiss();
+    } catch (e) {
+      if (!_deviceInfoController.isPolling.value) {
+        _deviceInfoController.startPolling();
+      }
       EasyLoading.dismiss();
     }
   }
@@ -701,90 +857,85 @@ class _tablePageState extends State<tablePage> {
                 // ),
                 const Padding(padding: EdgeInsets.fromLTRB(0, 0, 20, 0)),
 
-                // CustomPopupMenu(
-                //   horizontalMargin: 10.0,
-                //   verticalMargin: 0.0,
-                //   arrowColor: Colors.white,
-                //   menuBuilder: () => ClipRRect(
-                //     borderRadius: BorderRadius.circular(5),
-                //     child: Container(
-                //       color: Colors.white,
-                //       child: IntrinsicWidth(
-                //         child: Column(
-                //           crossAxisAlignment: CrossAxisAlignment.stretch,
-                //           children: menuItems
-                //               .map(
-                //                 (item) => GestureDetector(
-                //                   behavior: HitTestBehavior.translucent,
-                //                   onTap: () async {
-                //                     _controller.hideMenu();
-                //                     if (item == menuItems[1]) {
-                //                       if (_deviceInfoController
-                //                               .loacalDevice.value.model !=
-                //                           'V8') {
-                //                         EasyLoading.showError("当前仅支持V8协议");
-                //                         return;
-                //                       }
-                //                       bool ischeckNet = await checkNet(false);
-                //                       if (ischeckNet) {
-                //                         EmailInputDialog.show(
-                //                           context,
-                //                           onConfirm: (email) {
-                //                             downlown(email);
-                //                           },
-                //                         );
-                //                       } else {
-                //                         EasyLoading.showError(
-                //                             tr("netword.error"));
-                //                       }
-                //                     } else {
-                //                       captureAndSaveTable();
-                //                     }
-                //                   },
-                //                   child: Container(
-                //                     padding:
-                //                         const EdgeInsets.fromLTRB(8, 8, 8, 0),
-                //                     child: Column(
-                //                       children: [
-                //                         Text(
-                //                           item,
-                //                           style: const TextStyle(fontSize: 14),
-                //                         ).tr(),
-                //                         Container(
-                //                           margin: const EdgeInsets.fromLTRB(
-                //                               0, 8, 0, 0),
-                //                           height: 1,
-                //                           color: item == menuItems[1]
-                //                               ? Colors.transparent
-                //                               : const Color.fromRGBO(
-                //                                   223, 223, 223, 1),
-                //                         )
-                //                       ],
-                //                     ),
-                //                   ),
-                //                 ),
-                //               )
-                //               .toList(),
-                //         ),
-                //       ),
-                //     ),
-                //   ),
-                //   pressType: PressType.singleClick,
-                //   controller: _controller,
-                //   child: Row(
-                //     children: [
-                //       Image.asset(
-                //         'public/images/checkData/import_export.png',
-                //         width: 36.w,
-                //       ),
-                //       const Padding(padding: EdgeInsets.fromLTRB(5, 0, 0, 0)),
-                //       Text(
-                //         'table.export',
-                //         style: versionValue(context),
-                //       ).tr()
-                //     ],
-                //   ),
-                // ),
+                CustomPopupMenu(
+                  horizontalMargin: 10.0,
+                  verticalMargin: 0.0,
+                  arrowColor: Colors.white,
+                  menuBuilder: () => ClipRRect(
+                    borderRadius: BorderRadius.circular(5),
+                    child: Container(
+                      color: Colors.white,
+                      child: IntrinsicWidth(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: menuItems
+                              .map(
+                                (item) => GestureDetector(
+                                  behavior: HitTestBehavior.translucent,
+                                  onTap: () async {
+                                    _controller.hideMenu();
+                                    if (item == menuItems[1]) {
+                                      if (_deviceInfoController
+                                              .loacalDevice.value.model !=
+                                          'V8') {
+                                        EasyLoading.showError("当前仅支持V8协议");
+                                        return;
+                                      }
+                                      bool ischeckNet = await checkNet(false);
+                                      if (ischeckNet) {
+                                        togetLastDBFile(context);
+                                      } else {
+                                        EasyLoading.showError(
+                                            tr("netword.error"));
+                                      }
+                                    } else {
+                                      captureAndSaveTable();
+                                    }
+                                  },
+                                  child: Container(
+                                    padding:
+                                        const EdgeInsets.fromLTRB(8, 8, 8, 0),
+                                    child: Column(
+                                      children: [
+                                        Text(
+                                          item,
+                                          style: const TextStyle(fontSize: 14),
+                                        ).tr(),
+                                        Container(
+                                          margin: const EdgeInsets.fromLTRB(
+                                              0, 8, 0, 0),
+                                          height: 1,
+                                          color: item == menuItems[1]
+                                              ? Colors.transparent
+                                              : const Color.fromRGBO(
+                                                  223, 223, 223, 1),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                        ),
+                      ),
+                    ),
+                  ),
+                  pressType: PressType.singleClick,
+                  controller: _controller,
+                  child: Row(
+                    children: [
+                      Image.asset(
+                        'public/images/checkData/import_export.png',
+                        width: 36.w,
+                      ),
+                      const Padding(padding: EdgeInsets.fromLTRB(5, 0, 0, 0)),
+                      Text(
+                        'table.export',
+                        style: versionValue(context),
+                      ).tr()
+                    ],
+                  ),
+                ),
               ],
             )
           ],
@@ -863,285 +1014,162 @@ class _tablePageState extends State<tablePage> {
                           color: Colors.white,
                           height: titleColumn.length * 50 + 80,
                           width: 720.w - 32.w * 2,
-                          child: false
-                              ? StickyHeadersTable(
-                                  key: ValueKey(
-                                      'checkDataPage_${_deviceInfoController.updateTime.value}'),
-                                  cellDimensions: CellDimensions
-                                      .variableColumnWidthAndRowHeight(
-                                          columnWidths: List.generate(
-                                              titleColumn.length,
-                                              (index) =>
-                                                  (720.w - 32.w * 2 - 10) /
-                                                  widthsp),
-                                          rowHeights:
-                                              rowHeightsList(titleRow.length),
-                                          stickyLegendWidth:
-                                              (720.w - 32.w * 2 - 10) / 3,
-                                          stickyLegendHeight: 72.h),
-                                  columnsLength: titleColumn.length,
-                                  rowsLength: titleRow.length,
-                                  columnsTitleBuilder: (i) => Container(
-                                    width: double.infinity,
-                                    height: double.infinity,
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                        color: const Color.fromRGBO(
-                                            223, 223, 223, 1), // 边框颜色
-                                        width: 0.5, // 边框宽度
-                                      ),
-                                      borderRadius:
-                                          BorderRadius.circular(0.0), // 圆角半径
-                                    ),
-                                    child: Center(
-                                        child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          titleColumn[i],
-                                          textAlign: TextAlign.center,
-                                          style: tableLabel(context),
-                                        ).tr()
-                                      ],
-                                    )),
-                                  ),
-                                  rowsTitleBuilder: (i) => Container(
-                                    width: double.infinity,
-                                    height: double.infinity,
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                        color: const Color.fromRGBO(
-                                            223, 223, 223, 1), // 边框颜色
-                                        width: 0.5, // 边框宽度
-                                      ),
-                                      borderRadius:
-                                          BorderRadius.circular(0.0), // 圆角半径
-                                    ),
-                                    child: Center(
-                                        child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.fromLTRB(
-                                              0, 0, 0, 0),
-                                          child: Text(titleRow[i],
-                                              textAlign: TextAlign.center,
-                                              style: tableLabel(context)),
-                                        )
-                                      ],
-                                    )),
-                                  ),
-                                  contentCellBuilder: (i, j) => Container(
-                                    width: double.infinity,
-                                    height: double.infinity,
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                        color: const Color.fromRGBO(
-                                            223, 223, 223, 1), // 边框颜色
-                                        width: 0.5, // 边框宽度
-                                      ),
-                                      borderRadius:
-                                          BorderRadius.circular(0.0), // 圆角半径
-                                    ),
-                                    child: GetBuilder<deviceInfoController>(
-                                        builder: (_) {
-                                      var xindex = j;
-                                      var yindex = titleColumn[i]
-                                          .toString()
-                                          .split('.')[1];
-                                      return Center(
-                                          key: ValueKey(
-                                              'checkDataPage$j $i _ ${_deviceInfoController.updateTime.value}'),
-                                          child: handelTabelRow(
-                                              '${_deviceInfoController.indoorEntityList[xindex][titleColumn[i].toString().split('.')[1]]}',
-                                              yindex));
-                                    }),
-                                  ),
-                                  legendCell: Container(
-                                      width: double.infinity,
-                                      height: double.infinity,
-                                      decoration: BoxDecoration(
-                                        border: Border.all(
-                                          color: const Color.fromRGBO(
-                                              223, 223, 223, 1), // 边框颜色
-                                          width: 0.5, // 边框宽度
-                                        ),
-                                        borderRadius:
-                                            BorderRadius.circular(0.0), // 圆角半径
-                                      ),
-                                      child: tableHeaderIndex()),
-                                )
-                              : StickyHeadersTable(
-                                  key: ValueKey(
-                                      'checkDataPage_${_deviceInfoController.updateTime.value}'),
-                                  cellDimensions: CellDimensions
-                                      .variableColumnWidthAndRowHeight(
-                                          columnWidths: List.generate(
-                                              titleRow.length,
-                                              (index) =>
-                                                  (720.w - 32.w * 2) /
-                                                  (titleRow.length == 1
-                                                      ? 2
-                                                      : titleRow.length == 2
-                                                          ? 3
-                                                          : 4)),
-                                          rowHeights: rowHeightsList(
-                                              titleColumn.length),
-                                          stickyLegendWidth:
-                                              (720.w - 32.w * 2) /
-                                                  (titleRow.length == 1
-                                                      ? 2
-                                                      : titleRow.length == 2
-                                                          ? 3
-                                                          : 4),
-                                          stickyLegendHeight: 72.h),
-                                  columnsLength: titleRow.length,
-                                  rowsLength: titleColumn.length,
-                                  columnsTitleBuilder: (i) => Container(
-                                    width: double.infinity,
-                                    height: double.infinity,
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                        color: const Color.fromRGBO(
-                                            223, 223, 223, 1), // 边框颜色
-                                        width: 0.5, // 边框宽度
-                                      ),
-                                      borderRadius:
-                                          BorderRadius.circular(0.0), // 圆角半径
-                                    ),
-                                    child: Center(
-                                        child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          titleRow[i],
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          textAlign: TextAlign.center,
-                                          style: tableLabel(context),
-                                        ).tr()
-                                      ],
-                                    )),
-                                  ),
-                                  rowsTitleBuilder: (i) => Container(
-                                    width: double.infinity,
-                                    height: double.infinity,
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                        color: const Color.fromRGBO(
-                                            223, 223, 223, 1), // 边框颜色
-                                        width: 0.5, // 边框宽度
-                                      ),
-                                      borderRadius:
-                                          BorderRadius.circular(0.0), // 圆角半径
-                                    ),
-                                    child: Center(
-                                        child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Padding(
-                                            padding: const EdgeInsets.fromLTRB(
-                                                0, 0, 0, 0),
-                                            child: SizedBox(
-                                              width: (720.w - 32.w * 2) /
-                                                      (titleRow.length == 1
-                                                          ? 2
-                                                          : titleRow.length == 2
-                                                              ? 3
-                                                              : 4) -
-                                                  1,
-                                              child: Text(titleColumn[i],
-                                                      maxLines: 1,
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                      textAlign:
-                                                          TextAlign.center,
-                                                      style:
-                                                          tableLabel(context))
-                                                  .tr(),
-                                            ))
-                                      ],
-                                    )),
-                                  ),
-                                  contentCellBuilder: (i, j) => Container(
-                                    width: double.infinity,
-                                    height: double.infinity,
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                        color: const Color.fromRGBO(
-                                            223, 223, 223, 1), // 边框颜色
-                                        width: 0.5, // 边框宽度
-                                      ),
-                                      borderRadius:
-                                          BorderRadius.circular(0.0), // 圆角半径
-                                    ),
-                                    child: GetBuilder<deviceInfoController>(
-                                        builder: (_) {
-                                      var xindex = i;
-                                      var yindex = titleColumn[j]
-                                          .toString()
-                                          .split('.')[1];
-                                      final device = _deviceInfoController
-                                          .loacalDevice.value
-                                          .toMap();
-                                      // 获取 systemEntity 的当前值（非空处理）
-                                      final system = _deviceInfoController
-                                          .systemEntity.value;
-                                      var sys = {...system, ...device};
-                                      return Center(
-                                          key: ValueKey(
-                                              'checkDataPage$j $i _ ${_deviceInfoController.updateTime.value}'),
-                                          child: [
-                                            'OutdoorUnit',
-                                            'Compressor',
-                                            'Sensor',
-                                            'ValveBody',
-                                            'IndoorUnitParameters'
-                                          ].contains(activeType)
-                                              ? handelTabelRow(
-                                                  '${activeType == "IndoorUnitParameters" ? _deviceInfoController.indoorEntityList.isEmpty || _deviceInfoController.indoorEntityList[xindex] == null ? "--" : _deviceInfoController.indoorEntityList[xindex][yindex] : _deviceInfoController.outdoorEntityList.isEmpty || _deviceInfoController.outdoorEntityList[xindex] == null ? "--" : _deviceInfoController.outdoorEntityList[xindex][yindex]}',
-                                                  yindex)
-                                              : handelTabelRow(
-                                                  '${sys[yindex]}', yindex));
-                                    }),
-                                  ),
-                                  legendCell: Container(
-                                      width: double.infinity,
-                                      height: double.infinity,
-                                      decoration: BoxDecoration(
-                                        border: Border.all(
-                                          color: const Color.fromRGBO(
-                                              223, 223, 223, 1), // 边框颜色
-                                          width: 0.5, // 边框宽度
-                                        ),
-                                        borderRadius:
-                                            BorderRadius.circular(0.0), // 圆角半径
-                                      ),
-                                      child: tableHeaderIndex(
-                                        width: titleRow.length == 1
-                                            ? (720.w - 32.w * 2) / 2
-                                            : (720.w - 32.w * 2) /
+                          child: StickyHeadersTable(
+                            key: ValueKey(
+                                'checkDataPage_${_deviceInfoController.updateTime.value}'),
+                            cellDimensions:
+                                CellDimensions.variableColumnWidthAndRowHeight(
+                                    columnWidths: List.generate(
+                                        titleRow.length,
+                                        (index) =>
+                                            (720.w - 32.w * 2) /
+                                            (titleRow.length == 1
+                                                ? 2
+                                                : titleRow.length == 2
+                                                    ? 3
+                                                    : 4)),
+                                    rowHeights:
+                                        rowHeightsList(titleColumn.length),
+                                    stickyLegendWidth: (720.w - 32.w * 2) /
+                                        (titleRow.length == 1
+                                            ? 2
+                                            : titleRow.length == 2
+                                                ? 3
+                                                : 4),
+                                    stickyLegendHeight: 72.h),
+                            columnsLength: titleRow.length,
+                            rowsLength: titleColumn.length,
+                            columnsTitleBuilder: (i) => Container(
+                              width: double.infinity,
+                              height: double.infinity,
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: const Color.fromRGBO(
+                                      223, 223, 223, 1), // 边框颜色
+                                  width: 0.5, // 边框宽度
+                                ),
+                                borderRadius:
+                                    BorderRadius.circular(0.0), // 圆角半径
+                              ),
+                              child: Center(
+                                  child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    titleRow[i],
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    textAlign: TextAlign.center,
+                                    style: tableLabel(context),
+                                  ).tr()
+                                ],
+                              )),
+                            ),
+                            rowsTitleBuilder: (i) => Container(
+                              width: double.infinity,
+                              height: double.infinity,
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: const Color.fromRGBO(
+                                      223, 223, 223, 1), // 边框颜色
+                                  width: 0.5, // 边框宽度
+                                ),
+                                borderRadius:
+                                    BorderRadius.circular(0.0), // 圆角半径
+                              ),
+                              child: Center(
+                                  child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Padding(
+                                      padding:
+                                          const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                                      child: SizedBox(
+                                        width: (720.w - 32.w * 2) /
                                                 (titleRow.length == 1
                                                     ? 2
                                                     : titleRow.length == 2
                                                         ? 3
-                                                        : 4),
-                                        rightText: 'table.parameter',
-                                        leftText: 'table.address',
-                                      )),
+                                                        : 4) -
+                                            1,
+                                        child: Text(titleColumn[i],
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                textAlign: TextAlign.center,
+                                                style: tableLabel(context))
+                                            .tr(),
+                                      ))
+                                ],
+                              )),
+                            ),
+                            contentCellBuilder: (i, j) => Container(
+                              width: double.infinity,
+                              height: double.infinity,
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: const Color.fromRGBO(
+                                      223, 223, 223, 1), // 边框颜色
+                                  width: 0.5, // 边框宽度
                                 ),
+                                borderRadius:
+                                    BorderRadius.circular(0.0), // 圆角半径
+                              ),
+                              child: GetBuilder<deviceInfoController>(
+                                  builder: (_) {
+                                var xindex = i;
+                                var yindex =
+                                    titleColumn[j].toString().split('.')[1];
+                                final device = _deviceInfoController
+                                    .loacalDevice.value
+                                    .toMap();
+                                // 获取 systemEntity 的当前值（非空处理）
+                                final system =
+                                    _deviceInfoController.systemEntity.value;
+                                var sys = {...system, ...device};
+                                return Center(
+                                    key: ValueKey(
+                                        'checkDataPage$j $i _ ${_deviceInfoController.updateTime.value}'),
+                                    child: [
+                                      'OutdoorUnit',
+                                      'Compressor',
+                                      'Sensor',
+                                      'ValveBody',
+                                      'IndoorUnitParameters'
+                                    ].contains(activeType)
+                                        ? handelTabelRow(
+                                            '${activeType == "IndoorUnitParameters" ? _deviceInfoController.indoorEntityList.isEmpty || _deviceInfoController.indoorEntityList[xindex] == null ? "--" : _deviceInfoController.indoorEntityList[xindex][yindex] : _deviceInfoController.outdoorEntityList.isEmpty || _deviceInfoController.outdoorEntityList[xindex] == null ? "--" : _deviceInfoController.outdoorEntityList[xindex][yindex]}',
+                                            yindex)
+                                        : handelTabelRow(
+                                            '${sys[yindex]}', yindex));
+                              }),
+                            ),
+                            legendCell: Container(
+                                width: double.infinity,
+                                height: double.infinity,
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: const Color.fromRGBO(
+                                        223, 223, 223, 1), // 边框颜色
+                                    width: 0.5, // 边框宽度
+                                  ),
+                                  borderRadius:
+                                      BorderRadius.circular(0.0), // 圆角半径
+                                ),
+                                child: tableHeaderIndex(
+                                  width: titleRow.length == 1
+                                      ? (720.w - 32.w * 2) / 2
+                                      : (720.w - 32.w * 2) /
+                                          (titleRow.length == 1
+                                              ? 2
+                                              : titleRow.length == 2
+                                                  ? 3
+                                                  : 4),
+                                  rightText: 'table.parameter',
+                                  leftText: 'table.address',
+                                )),
+                          ),
                         )
                       : Center(
                           child: SizedBox(

@@ -2618,6 +2618,78 @@ var selectMap = {
       "value1": "STATUS_4",
       "value": 4
     },
+  ],
+  "startupType": [
+    {"label": "无特殊模式", "name": "无特殊模式", "value1": "SETTING_ENUM_0", "value": 0},
+    {"label": "预热", "name": "预热", "value1": "SETTING_ENUM_1", "value": 1},
+    {"label": "回油", "name": "回油", "value1": "SETTING_ENUM_2", "value": 2},
+    {"label": "化霜", "name": "化霜", "value1": "SETTING_ENUM_3", "value": 3},
+    {"label": "启动", "name": "启动", "value1": "SETTING_ENUM_4", "value": 4},
+    {"label": "停止", "name": "停止", "value1": "SETTING_ENUM_5", "value": 5},
+  ],
+  "indoorType": [
+    {"label": "老内机", "name": "老内机", "value1": "IduType_0", "value": 0},
+    {"label": "环形出风Q4", "name": "环形出风Q4", "value1": "IduType_1", "value": 1},
+    {"label": "G挂壁", "name": "G挂壁", "value1": "IduType_2", "value": 2},
+    {"label": "自由静压T2", "name": "自由静压T2", "value1": "IduType_3", "value": 3},
+    {"label": "薄型风管机T2", "name": "薄型风管机T2", "value1": "IduType_4", "value": 4},
+    {"label": "美式风管机", "name": "美式风管机", "value1": "IduType_5", "value": 5},
+    {"label": "T1高静压", "name": "T1高静压", "value1": "IduType_6", "value": 6},
+    {"label": "环形出风Q4_", "name": "环形出风Q4_", "value1": "IduType_7", "value": 7},
+    {"label": "DL座吊", "name": "DL座吊", "value1": "IduType_8", "value": 8},
+    {"label": "立式暗装", "name": "立式暗装", "value1": "IduType_9", "value": 9},
+    {"label": "立式明装", "name": "立式明装", "value1": "IduType_10", "value": 10},
+    {"label": "新风机", "name": "新风机", "value1": "IduType_11", "value": 11},
+    {"label": "一拖一", "name": "一拖一", "value1": "IduType_12", "value": 12},
+    {"label": "全热交换器", "name": "全热交换器", "value1": "IduType_13", "value": 13},
+    {"label": "一面出风", "name": "一面出风", "value1": "IduType_14", "value": 14},
+    {"label": "两面出风", "name": "两面出风", "value1": "IduType_15", "value": 15},
+    {
+      "label": "Console",
+      "name": "Console",
+      "value1": "IduType_16",
+      "value": 16
+    },
+    {"label": "高温水力模块", "name": "高温水力模块", "value1": "IduType_17", "value": 17},
+    {"label": "T3新风机", "name": "T3新风机", "value1": "IduType_18", "value": 18},
+    {
+      "label": "Clivet新风机",
+      "name": "Clivet新风机",
+      "value1": "IduType_19",
+      "value": 19
+    },
+    {
+      "label": "常温小风量新风机",
+      "name": "常温小风量新风机",
+      "value1": "IduType_20",
+      "value": 20
+    },
+    {"label": "独立控制盒", "name": "独立控制盒", "value1": "IduType_21", "value": 21},
+    {"label": "柜机", "name": "柜机", "value1": "IduType_22", "value": 22},
+    {"label": "加湿器", "name": "加湿器", "value1": "IduType_23", "value": 23},
+    {
+      "label": "独立控制盒_出风温度控制",
+      "name": "独立控制盒_出风温度控制",
+      "value1": "IduType_24",
+      "value": 24
+    },
+    {"label": "小多联新风机", "name": "小多联新风机", "value1": "IduType_25", "value": 25},
+    {"label": "直棚机", "name": "直棚机", "value1": "IduType_26", "value": 26},
+    {"label": "低温水力模块", "name": "低温水力模块", "value1": "IduType_27", "value": 27},
+    {"label": "中温水力模块", "name": "中温水力模块", "value1": "IduType_28", "value": 28},
+    {"label": "采暖水力模块", "name": "采暖水力模块", "value1": "IduType_29", "value": 29},
+    {"label": "直棚机_再热", "name": "直棚机_再热", "value1": "IduType_30", "value": 30},
+    {"label": "烤烟内机", "name": "烤烟内机", "value1": "IduType_31", "value": 31},
+    {"label": "AT内机", "name": "AT内机", "value1": "IduType_32", "value": 32},
+    {"label": "卧式", "name": "卧式", "value1": "IduType_33", "value": 33},
+    {"label": "制热水箱", "name": "制热水箱", "value1": "IduType_34", "value": 34},
+    {
+      "label": "ByPassKit",
+      "name": "ByPassKit",
+      "value1": "IduType_61",
+      "value": 61
+    },
+    {"label": "屋顶机", "name": "屋顶机", "value1": "IduType_62", "value": 62}
   ]
 };
 

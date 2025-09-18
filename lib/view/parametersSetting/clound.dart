@@ -348,6 +348,7 @@ class _cloundParametersSettingState extends State<cloundParametersSetting> {
         var sendControl = await _selfplatform.invokeMethod(
             'getMideaAppHandler.control', {"nid": nid, "needsend": _needsend});
         var data = jsonDecode(sendControl);
+        print("getMideaAppHandler.control --- ${data}");
         EasyLoading.dismiss();
         if (data["success"]) {
           EasyLoading.showSuccess(tr("refresh.tip"));

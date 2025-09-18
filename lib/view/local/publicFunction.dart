@@ -230,6 +230,8 @@ class deviceInfoController extends GetxController {
   }
 
   bool isconnectedBefore = false;
+  bool isDataExportDisConnect = false;
+
   Future<void> setIsConnected(isConnected) async {
     loacalDevice.value.isconnected = isConnected;
     update();
@@ -352,9 +354,10 @@ class deviceInfoController extends GetxController {
   DateTime startTime = DateTime.now();
   // 模拟加载数据
   startPolling() async {
+    isDataExportDisConnect = false;
     startTime = DateTime.now();
     await McuUtilplatform.invokeMethod('powerOff');
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1));
     if (_isProtocolHandlerStoping) {
       return;
     }
@@ -401,23 +404,7 @@ class deviceInfoController extends GetxController {
 
       await platform.invokeMethod('disableAutoSleep', <String, dynamic>{});
       EasyLoading.showSuccess(tr("startPolling"));
-      // var data = jsonDecode(iscon);
-      // print("startPolling: $data");
-      // if (data["success"]) {
-      //   EasyLoading.showSuccess(tr('load.success'));
-      //   if (_timerisPolling != null) {
-      //     _timerisPolling?.cancel();
-      //   }
-      //   _timerisPolling = Timer.periodic(const Duration(seconds: 2),
-      //       (timer) => platform.invokeMethod('getPolling'));
-      //   setIsPolling(true);
-      // } else {
-      //   EasyLoading.showError(iscon['errorMsg']);
-      // }
-      // EasyLoading.dismiss();
-      // EasyLoading.showSuccess(tr('load.success'));
     } catch (e) {
-      //   EasyLoading.dismiss();
       EasyLoading.showError("$e");
     }
   }
@@ -437,6 +424,11 @@ class deviceInfoController extends GetxController {
       isconnectedBefore = false;
       print("------------------   powerOff   --------------");
     }
+  }
+
+  toDataExportDisConnectStopPolling() {
+    isDataExportDisConnect = true;
+    stopPolling();
   }
 
   // ignore: non_constant_identifier_names
@@ -528,7 +520,7 @@ class deviceInfoController extends GetxController {
                         ),
                       ),
                       child: Center(
-                        child: Text(
+                        child: const Text(
                           "determine",
                           style: TextStyle(color: Colors.white),
                         ).tr(),
@@ -547,6 +539,9 @@ class deviceInfoController extends GetxController {
             setIsConnected(arguments['linkStatus']);
           } else {
             if (isconnectedBefore) {
+              if (isDataExportDisConnect) {
+                return;
+              }
               if (_isreconnect) {
                 Get.defaultDialog(
                   title: tr("device.checkDataController.confirmTitle"),
@@ -583,7 +578,7 @@ class deviceInfoController extends GetxController {
                         ),
                       ),
                       child: Center(
-                        child: Text(
+                        child: const Text(
                           "determine",
                           style: TextStyle(color: Colors.white),
                         ).tr(),
@@ -593,7 +588,6 @@ class deviceInfoController extends GetxController {
                   cancel: null, // 通过设置 cancel 为 null 来隐藏取消按钮
                 );
               }
-
               isconnectedBefore = false;
               setIsConnected(false);
               clean_loacalDevic();
@@ -852,6 +846,42 @@ Widget handelTabelRow(val, key) {
       textAlign: TextAlign.center,
       style: tableValue(),
     ).tr();
+  }
+}
+
+String handelTabelRowString(val, key) {
+  if (val == null) {
+    return '--';
+  }
+
+  if (selectMap[key] != null) {
+    return selectMapfilterOp(key, val);
+  }
+  if (key.toString().toUpperCase().contains("SN")) {
+    return val.toString().toUpperCase();
+  } else if (val.toString().contains('FanSpeed_')) {
+    return val.replaceAll('FanSpeed_', '') == '8'
+        ? '自动风'
+        : val.replaceAll(
+            'FanSpeed_',
+            '',
+          );
+  } else if (val.toString().contains('IduType_')) {
+    return iduTypeMap[val.toString().replaceAll(' ', '')] ?? val;
+  }
+  if (lockItemTableColumns.contains(key)) {
+    if (val.toString().contains('LockMode_')) {
+      return val.tr();
+    } else {
+      return 'Lock';
+    }
+  } else {
+    double? value = double.tryParse(val);
+    return tr(value != null
+        ? value.toStringAsFixed(1)
+        : val.toString() == 'null'
+            ? '--'
+            : val.toString().toUpperCase());
   }
 }
 

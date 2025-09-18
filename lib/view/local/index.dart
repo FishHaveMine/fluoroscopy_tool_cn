@@ -19,6 +19,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:fluoroscopy_tool/compent/ImagePickerExample.dart';
+import 'package:fluoroscopy_tool/compent/file_picker.dart';
 import 'package:fluoroscopy_tool/compent/location.dart';
 import 'package:fluoroscopy_tool/store/globalFunction.dart';
 import 'package:fluoroscopy_tool/view/local/cardFunList.dart';
@@ -382,17 +383,25 @@ class _deviceVersionState extends State<deviceVersion> {
                     )
                   : SizedBox(
                       width: 720.w,
-                      child: InkWell(
-                        onTap: () {
-                          imgpick();
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(0, 7, 0, 11),
-                          child: Text(
-                            'local.disconnect',
-                            style: versionTitle(context),
-                          ).tr(),
-                        ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(0, 7, 0, 11),
+                            child: Text(
+                              'local.disconnect',
+                              style: versionTitle(context),
+                            ).tr(),
+                          ),
+                          IconButton(
+                              onPressed: () {
+                                getDBFile(context);
+                              },
+                              icon: const Icon(
+                                Icons.ios_share,
+                                color: Colors.white,
+                              ))
+                        ],
                       ),
                     ),
             ));

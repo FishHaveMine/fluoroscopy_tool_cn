@@ -141,9 +141,8 @@ class MideaApi {
   // 获取设备上报记录
   static Future<Map<dynamic, dynamic>> getDeviceReportRecord(
       Map<dynamic, dynamic> data) async {
-    final response = await _dio.get(
-        '/professionalTools/getDeviceReportRecord?uid=${data['uid']}',
-        data: data);
+    final response =
+        await _dio.post('/professionalTools/getDeviceReportRecord', data: data);
     return response.data;
   }
 

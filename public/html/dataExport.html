@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>MIDEA(midea.com)</title>
+  <style>
+    .table-report table td {
+      text-align: center;
+    }
+
+    .text-row {
+      text-indent: 10px;
+    }
+
+    /* 容器基础样式 */
+    #table-report {
+      width: 100%;
+      padding: 20px;
+      box-sizing: border-box;
+      font-family: "Microsoft YaHei", Arial, sans-serif;
+      background-color: #fafafa;
+    }
+
+    /* 表格组容器（每个 activeType 对应一个组） */
+    .table-group {
+      margin-bottom: 30px;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      background-color: #fff;
+    }
+
+    /* 表格组标题（含中英文标识） */
+    .table-group-title {
+      padding: 14px 20px;
+      background-color: #f9fafb;
+      font-size: 16px;
+      font-weight: 600;
+      color: #1f2937;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+    }
+
+    .table-group-title .en-type {
+      margin-left: 8px;
+      font-size: 12px;
+      color: #6b7280;
+      font-weight: normal;
+    }
+
+    /* 表格滚动容器（适配小屏幕横向滚动） */
+    .table-scroll {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      /* 移动端顺滑滚动 */
+    }
+
+    /* 数据表格样式 */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      /* 固定表格布局，避免列宽错乱 */
+    }
+
+    /* 表头样式 */
+    .data-table th {
+      padding: 12px 16px;
+      text-align: left;
+      background-color: #f3f4f6;
+      border-bottom: 1px solid #e5e7eb;
+      font-size: 13px;
+      color: #4b5563;
+      font-weight: 500;
+      white-space: nowrap;
+      /* 表头不换行 */
+      position: relative;
+      text-align: center;
+    }
+
+    /* 表头hover提示（防止表头文字过长被截断） */
+    .data-table th:hover::after {
+      content: attr(data-label);
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 4px 8px;
+      background-color: #1f2937;
+      color: #fff;
+      font-size: 12px;
+      border-radius: 4px;
+      white-space: nowrap;
+      z-index: 10;
+      margin-top: 4px;
+    }
+
+    /* 数据行样式 */
+    .data-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid #e5e7eb;
+      font-size: 12px;
+      color: #374151;
+      white-space: nowrap;
+      /* 数据不换行 */
+      overflow: hidden;
+      text-overflow: ellipsis;
+      /* 超出部分显示省略号 */
+    }
+
+    /* 交替行背景（提升可读性） */
+    .data-table tbody tr:nth-child(even) {
+      background-color: #fdfdfe;
+    }
+
+    /* 行hover效果 */
+    .data-table tbody tr:hover {
+      background-color: #f9fafb;
+      cursor: default;
+    }
+
+    /* 空数据提示样式 */
+    .empty-tip {
+      padding: 60px 20px;
+      text-align: center;
+      color: #9ca3af;
+      font-size: 14px;
+    }
+
+    .empty-tip::before {
+      content: "📊";
+      display: block;
+      font-size: 32px;
+      margin-bottom: 12px;
+    }
+
+    /* 加载失败提示 */
+    .load-error {
+      padding: 40px 20px;
+      text-align: center;
+      color: #ef4444;
+      font-size: 14px;
+      background-color: #fff;
+      border-radius: 8px;
+      margin: 20px;
+    }
+  </style>
+</head>
+
+<body class="body" id="bodyBox" style="font-family:Arial">
+  <div id="table-report" class="table-report"></div>
+</body>
+<script type="text/javascript">
+  function createWaterMark(message, options, dom) {
+    var font = options && options.font || '16px sans-serif';
+    var color = options && options.color || '#7f7f7f';
+    var position = options && options.position;
+    var width = options && options.width || 160;
+    var height = options && options.height || 160;
+    var angleCount = options && options.angleCount || 6;
+    var globalAlpha = options && options.globalAlpha || 0.1;
+    var zIndex = options && options.zIndex || '10000000';
+
+    var canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    var ctx = canvas.getContext('2d');
+    if (!ctx) {
+      return;
+    }
+ 
+    ctx.font = font;
+    ctx.fillStyle = color;
+    ctx.globalAlpha = globalAlpha;
+    ctx.translate(width / 2, height / 2);
+    ctx.rotate(-Math.PI / angleCount);
+    ctx.textAlign = 'center';
+    ctx.fillText(message || '', 0, 0);
+    var dataURL = canvas.toDataURL('image/png');
+
+    var mask = document.createElement('div');
+    mask.style.width = '100%';
+    mask.style.height = '100%';
+    mask.style.position = 'fixed';
+    mask.style.left = '0';
+    mask.style.right = '0';
+    mask.style.top = '0';
+    mask.style.bottom = '0';
+    mask.style.zIndex = zIndex;
+    mask.style.pointerEvents = 'none';
+    mask.style.backgroundImage = 'url(' + dataURL + ')';
+
+    dom = dom || document.body;
+    dom.appendChild(mask);
+  }
+
+
+
+  const WaterMark = "Midea楼宇科技";
+  createWaterMark(
+   WaterMark, //打水印的内容
+    {
+      position: 'absolute', //水印样式
+      color: '#1897f2',
+      font: '20px sans-serif',
+      width: 200,
+      height: 300,
+      angleCount: 4,
+      globalAlpha: 0.2
+    },
+    document.getElementById('bodyBox') //被打水印的Dom, 非必填，不填的情况下为body
+  )
+
+
+
+
+
+
+  // 2. 工具函数：activeType 中英文映射（提升表格可读性）
+  function getActiveTypeCN(activeType) {
+    const typeMap = {
+      "System": "系统",
+      "OutdoorUnit": "外机",
+      "Compressor": "压缩机",
+      "Sensor": "传感器",
+      "ValveBody": "阀体",
+      "IndoorUnitParameters": "内机"
+    };
+    return typeMap[activeType] || activeType;
+  }
+
+  // 3. 核心函数：生成单个表格（根据表格组数据）
+  function createSingleTable(tableGroup) {
+    const { activeType, titleRow, data, titleColumn } = tableGroup;
+
+    // 3.1 创建表格组容器
+    const tableGroupEl = document.createElement('div');
+    tableGroupEl.className = 'table-group';
+
+    // 3.2 创建表格组标题
+    const groupTitleEl = document.createElement('div');
+    groupTitleEl.className = 'table-group-title';
+    groupTitleEl.innerHTML = `
+                ${getActiveTypeCN(activeType)}
+            `;
+    tableGroupEl.appendChild(groupTitleEl);
+
+    // 3.3 处理空数据场景
+    if (!data || data.length === 0 || data.every(row => row.length === 0)) {
+      const emptyTipEl = document.createElement('div');
+      emptyTipEl.className = 'empty-tip';
+      emptyTipEl.textContent = '暂无数据';
+      tableGroupEl.appendChild(emptyTipEl);
+      return tableGroupEl;
+    }
+
+    // 3.4 创建表格滚动容器（适配小屏幕）
+    const tableScrollEl = document.createElement('div');
+    tableScrollEl.className = 'table-scroll';
+
+    // 3.5 创建表格元素
+    const tableEl = document.createElement('table');
+    tableEl.className = 'data-table';
+
+    // 3.6 创建表头（thead）
+    const theadEl = document.createElement('thead');
+    const theadTrEl = document.createElement('tr');
+
+    // 表头第一列：行标题（titleRow 如 "0#", "1#"）
+    const titleThEl = document.createElement('th');
+    titleThEl.textContent = '设备编号';
+    titleThEl.setAttribute('data-label', '设备编号'); // hover提示
+    theadTrEl.appendChild(titleThEl);
+
+    // 表头其他列：数据列标题（titleColumn）
+    titleRow.forEach(label => {
+      const thEl = document.createElement('th');
+      thEl.textContent = label;
+      thEl.setAttribute('data-label', label); // hover提示（防止文字截断）
+      theadTrEl.appendChild(thEl);
+    });
+    theadEl.appendChild(theadTrEl);
+    tableEl.appendChild(theadEl);
+    // 3.7 创建表格内容（tbody）
+    const tbodyEl = document.createElement('tbody');
+
+    titleColumn.forEach((rowData, columnIndex) => {
+      const trEl = document.createElement('tr');
+
+      // 3.7.1 行标题单元格（如 "0#"）
+      const titleTdEl = document.createElement('td');
+      titleTdEl.textContent = rowData;
+
+      trEl.appendChild(titleTdEl);
+      data.forEach((rowData, Index) => {
+        // 3.7.1 行标题单元格（如 "0#"）
+        rowData.forEach((dataitem, rowIndex) => {
+        if (columnIndex == rowIndex) {
+          const titleTdEl = document.createElement('td');
+          titleTdEl.textContent = dataitem;
+          trEl.appendChild(titleTdEl);
+        }
+      })
+
+      });
+      tbodyEl.appendChild(trEl);
+    });
+    // 遍历数据行：匹配 titleRow（行标题）和 data（行数据）
+    tableEl.appendChild(tbodyEl);
+    tableScrollEl.appendChild(tableEl);
+    tableGroupEl.appendChild(tableScrollEl);
+
+    return tableGroupEl;
+  }
+
+  // 4. 主函数：渲染所有表格到容器
+  function renderAllTables() {
+    const container = document.getElementById('table-report');
+    if (!container) {
+      console.error('表格容器不存在：#table-report');
+      return;
+    }
+
+    // 清空容器（防止重复渲染）
+    container.innerHTML = '';
+
+    // 检查数据合法性
+    if (!datarepal || !Array.isArray(datarepal)) {
+      const errorEl = document.createElement('div');
+      errorEl.className = 'load-error';
+      errorEl.textContent = '数据加载失败：datarepal 不是有效的数组';
+      container.appendChild(errorEl);
+      return;
+    }
+
+    // 遍历所有表格组，生成并插入表格
+    datarepal.forEach(tableGroup => {
+      const singleTable = createSingleTable(tableGroup);
+      container.appendChild(singleTable);
+    });
+  }
+
+
+  
+  const datarepal = dataparamReplace;
+  renderAllTables();
+</script>
+
+</html>

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:easy_localization/easy_localization.dart';
+import 'package:fluoroscopy_tool/compent/expandable_widget.dart';
 import 'package:fluoroscopy_tool/compent/snInput.dart';
 import 'package:fluoroscopy_tool/compent/submitbutton.dart';
 import 'package:fluoroscopy_tool/store/globalData.dart';
@@ -41,45 +42,17 @@ class _originTrackingPageState extends State<originTrackingPage> {
     return buffer.toString();
   }
 
-  String sn =
-      ''; // 000143533534303342311500BF009C160315000000000000000000000000000000
+  String sn = '';
 
-  List<dynamic> projects = [];
+  String driverUid = '';
+
+  String centralUid = '';
+
+  var projects = {};
   int pageIndex = 0;
   int pageSize = 10;
   bool isLoading = false;
   bool hasMoreData = true;
-
-  List<dynamic> generateMockProjects(int count) {
-    final List<dynamic> projects = [];
-
-    // 获取当前时间作为基准
-    final now = DateTime.now();
-
-    for (int i = 0; i < count; i++) {
-      // 生成递增的设备SN
-      final sn = '设备SN-${(i + 1).toString().padLeft(3, '0')}';
-
-      // 生成不同的上报时间（每次递减10分钟）
-      final reportTime = now.subtract(Duration(minutes: i * 10));
-      final formattedTime =
-          '${reportTime.year}-${reportTime.month.toString().padLeft(2, '0')}-${reportTime.day.toString().padLeft(2, '0')} '
-          '${reportTime.hour.toString().padLeft(2, '0')}:${reportTime.minute.toString().padLeft(2, '0')}:${reportTime.second.toString().padLeft(2, '0')}';
-
-      // 生成唯一识别码
-      final id =
-          'ID-${reportTime.year}${reportTime.month.toString().padLeft(2, '0')}${reportTime.day.toString().padLeft(2, '0')}${(i + 1).toString().padLeft(3, '0')}';
-
-      // 添加到项目列表
-      projects.add({
-        "sn": sn,
-        "uptime": formattedTime,
-        "id": id,
-      });
-    }
-
-    return projects;
-  }
 
   static const platform = MethodChannel('samples.flutter.dev/battery');
 
@@ -122,11 +95,11 @@ class _originTrackingPageState extends State<originTrackingPage> {
     EasyLoading.show(status: 'loading...');
     setState(() {
       isLoading = true;
-      projects = [];
+      projects = {};
     });
 
     var _send = {};
-    _send = {"uid": sn};
+    _send = {"masterUid": sn, "centralUid": centralUid, "driverUid": driverUid};
 
     print("_fetchProjects _send : $_send");
 
@@ -136,10 +109,9 @@ class _originTrackingPageState extends State<originTrackingPage> {
       print("_fetchProjects response : $response");
       if (response['errorCode'] == 200) {
         final data = response['data'];
-        final List<dynamic> newProjects = data ?? [];
-
+        print("_fetchProjects response : $data");
         setState(() {
-          projects = newProjects;
+          projects = response['data'];
           hasMoreData = false;
           isLoading = false;
         });
@@ -171,19 +143,23 @@ class _originTrackingPageState extends State<originTrackingPage> {
       print(
           "_readUUid  ${double.parse(_deviceInfoController.outdoorEntityList[0]['version'].toString())}");
       if (double.parse(_deviceInfoController.outdoorEntityList[0]['version']
-              .toString()) >=
-          28.3) {
+                  .toString()) >=
+              28.3 ||
+          _deviceInfoController.loacalDevice.value.oduTypeEnum == "OduType_9") {
         EasyLoading.show(status: 'loading...');
         try {
           var unLock = await _selfplatform
               .invokeMethod('getAntiTampering', <String, dynamic>{});
           var uuid = jsonDecode(unLock);
-
+          print("getAntiTampering uuid: ${uuid["data"]["masterUid"]}");
           if (uuid["success"]) {
+            sn = uuid["data"]["masterUid"] ?? "";
+            centralUid = uuid["data"]["centralUid"] ?? "";
+            driverUid = uuid["data"]["driverUid"] ?? "";
             setState(() {
-              sn = uuid["data"];
+              sn;
             });
-            _controller.text = uuid["data"]; // 调用子组件方法
+            _controller.text = sn; // 调用子组件方法
           } else {
             EasyLoading.showError(unLock["errorMsg"]);
           }
@@ -260,6 +236,12 @@ class _originTrackingPageState extends State<originTrackingPage> {
 
   @override
   Widget build(BuildContext context) {
+    // 先计算有效数据的数量
+    final validItemCount = [
+      "firstCentralUid",
+      "firstDriverUid",
+      "firstMasterUid"
+    ].where((key) => projects[key] != null).length;
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.white,
@@ -281,9 +263,9 @@ class _originTrackingPageState extends State<originTrackingPage> {
           height: 1280.h,
           color: const Color.fromRGBO(244, 244, 244, 1),
           padding: EdgeInsets.fromLTRB(0.w, 0.h, 0.w, 0.h),
-          child: Column(
-            children: [
-              Container(
+          child: SingleChildScrollView(
+            child: Column(children: [
+              SizedBox(
                 width: double.infinity,
                 child: Padding(
                     padding: EdgeInsets.fromLTRB(8, 24.h, 8, 32.h),
@@ -353,7 +335,7 @@ class _originTrackingPageState extends State<originTrackingPage> {
                                               fontSize: 16),
                                           hintStyle: TextStyle(
                                               height: sn == "" ? 1.5 : 1,
-                                              color: Color.fromRGBO(
+                                              color: const Color.fromRGBO(
                                                   140, 140, 140, 1),
                                               fontSize: 16),
                                           hintText: tr("scancode")),
@@ -395,92 +377,165 @@ class _originTrackingPageState extends State<originTrackingPage> {
                       ],
                     )),
               ),
-              Expanded(
-                child: RefreshIndicator(
-                  onRefresh: _refreshProjects,
-                  child: projects.isEmpty
-                      ? const Center(child: Text('暂无数据'))
-                      : ListView.builder(
-                          controller: _scrollController,
-                          itemCount: projects.length + (hasMoreData ? 1 : 0),
-                          itemBuilder: (context, index) {
-                            if (index < projects.length) {
-                              final item = projects[index];
-                              return Card(
-                                margin: EdgeInsets.symmetric(
-                                    horizontal: 32.w, vertical: 8),
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10)),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(16.0),
-                                  child: Row(
-                                    children: [
-                                      // Padding(
-                                      //   padding: const EdgeInsets.symmetric(
-                                      //       horizontal: 16),
-                                      //   child: Text((index + 1).toString(),
-                                      //       style: const TextStyle(
-                                      //           fontSize: 18,
-                                      //           fontWeight: FontWeight.bold)),
-                                      // ),
-                                      Expanded(
-                                          child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          InkWell(
-                                            onTap: () {
-                                              copyTextToClipboard(
-                                                  item['sn'], context);
-                                            },
-                                            child: _infobox(
-                                              label: '设备SN:',
-                                              val: item['sn'] ?? "",
-                                            ),
-                                          ),
-                                          const SizedBox(
-                                            height: 10,
-                                          ),
-                                          InkWell(
-                                              onTap: () {
-                                                copyTextToClipboard(
-                                                    item['uuid'], context);
-                                              },
-                                              child: _infobox(
-                                                label: '内部识别码:',
-                                                val: item['uuid'] ?? "",
-                                              )),
-                                          const SizedBox(
-                                            height: 10,
-                                          ),
-                                          _infobox(
-                                            label: '创建时间:',
-                                            // val: formatTimestamp(item['uptime']),
-                                            val: _formatTimestamp(
-                                                item['createTime']),
-                                          ),
-                                        ],
-                                      ))
-                                    ],
+              if (!projects.isEmpty)
+                Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                    child: ExpandableWidget(
+                      // 折叠状态显示的内容
+                      collapsedChild: Container(),
+
+                      // 展开状态显示的内容
+                      expandedChild: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Card(
+                              margin: EdgeInsets.symmetric(
+                                  horizontal: 0.w, vertical: 8),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10)),
+                              child: Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: InkWell(
+                                  onTap: () {
+                                    copyTextToClipboard(sn, context);
+                                  },
+                                  child: _infobox(
+                                    label: '主控:',
+                                    val: sn ?? "",
                                   ),
                                 ),
-                              );
-                            } else {
-                              // 加载更多指示器
-                              return Padding(
+                              )),
+                          Card(
+                              margin: EdgeInsets.symmetric(
+                                  horizontal: 0.w, vertical: 8),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10)),
+                              child: Padding(
                                 padding: const EdgeInsets.all(16.0),
-                                child: Center(
-                                  child: hasMoreData
-                                      ? const CircularProgressIndicator()
-                                      : const Text('没有更多数据'),
+                                child: InkWell(
+                                  onTap: () {
+                                    copyTextToClipboard(sn, context);
+                                  },
+                                  child: _infobox(
+                                    label: '中驱:',
+                                    val: centralUid ?? "--",
+                                  ),
                                 ),
-                              );
-                            }
-                          },
-                        ),
+                              )),
+                          Card(
+                              margin: EdgeInsets.symmetric(
+                                  horizontal: 0.w, vertical: 8),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10)),
+                              child: Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: InkWell(
+                                  onTap: () {
+                                    copyTextToClipboard(sn, context);
+                                  },
+                                  child: _infobox(
+                                    label: '模块:',
+                                    val: driverUid ?? "--",
+                                  ),
+                                ),
+                              )),
+                        ],
+                      ),
+
+                      // 触发区域
+                      toggleWidget: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            '云端设备码识别',
+                            style: titleText(),
+                          ),
+                          Icon(Icons.arrow_drop_down),
+                        ],
+                      ),
+                    )),
+              if (!projects.isEmpty)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: Text(
+                      "云端对应关系检索",
+                      style: titleText(),
+                    ),
+                  ),
                 ),
-              )
-            ],
+              SizedBox(
+                width: double.infinity,
+                height: 320.h * validItemCount,
+                child: ListView.builder(
+                  physics: const NeverScrollableScrollPhysics(), // 或不设置（默认值）
+                  itemCount: 3,
+                  itemBuilder: (context, index) {
+                    const keylist = [
+                      "firstCentralUid",
+                      "firstDriverUid",
+                      "firstMasterUid"
+                    ];
+                    final item = projects[keylist[index]];
+                    return item == null
+                        ? Container()
+                        : Card(
+                            margin: EdgeInsets.symmetric(
+                                horizontal: 32.w, vertical: 8),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10)),
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                      child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      InkWell(
+                                        onTap: () {
+                                          copyTextToClipboard(
+                                              item['sn'], context);
+                                        },
+                                        child: _infobox(
+                                          label: '设备SN:',
+                                          val: item['sn'] ?? "",
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      InkWell(
+                                          onTap: () {
+                                            copyTextToClipboard(
+                                                item['uuid'], context);
+                                          },
+                                          child: _infobox(
+                                            label:
+                                                '${keylist[index] == "firstMasterUid" ? '主控' : keylist[index] == "firstCentralUid" ? '中驱' : '模块'}识别码:',
+                                            val: item['uuid'] ?? "",
+                                          )),
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      _infobox(
+                                        label: '创建时间:',
+                                        // val: formatTimestamp(item['uptime']),
+                                        val: _formatTimestamp(
+                                            item['createTime']),
+                                      ),
+                                    ],
+                                  ))
+                                ],
+                              ),
+                            ),
+                          );
+                  },
+                ),
+              ),
+            ]),
           ),
         ));
   }
